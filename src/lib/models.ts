@@ -5,7 +5,7 @@ export interface IUser extends Document {
   name: string;
   email: string;
   password_hash: string;
-  locked_course_id?: mongoose.Types.ObjectId | null;
+  locked_course_id?: any;
   status: 'Active' | 'Suspended' | 'Deleted';
   xp_total: number;
   created_at: Date;
@@ -15,7 +15,7 @@ const UserSchema = new Schema<IUser>({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true, lowercase: true },
   password_hash: { type: String, required: true },
-  locked_course_id: { type: Schema.Types.ObjectId, ref: 'Course', default: null },
+  locked_course_id: { type: Schema.Types.Mixed, default: null },
   status: { type: String, enum: ['Active', 'Suspended', 'Deleted'], default: 'Active' },
   xp_total: { type: Number, default: 0 },
   created_at: { type: Date, default: Date.now },
@@ -25,6 +25,7 @@ const UserSchema = new Schema<IUser>({
 export interface ICourse extends Document {
   name: string;
   description: string;
+  subjects?: string[];
   marking_scheme: {
     marks_per_correct: number;
     penalty_per_incorrect: number;
@@ -36,6 +37,7 @@ export interface ICourse extends Document {
 const CourseSchema = new Schema<ICourse>({
   name: { type: String, required: true, unique: true },
   description: { type: String, required: true },
+  subjects: [{ type: String }],
   marking_scheme: {
     marks_per_correct: { type: Number, default: 4 },
     penalty_per_incorrect: { type: Number, default: 1 },
@@ -46,7 +48,7 @@ const CourseSchema = new Schema<ICourse>({
 
 // Question
 export interface IQuestion extends Document {
-  course_id: mongoose.Types.ObjectId;
+  course_id: any;
   topic_tag: string;
   question_text: string;
   options: string[];
@@ -57,7 +59,7 @@ export interface IQuestion extends Document {
 }
 
 const QuestionSchema = new Schema<IQuestion>({
-  course_id: { type: Schema.Types.ObjectId, ref: 'Course', required: true },
+  course_id: { type: Schema.Types.Mixed, required: true },
   topic_tag: { type: String, required: true },
   question_text: { type: String, required: true },
   options: [{ type: String, required: true }],
@@ -69,36 +71,36 @@ const QuestionSchema = new Schema<IQuestion>({
 
 // MockTest
 export interface IMockTest extends Document {
-  course_id: mongoose.Types.ObjectId;
+  course_id: any;
   title: string;
   type: 'full' | 'sectional';
   duration_minutes: number;
   cutoff_marks: number;
-  question_ids: mongoose.Types.ObjectId[];
+  question_ids: any[];
   is_active: boolean;
   created_at: Date;
 }
 
 const MockTestSchema = new Schema<IMockTest>({
-  course_id: { type: Schema.Types.ObjectId, ref: 'Course', required: true },
+  course_id: { type: Schema.Types.Mixed, required: true },
   title: { type: String, required: true },
   type: { type: String, enum: ['full', 'sectional'], default: 'full' },
   duration_minutes: { type: Number, required: true },
   cutoff_marks: { type: Number, required: true },
-  question_ids: [{ type: Schema.Types.ObjectId, ref: 'Question' }],
+  question_ids: [{ type: Schema.Types.Mixed }],
   is_active: { type: Boolean, default: true },
   created_at: { type: Date, default: Date.now },
 });
 
 // Attempt
 export interface IAttempt extends Document {
-  student_id: mongoose.Types.ObjectId;
-  course_id: mongoose.Types.ObjectId;
-  test_id?: mongoose.Types.ObjectId | null;
+  student_id: any;
+  course_id: any;
+  test_id?: any;
   type: 'practice' | 'mock';
   topic_tag?: string;
   responses: Array<{
-    question_id: mongoose.Types.ObjectId;
+    question_id: any;
     selected_option: number;
     is_correct: boolean;
   }>;
@@ -110,13 +112,13 @@ export interface IAttempt extends Document {
 }
 
 const AttemptSchema = new Schema<IAttempt>({
-  student_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  course_id: { type: Schema.Types.ObjectId, ref: 'Course', required: true },
-  test_id: { type: Schema.Types.ObjectId, ref: 'MockTest', default: null },
+  student_id: { type: Schema.Types.Mixed, required: true },
+  course_id: { type: Schema.Types.Mixed, required: true },
+  test_id: { type: Schema.Types.Mixed, default: null },
   type: { type: String, enum: ['practice', 'mock'], required: true },
   topic_tag: { type: String, default: '' },
   responses: [{
-    question_id: { type: Schema.Types.ObjectId, ref: 'Question' },
+    question_id: { type: Schema.Types.Mixed },
     selected_option: { type: Number },
     is_correct: { type: Boolean }
   }],
@@ -129,16 +131,16 @@ const AttemptSchema = new Schema<IAttempt>({
 
 // XPTransaction
 export interface IXPTransaction extends Document {
-  student_id: mongoose.Types.ObjectId;
-  attempt_id?: mongoose.Types.ObjectId | null;
+  student_id: any;
+  attempt_id?: any;
   xp_amount: number;
   reason: string;
   created_at: Date;
 }
 
 const XPTransactionSchema = new Schema<IXPTransaction>({
-  student_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  attempt_id: { type: Schema.Types.ObjectId, ref: 'Attempt', default: null },
+  student_id: { type: Schema.Types.Mixed, required: true },
+  attempt_id: { type: Schema.Types.Mixed, default: null },
   xp_amount: { type: Number, required: true },
   reason: { type: String, required: true },
   created_at: { type: Date, default: Date.now },
@@ -167,7 +169,7 @@ const AdminSchema = new Schema<IAdmin>({
 
 // AuditLog
 export interface IAuditLog extends Document {
-  admin_id?: mongoose.Types.ObjectId;
+  admin_id?: any;
   admin_name: string;
   action_type: string;
   affected_entity_id?: string;
@@ -176,7 +178,7 @@ export interface IAuditLog extends Document {
 }
 
 const AuditLogSchema = new Schema<IAuditLog>({
-  admin_id: { type: Schema.Types.ObjectId, ref: 'Admin' },
+  admin_id: { type: Schema.Types.Mixed },
   admin_name: { type: String, default: 'System Admin' },
   action_type: { type: String, required: true },
   affected_entity_id: { type: String, default: '' },
@@ -186,19 +188,19 @@ const AuditLogSchema = new Schema<IAuditLog>({
 
 // WeeklyDPP
 export interface IWeeklyDPP extends Document {
-  course_id: mongoose.Types.ObjectId;
+  course_id: any;
   title: string;
   duration_minutes: number;
-  question_ids: mongoose.Types.ObjectId[];
+  question_ids: any[];
   is_active: boolean;
   created_at: Date;
 }
 
 const WeeklyDPPSchema = new Schema<IWeeklyDPP>({
-  course_id: { type: Schema.Types.ObjectId, ref: 'Course', required: true },
+  course_id: { type: Schema.Types.Mixed, required: true },
   title: { type: String, required: true },
   duration_minutes: { type: Number, required: true, default: 30 },
-  question_ids: [{ type: Schema.Types.ObjectId, ref: 'Question' }],
+  question_ids: [{ type: Schema.Types.Mixed }],
   is_active: { type: Boolean, default: true },
   created_at: { type: Date, default: Date.now },
 });
