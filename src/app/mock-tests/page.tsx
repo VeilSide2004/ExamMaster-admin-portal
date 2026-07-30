@@ -188,7 +188,20 @@ export default function MockTestManagementPage() {
 
   const availableCourseQuestions = questions.filter((q) => {
     const cId = typeof q.course_id === 'object' ? q.course_id?._id : q.course_id;
-    return cId === courseId;
+    const isDirectMatch = String(cId) === String(courseId);
+    const selectedCourseObj = courses.find((c) => String(c._id) === String(courseId));
+    const questionCourseObj = courses.find((c) => String(c._id) === String(cId));
+
+    const sName = (selectedCourseObj?.name || '').toLowerCase();
+    const qName = (questionCourseObj?.name || '').toLowerCase();
+
+    const isTrackMatch = sName && qName && (
+      sName === qName ||
+      (sName.includes('neet') && qName.includes('neet')) ||
+      (sName.includes('jee') && qName.includes('jee'))
+    );
+
+    return isDirectMatch || isTrackMatch;
   });
 
   const getSubjectAndTopic = (q: any) => {
