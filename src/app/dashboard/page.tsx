@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { AdminSidebar } from '@/components/layout/AdminSidebar';
 import { AdminHeader } from '@/components/layout/AdminHeader';
 import {
@@ -21,6 +22,7 @@ import {
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
+  const router = useRouter();
   const [metrics, setMetrics] = useState({
     totalStudents: 0,
     totalQuestions: 0,
@@ -32,6 +34,17 @@ export default function AdminDashboardPage() {
   const [hourlyData, setHourlyData] = useState<any[]>([]);
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.authenticated) {
+          router.push('/login');
+        }
+      })
+      .catch(() => router.push('/login'));
+  }, [router]);
 
   const fetchDashboardData = () => {
     setLoading(true);
