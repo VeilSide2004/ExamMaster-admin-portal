@@ -59,11 +59,13 @@ export default function QuestionManagementPage() {
 
   // Bulk Question Modal
   const [showBulkModal, setShowBulkModal] = useState(false);
-  const [bulkMode, setBulkMode] = useState<'csv' | 'text' | 'json' | 'form'>('csv');
+  const [bulkMode, setBulkMode] = useState<'document' | 'text' | 'json' | 'form'>('document');
   const [bulkJson, setBulkJson] = useState('');
   const [bulkText, setBulkText] = useState('');
-  const [csvFileName, setCsvFileName] = useState('');
-  const [csvRawText, setCsvRawText] = useState('');
+  const [docFileName, setDocFileName] = useState('');
+  const [docParsing, setDocParsing] = useState(false);
+  const [parsedDocQuestions, setParsedDocQuestions] = useState<any[]>([]);
+  const [docError, setDocError] = useState('');
   const [bulkFormQuestions, setBulkFormQuestions] = useState<any[]>([
     { topic_tag: '', question_text: '', options: ['', '', '', ''], correct_option: 0, explanation: '' },
   ]);
@@ -267,48 +269,68 @@ export default function QuestionManagementPage() {
     }
   };
 
-  // CSV parsing
-  const parseCsvText = (csvString: string, targetCourse: string) => {
-    const lines = csvString.split(/\r?\n/).filter((l) => l.trim().length > 0);
-    if (lines.length < 2) throw new Error('CSV file must contain a header row and at least 1 question row.');
+  const handleDocFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setDocFileName(file.name);
+    setDocParsing(true);
+    setDocError('');
+    setBulkError('');
 
-    const parsed: any[] = [];
-    const startIndex = lines[0].toLowerCase().includes('topic') || lines[0].toLowerCase().includes('question') ? 1 : 0;
-    const defaultTag = selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : 'General';
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const defaultTag = selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : 'General';
+      formData.append('defaultTopic', defaultTag);
 
-    for (let i = startIndex; i < lines.length; i++) {
-      const line = lines[i];
-      const cols = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || line.split(',');
-      const clean = cols.map((c) => c.replace(/^"|"$/g, '').trim());
+      const res = await fetch('/api/questions/parse-document', {
+        method: 'POST',
+        body: formData,
+      });
 
-      if (clean.length >= 6) {
-        const topic_tag = clean[0] || defaultTag;
-        const qText = clean[1];
-        const optA = clean[2];
-        const optB = clean[3];
-        const optC = clean[4];
-        const optD = clean[5];
-        const rawAns = (clean[6] || 'A').toUpperCase();
-        const exp = clean[7] || '';
-
-        let correct = 0;
-        if (rawAns === 'B' || rawAns === '1') correct = 1;
-        else if (rawAns === 'C' || rawAns === '2') correct = 2;
-        else if (rawAns === 'D' || rawAns === '3') correct = 3;
-
-        if (qText && optA && optB) {
-          parsed.push({
-            course_id: targetCourse,
-            topic_tag,
-            question_text: qText,
-            options: [optA, optB, optC || 'Option C', optD || 'Option D'],
-            correct_option: correct,
-            explanation: exp,
-          });
-        }
+      const data = await res.json();
+      if (!res.ok) {
+        setDocError(data.error || 'Failed to parse document');
+        setParsedDocQuestions([]);
+      } else {
+        setParsedDocQuestions(data.questions || []);
       }
+    } catch (err: any) {
+      setDocError('Error uploading and parsing document');
+      setParsedDocQuestions([]);
+    } finally {
+      setDocParsing(false);
     }
-    return parsed;
+  };
+
+  const downloadSampleDocTemplate = () => {
+    const sampleContent = `Topic: ${selectedSubject || 'Physics'} - ${selectedTopic || 'Kinematics'}
+
+Q1. What is the acceleration due to gravity near Earth's surface?
+A) 9.8 m/s^2
+B) 8.9 m/s^2
+C) 10.5 m/s^2
+D) 9.8 km/s^2
+Answer: A
+Explanation: Standard acceleration due to gravity at sea level is approximately 9.8 m/s^2.
+
+Q2. Which physical quantity is defined as the rate of doing work?
+A) Force
+B) Energy
+C) Power
+D) Momentum
+Answer: C
+Explanation: Power is the rate at which work is done or energy is transferred.
+`;
+
+    const blob = new Blob([sampleContent], { type: 'text/plain;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'sample_questions_document.txt');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   // Plain text parsing
@@ -363,33 +385,6 @@ export default function QuestionManagementPage() {
     return parsed;
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setCsvFileName(file.name);
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setCsvRawText(event.target?.result as string);
-    };
-    reader.readAsText(file);
-  };
-
-  const downloadSampleCsv = () => {
-    const csvContent = `Topic,Question Text,Option A,Option B,Option C,Option D,Correct Answer (A/B/C/D),Explanation
-${selectedSubject || 'Physics'} - ${selectedTopic || 'Electrostatics'},What is the SI unit of electric charge?,Coulomb,Ampere,Volt,Ohm,A,Electric charge is measured in Coulombs (C).
-${selectedSubject || 'Chemistry'} - Optics,Which compound exhibits optical isomerism?,2-Chlorobutane,1-Chlorobutane,2-Chloropropane,Butan-1-ol,A,2-Chlorobutane has a chiral carbon center.`;
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'sample_questions_import.csv');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   const handleBulkSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBulkError('');
@@ -398,13 +393,17 @@ ${selectedSubject || 'Chemistry'} - Optics,Which compound exhibits optical isome
     try {
       let questionsToSubmit: any[] = [];
 
-      if (bulkMode === 'csv') {
-        if (!csvRawText.trim()) {
-          setBulkError('Please select or upload a CSV file.');
+      if (bulkMode === 'document') {
+        if (!parsedDocQuestions.length) {
+          setBulkError('Please upload a valid PDF or Word document containing questions.');
           setSubmitting(false);
           return;
         }
-        questionsToSubmit = parseCsvText(csvRawText, selectedCourseId);
+        questionsToSubmit = parsedDocQuestions.map((q) => ({
+          ...q,
+          course_id: selectedCourseId,
+          topic_tag: q.topic_tag || (selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : 'General'),
+        }));
       } else if (bulkMode === 'text') {
         if (!bulkText.trim()) {
           setBulkError('Please paste questions in Q&A plain text format.');
@@ -493,8 +492,9 @@ ${selectedSubject || 'Chemistry'} - Optics,Which compound exhibits optical isome
         setShowBulkModal(false);
         setBulkJson('');
         setBulkText('');
-        setCsvRawText('');
-        setCsvFileName('');
+        setParsedDocQuestions([]);
+        setDocFileName('');
+        setDocError('');
         fetchData();
       }
     } catch (err: any) {
@@ -975,13 +975,13 @@ ${selectedSubject || 'Chemistry'} - Optics,Which compound exhibits optical isome
             <div className="flex flex-wrap border-b border-slate-200 dark:border-slate-800 mb-4 gap-1">
               <button
                 type="button"
-                onClick={() => setBulkMode('csv')}
-                className={`pb-2.5 px-3 text-xs font-bold flex items-center gap-1.5 border-b-2 transition-colors ${bulkMode === 'csv'
+                onClick={() => setBulkMode('document')}
+                className={`pb-2.5 px-3 text-xs font-bold flex items-center gap-1.5 border-b-2 transition-colors ${bulkMode === 'document'
                   ? 'border-[#0B192C] text-[#0B192C] dark:border-blue-400 dark:text-blue-400'
                   : 'border-transparent text-slate-500 hover:text-slate-800'
                   }`}
               >
-                <FileSpreadsheet className="w-4 h-4 text-emerald-600" /> Excel / CSV Upload
+                <FileText className="w-4 h-4 text-rose-600" /> PDF & Word Upload (.pdf, .docx)
               </button>
               <button
                 type="button"
@@ -1018,37 +1018,127 @@ ${selectedSubject || 'Chemistry'} - Optics,Which compound exhibits optical isome
             {bulkError && <div className="mb-4 p-3 bg-rose-50 border border-rose-200 text-rose-600 text-xs rounded-lg">{bulkError}</div>}
 
             <form onSubmit={handleBulkSubmit} className="flex-1 flex flex-col min-h-0 space-y-4 text-xs">
-              {/* TAB 1: CSV / EXCEL FILE UPLOAD */}
-              {bulkMode === 'csv' && (
-                <div className="flex-1 flex flex-col space-y-4">
-                  <div className="flex justify-between items-center p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-lg">
+              {/* TAB 1: PDF & WORD DOCUMENT FILE UPLOAD */}
+              {bulkMode === 'document' && (
+                <div className="flex-1 flex flex-col space-y-4 overflow-hidden">
+                  <div className="flex justify-between items-center p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-lg">
                     <div>
-                      <h4 className="font-bold text-emerald-900 dark:text-emerald-300 text-xs">Excel / CSV Template Ready</h4>
-                      <p className="text-[11px] text-emerald-700 dark:text-emerald-400">Fill your questions row-by-row in Excel and upload!</p>
+                      <h4 className="font-bold text-rose-900 dark:text-rose-300 text-xs">PDF & Word Document Parser</h4>
+                      <p className="text-[11px] text-rose-700 dark:text-rose-400">Upload .pdf, .docx, or .doc question papers. Questions and assigned answers will be extracted automatically.</p>
                     </div>
                     <button
                       type="button"
-                      onClick={downloadSampleCsv}
-                      className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg flex items-center gap-1.5 shadow-xs transition-colors"
+                      onClick={downloadSampleDocTemplate}
+                      className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-lg flex items-center gap-1.5 shadow-xs transition-colors shrink-0"
                     >
-                      <Download className="w-4 h-4" /> Download Sample CSV
+                      <Download className="w-4 h-4" /> Sample Format Guide
                     </button>
                   </div>
 
-                  <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg p-8 text-center flex flex-col items-center justify-center space-y-3 bg-slate-50/50 dark:bg-slate-800/20">
-                    <FileSpreadsheet className="w-10 h-10 text-emerald-500" />
-                    <div>
-                      <span className="font-bold text-slate-900 dark:text-white block text-sm mb-1">
-                        {csvFileName ? `Selected: ${csvFileName}` : 'Choose a .CSV Question File'}
-                      </span>
-                      <span className="text-[11px] text-slate-500 block">Columns: Topic, Question Text, Option A, Option B, Option C, Option D, Correct Answer, Explanation</span>
+                  {docError && (
+                    <div className="p-3 bg-rose-100 text-rose-700 border border-rose-300 rounded-lg text-xs flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 shrink-0" />
+                      <span>{docError}</span>
                     </div>
+                  )}
 
-                    <label className="cursor-pointer px-4 py-2 bg-[#0B192C] hover:bg-[#060E18] text-white font-bold rounded-lg shadow-xs text-xs flex items-center gap-2">
-                      <Upload className="w-4 h-4" /> Browse CSV File
-                      <input type="file" accept=".csv" onChange={handleFileUpload} className="hidden" />
-                    </label>
-                  </div>
+                  {!parsedDocQuestions.length ? (
+                    <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg p-8 text-center flex flex-col items-center justify-center space-y-3 bg-slate-50/50 dark:bg-slate-800/20 flex-1">
+                      {docParsing ? (
+                        <div className="flex flex-col items-center space-y-2 py-6">
+                          <div className="w-8 h-8 border-4 border-rose-500 border-t-transparent rounded-full animate-spin"></div>
+                          <span className="font-bold text-slate-700 dark:text-slate-300">Extracting questions & answers from document...</span>
+                        </div>
+                      ) : (
+                        <>
+                          <FileText className="w-12 h-12 text-rose-500" />
+                          <div>
+                            <span className="font-bold text-slate-900 dark:text-white block text-sm mb-1">
+                              {docFileName ? `Selected: ${docFileName}` : 'Upload PDF or Word Document'}
+                            </span>
+                            <span className="text-[11px] text-slate-500 block">
+                              Supports PDF (.pdf), Word (.docx, .doc), and Text (.txt) formats with questions, options & assigned answers.
+                            </span>
+                          </div>
+
+                          <label className="cursor-pointer px-4 py-2.5 bg-[#0B192C] hover:bg-[#060E18] text-white font-bold rounded-lg shadow-xs text-xs flex items-center gap-2 transition-colors">
+                            <Upload className="w-4 h-4" /> Select Question File
+                            <input
+                              type="file"
+                              accept=".pdf,.docx,.doc,.txt"
+                              onChange={handleDocFileUpload}
+                              className="hidden"
+                            />
+                          </label>
+                        </>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex-1 flex flex-col min-h-0 space-y-3">
+                      <div className="flex justify-between items-center bg-slate-100 dark:bg-slate-800 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700">
+                        <div className="flex items-center gap-2">
+                          <span className="font-extrabold text-slate-800 dark:text-slate-200">
+                            Parsed {parsedDocQuestions.length} Questions from &quot;{docFileName}&quot;
+                          </span>
+                        </div>
+                        <label className="cursor-pointer px-3 py-1 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 text-slate-800 dark:text-slate-200 font-bold rounded text-xs">
+                          Change File
+                          <input
+                            type="file"
+                            accept=".pdf,.docx,.doc,.txt"
+                            onChange={handleDocFileUpload}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
+
+                      <div className="flex-1 overflow-y-auto space-y-3 max-h-[40vh] pr-1">
+                        {parsedDocQuestions.map((q: any, idx: number) => (
+                          <div
+                            key={idx}
+                            className="p-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800/60 space-y-2"
+                          >
+                            <div className="flex justify-between items-start">
+                              <span className="font-bold text-slate-900 dark:text-slate-100">
+                                Q{idx + 1}. {q.question_text}
+                              </span>
+                              <span className="text-[10px] px-2 py-0.5 bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-semibold rounded shrink-0 ml-2">
+                                {q.topic_tag}
+                              </span>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-1.5 text-[11px]">
+                              {q.options.map((opt: string, optIdx: number) => {
+                                const isCorrect = q.correct_option === optIdx;
+                                return (
+                                  <div
+                                    key={optIdx}
+                                    className={`p-1.5 rounded border ${
+                                      isCorrect
+                                        ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-200 font-bold'
+                                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
+                                    }`}
+                                  >
+                                    <span className="font-mono mr-1">
+                                      {String.fromCharCode(65 + optIdx)}:
+                                    </span>
+                                    {opt}
+                                    {isCorrect && <span className="ml-1 text-emerald-600 dark:text-emerald-400">✓ (Answer)</span>}
+                                  </div>
+                                );
+                              })}
+                            </div>
+
+                            {q.explanation && (
+                              <p className="text-[10px] text-slate-500 dark:text-slate-400 italic">
+                                Explanation: {q.explanation}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 

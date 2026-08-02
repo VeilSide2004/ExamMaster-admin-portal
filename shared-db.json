@@ -1,0 +1,3480 @@
+{
+  "users": [
+    {
+      "_id": "v1m9vudjkms7dfwni",
+      "name": "Deleted User",
+      "email": "deleted_v1m9vudjkms7dfwni@anonymized.local",
+      "password_hash": "$2a$10$SpwrpepfTzH7fuQUb6mKJOPYMPqoFlhDEunGbat.xLogBhYVqYQm.",
+      "status": "Deleted",
+      "xp_total": 81,
+      "locked_course_id": "1339osvcems5xpvjb",
+      "created_at": "2026-07-30T10:29:15.918Z"
+    },
+    {
+      "_id": "gqah4tu0nms66dwls",
+      "name": "Deleted User",
+      "email": "deleted_gqah4tu0nms66dwls@anonymized.local",
+      "password_hash": "$2a$10$XALFrKaM3O6DZf4cHUN01OTFAisS3OkL2SDytG7gvNSuCEmB9LJcO",
+      "status": "Deleted",
+      "xp_total": 0,
+      "locked_course_id": "course_jee_2027",
+      "created_at": "2026-07-29T14:23:59.056Z"
+    },
+    {
+      "_id": "quq6x39tmms5woyjl",
+      "name": "Deleted User",
+      "email": "deleted_quq6x39tmms5woyjl@anonymized.local",
+      "password_hash": "$2a$10$ReYfOwJOyDZVHOB3058J6.QJeK8Yqu3i9gqiKOrHEvFFkPd/KFswm",
+      "status": "Deleted",
+      "xp_total": 135,
+      "locked_course_id": "course_jee_2027",
+      "created_at": "2026-07-29T09:52:38.625Z"
+    },
+    {
+      "_id": "yz0cn6ognmsb4wvmr",
+      "name": "Ishan",
+      "email": "test1785634895701@gmail.com",
+      "password_hash": "$2a$10$U.AZ/l7ZlgjqXgnX6EzfHOH1gW46C41r0Qt131FRE/S/huym1iaCO",
+      "status": "Active",
+      "xp_total": 0,
+      "locked_course_id": null,
+      "created_at": "2026-08-02T01:41:35.908Z"
+    },
+    {
+      "_id": "o9qpxf37vmsb4y3ds",
+      "name": "Ishan",
+      "email": "ishan1785634948156@gmail.com",
+      "password_hash": "$2a$10$tTT5Xicu/r7mJaSQ4hXrl.T1WWWjClX0smzXAnsCQd1WocmU4Mks.",
+      "status": "Active",
+      "xp_total": 0,
+      "locked_course_id": null,
+      "created_at": "2026-08-02T01:42:32.608Z"
+    },
+    {
+      "_id": "qv0yzg7yrmsb4yhs9",
+      "name": "ishan",
+      "email": "ishan@gmail.com",
+      "password_hash": "$2a$10$is4MOmsBqolL3T5qwvwXo.aJDr0DzqyXYfzkBLp/fu6WsSZFnZnsS",
+      "status": "Active",
+      "xp_total": 81,
+      "locked_course_id": "ynzp9kszdms7g1ytt",
+      "created_at": "2026-08-02T01:42:51.273Z"
+    }
+  ],
+  "courses": [
+    {
+      "_id": "ynzp9kszdms7g1ytt",
+      "name": "NEET",
+      "description": "dlksahfihjfo",
+      "subjects": [
+        "Physics",
+        "Chemistry",
+        "Mathematics"
+      ],
+      "marking_scheme": {
+        "marks_per_correct": 4,
+        "penalty_per_incorrect": 1
+      },
+      "is_active": true,
+      "created_at": "2026-07-30T11:42:24.401Z"
+    },
+    {
+      "_id": "1339osvcems5xpvjb",
+      "name": "NEET 2027",
+      "description": "Full medical entrance exam syllabus with Biology (Botany & Zoology), Physics, and Chemistry.",
+      "subjects": [
+        "Physics",
+        "Chemistry",
+        "Biology"
+      ],
+      "marking_scheme": {
+        "marks_per_correct": 4,
+        "penalty_per_incorrect": 1
+      },
+      "is_active": true,
+      "created_at": "2026-07-29T10:21:20.999Z"
+    },
+    {
+      "_id": "course_jee_2027",
+      "name": "JEE MAINS 2027",
+      "description": "Comprehensive preparation track for JEE Advanced & Main covering Physics, Chemistry, and Mathematics.",
+      "subjects": [
+        "Physics",
+        "Chemistry",
+        "Mathematics"
+      ],
+      "marking_scheme": {
+        "marks_per_correct": 4,
+        "penalty_per_incorrect": 1
+      },
+      "is_active": true,
+      "created_at": "2026-07-29T09:40:00.000Z"
+    }
+  ],
+  "questions": [
+    {
+      "_id": "6599spcqtmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following describes the difference between enantiomers and diastereomers?",
+      "options": [
+        "Enantiomers are non-superimposable mirror images; diastereomers are not",
+        "Diastereomers are mirror images; enantiomers are not",
+        "Both are identical in properties",
+        "Enantiomers have different molecular formulas"
+      ],
+      "correct_option": 0,
+      "explanation": "Enantiomers are non-superimposable mirror images of each other, whereas diastereomers are stereoisomers that are not mirror images.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "ticq6puwsmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following best explains why alkyl halides are more reactive than aryl halides towards nucleophilic substitution?",
+      "options": [
+        "Aryl halides have partial double bond character between C-X due to resonance with the ring",
+        "Alkyl halides have stronger C-X bonds",
+        "Aryl halides have no lone pairs on halogen",
+        "Alkyl halides are aromatic"
+      ],
+      "correct_option": 0,
+      "explanation": "In aryl halides, resonance delocalization gives the C-X bond partial double bond character, strengthening it and reducing reactivity toward substitution.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "4ata2f2m6msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following polymers is a copolymer?",
+      "options": [
+        "Polyethylene",
+        "PVC",
+        "Buna-S (styrene-butadiene rubber)",
+        "Polystyrene"
+      ],
+      "correct_option": 2,
+      "explanation": "Buna-S is a copolymer formed from two different monomers, butadiene and styrene.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "d2x3wegoomsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following gives the most stable carbanion?",
+      "options": [
+        "Methyl carbanion (CH3-)",
+        "Vinyl carbanion",
+        "Carbanion stabilized by an adjacent carbonyl group",
+        "Ethyl carbanion"
+      ],
+      "correct_option": 2,
+      "explanation": "A carbanion adjacent to a carbonyl group is stabilized by resonance delocalization into the electron-withdrawing carbonyl group.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "mgxo6pitrmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is used in the Sandmeyer reaction?",
+      "options": [
+        "Diazonium salt with CuCl/CuBr",
+        "Alkyl halide with AgNO2",
+        "Aldehyde with HCN",
+        "Alcohol with PCl5"
+      ],
+      "correct_option": 0,
+      "explanation": "The Sandmeyer reaction converts diazonium salts to aryl halides using cuprous halides (CuCl, CuBr) or CuCN.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "ghp8jf7k8msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following statements about diazonium salts is correct?",
+      "options": [
+        "They are stable at room temperature indefinitely",
+        "They are prepared by treating primary aromatic amines with HNO2 at low temperature",
+        "They cannot undergo coupling reactions",
+        "They are formed from secondary amines only"
+      ],
+      "correct_option": 1,
+      "explanation": "Diazonium salts are prepared by diazotization of primary aromatic amines with nitrous acid (from NaNO2/HCl) at 0-5°C.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "cxsa7qzhnmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is an example of nucleophilic aromatic substitution?",
+      "options": [
+        "Reaction of chlorobenzene with NaOH at high temperature and pressure",
+        "Chlorination of benzene with FeCl3",
+        "Nitration of benzene",
+        "Sulfonation of benzene"
+      ],
+      "correct_option": 0,
+      "explanation": "Chlorobenzene undergoes nucleophilic aromatic substitution with NaOH under high temperature and pressure to form phenol (Dow process).",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "nbmzfcmrmmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is true about phenols compared to alcohols?",
+      "options": [
+        "Phenols are less acidic than alcohols",
+        "Phenols are more acidic than alcohols due to resonance stabilization of phenoxide ion",
+        "Phenols do not react with sodium metal",
+        "Phenols have no aromatic character"
+      ],
+      "correct_option": 1,
+      "explanation": "The phenoxide ion formed after deprotonation of phenol is stabilized by resonance with the aromatic ring, increasing acidity.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "5rqp0xxnymsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following compounds is obtained by the Kolbe's electrolysis of sodium acetate?",
+      "options": [
+        "Methane",
+        "Ethane",
+        "Ethene",
+        "Ethanol"
+      ],
+      "correct_option": 1,
+      "explanation": "Kolbe's electrolysis of sodium acetate produces ethane at the anode along with CO2, via a free radical mechanism.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "253pmf7btmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is a characteristic feature of aromatic compounds according to Huckel's rule?",
+      "options": [
+        "4n pi electrons",
+        "(4n+2) pi electrons in a planar cyclic conjugated system",
+        "Non-planar ring structure",
+        "Absence of conjugation"
+      ],
+      "correct_option": 1,
+      "explanation": "Huckel's rule states aromatic compounds must be planar, cyclic, fully conjugated, and possess (4n+2) pi electrons.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "yewjr98dfmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following describes the E1 mechanism?",
+      "options": [
+        "One-step concerted elimination",
+        "Two-step elimination via carbocation intermediate",
+        "Bimolecular nucleophilic substitution",
+        "Free radical elimination"
+      ],
+      "correct_option": 1,
+      "explanation": "E1 elimination proceeds in two steps: formation of a carbocation followed by loss of a proton to form the alkene.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "e1o2326njmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following compounds would show the Cannizzaro reaction?",
+      "options": [
+        "Acetaldehyde",
+        "Benzaldehyde",
+        "Propionaldehyde",
+        "Butyraldehyde"
+      ],
+      "correct_option": 1,
+      "explanation": "Benzaldehyde lacks an alpha hydrogen, making it a suitable candidate for the Cannizzaro disproportionation reaction.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "ihaosyv51msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following best describes racemic mixture?",
+      "options": [
+        "A single pure enantiomer",
+        "An equimolar mixture of two enantiomers with no net optical rotation",
+        "A mixture of diastereomers",
+        "A mixture of structural isomers"
+      ],
+      "correct_option": 1,
+      "explanation": "A racemic mixture contains equal amounts of both enantiomers, which cancel each other's optical rotation.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "axecs4bjwmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is an example of an aromatic heterocyclic compound?",
+      "options": [
+        "Cyclohexane",
+        "Pyridine",
+        "Naphthalene",
+        "Anthracene"
+      ],
+      "correct_option": 1,
+      "explanation": "Pyridine is a six-membered aromatic ring containing a nitrogen atom, classifying it as an aromatic heterocycle.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "c2rps58rxmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following compounds is most reactive towards nucleophilic acyl substitution?",
+      "options": [
+        "Acid chloride",
+        "Amide",
+        "Ester",
+        "Carboxylic acid"
+      ],
+      "correct_option": 0,
+      "explanation": "Acid chlorides are the most reactive carboxylic acid derivatives due to chlorine being a good leaving group and strong electron withdrawal.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "nv3pndq0xmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following best represents an electrophile?",
+      "options": [
+        "OH-",
+        "NH3",
+        "AlCl3",
+        "CN-"
+      ],
+      "correct_option": 2,
+      "explanation": "AlCl3 is electron-deficient and can accept electron pairs, making it a Lewis acid and electrophile.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "nq4xe47x5msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is true regarding SN2 reactions?",
+      "options": [
+        "They proceed with retention of configuration",
+        "They proceed with inversion of configuration",
+        "They involve a planar carbocation intermediate",
+        "Rate depends only on substrate concentration"
+      ],
+      "correct_option": 1,
+      "explanation": "SN2 reactions proceed via backside attack, causing Walden inversion (inversion of configuration) at the reacting carbon.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "dgt8nxeromsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is prepared by the Cannizzaro reaction?",
+      "options": [
+        "An aldehyde with alpha hydrogen undergoing self-oxidation-reduction",
+        "An aldehyde without alpha hydrogen undergoing disproportionation to alcohol and acid",
+        "A ketone reacting with HCN",
+        "An alcohol undergoing dehydration"
+      ],
+      "correct_option": 1,
+      "explanation": "Aldehydes lacking alpha hydrogens undergo the Cannizzaro reaction in strong base, forming one molecule of alcohol and one of carboxylate salt.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "l4ig6h8p6msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is the correct order of nucleophilicity in protic solvents: F-, Cl-, Br-, I-?",
+      "options": [
+        "F- > Cl- > Br- > I-",
+        "I- > Br- > Cl- > F-",
+        "Cl- > F- > Br- > I-",
+        "Br- > I- > F- > Cl-"
+      ],
+      "correct_option": 1,
+      "explanation": "In protic solvents, larger, more polarizable ions like iodide are less solvated and hence more nucleophilic.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "s96ael63qmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following reagents can reduce a ketone to a secondary alcohol?",
+      "options": [
+        "NaBH4",
+        "KMnO4",
+        "Tollens' reagent",
+        "Br2/H2O"
+      ],
+      "correct_option": 0,
+      "explanation": "Sodium borohydride (NaBH4) selectively reduces ketones (and aldehydes) to their corresponding alcohols.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "s8guqcgy8msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "What is the product of the reaction of an aldehyde with a primary amine?",
+      "options": [
+        "Imine (Schiff base)",
+        "Amide",
+        "Nitrile",
+        "Alcohol"
+      ],
+      "correct_option": 0,
+      "explanation": "Aldehydes react with primary amines to form imines (Schiff bases) with loss of water.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "uzo6wagammsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following compounds shows tautomerism?",
+      "options": [
+        "Ethanol",
+        "Acetone",
+        "Ethyl acetate",
+        "Benzaldehyde"
+      ],
+      "correct_option": 1,
+      "explanation": "Acetone exists in equilibrium between keto and enol forms, exhibiting keto-enol tautomerism.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "qk990688amsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is the correct IUPAC name of CH3-CH(CH3)-CH2-CH3?",
+      "options": [
+        "2-Methylbutane",
+        "2,2-Dimethylpropane",
+        "Pentane",
+        "3-Methylbutane"
+      ],
+      "correct_option": 0,
+      "explanation": "The longest chain has four carbons with a methyl branch at position 2, giving 2-methylbutane.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "2br1m0ly7msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is the strongest evidence for the aromaticity of benzene?",
+      "options": [
+        "It undergoes addition reactions readily",
+        "Unusually low heat of hydrogenation compared to expected value",
+        "High reactivity with halogens without a catalyst",
+        "It behaves like a typical alkene"
+      ],
+      "correct_option": 1,
+      "explanation": "Benzene's heat of hydrogenation is much lower than expected for three isolated double bonds, indicating extra stability from delocalization.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "q5b9ty6k6msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following shows hyperconjugation?",
+      "options": [
+        "Propene",
+        "Ethyne",
+        "Methane",
+        "Benzene only"
+      ],
+      "correct_option": 0,
+      "explanation": "Propene shows hyperconjugation due to overlap of C-H sigma bonds of the methyl group with the adjacent pi system.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "cp5qbtxlcmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following describes an inductive effect?",
+      "options": [
+        "Permanent displacement of pi electrons",
+        "Permanent displacement of sigma electrons along a chain due to electronegativity",
+        "Delocalization due to resonance",
+        "Effect due to hyperconjugation only"
+      ],
+      "correct_option": 1,
+      "explanation": "The inductive effect involves the permanent polarization of sigma bonds caused by differences in electronegativity.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "ksn722a2omsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following reacts with Grignard reagent to give a tertiary alcohol?",
+      "options": [
+        "Formaldehyde",
+        "Ketone",
+        "CO2",
+        "Ester (1 equivalent)"
+      ],
+      "correct_option": 1,
+      "explanation": "Grignard reagents react with ketones to yield tertiary alcohols after aqueous workup.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "7frwq3cjxmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is used to prepare Grignard reagents?",
+      "options": [
+        "Alkyl halide with Mg in dry ether",
+        "Alkyl halide with Na",
+        "Alcohol with Mg",
+        "Alkane with Mg"
+      ],
+      "correct_option": 0,
+      "explanation": "Grignard reagents (RMgX) are prepared by reacting alkyl or aryl halides with magnesium metal in dry ether.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "jzzze53m6msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following best explains the Kharasch (peroxide) effect?",
+      "options": [
+        "Anti-Markovnikov addition of HBr to alkenes in presence of peroxides",
+        "Markovnikov addition of HCl",
+        "Addition of water to alkynes",
+        "Substitution of halogens on alkanes"
+      ],
+      "correct_option": 0,
+      "explanation": "In the presence of peroxides, HBr adds to alkenes via a free radical mechanism giving anti-Markovnikov product.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "7mblcwkjgmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following alkyl halides undergoes elimination more readily to form the more substituted alkene?",
+      "options": [
+        "Follows Hofmann's rule",
+        "Follows Zaitsev's rule",
+        "Follows Markovnikov's rule",
+        "Follows Kharasch effect"
+      ],
+      "correct_option": 1,
+      "explanation": "Zaitsev's rule states that the more substituted (more stable) alkene is generally the major product in elimination reactions.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "0yp65k3ppmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is used as a preservative and disinfectant, obtained by oxidation of methanol?",
+      "options": [
+        "Formaldehyde",
+        "Acetaldehyde",
+        "Acetone",
+        "Formic acid"
+      ],
+      "correct_option": 0,
+      "explanation": "Formaldehyde, produced by catalytic oxidation of methanol, is used as a disinfectant and biological preservative.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "xhh571y8jmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following gives a positive Fehling's test?",
+      "options": [
+        "Formaldehyde",
+        "Benzaldehyde",
+        "Acetone",
+        "Diethyl ketone"
+      ],
+      "correct_option": 0,
+      "explanation": "Aliphatic aldehydes like formaldehyde reduce Fehling's solution to give a brick-red Cu2O precipitate; aromatic aldehydes typically do not.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "rj4ntqf46msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is the correct order of stability of carbocations?",
+      "options": [
+        "Primary > Secondary > Tertiary",
+        "Tertiary > Secondary > Primary",
+        "Secondary > Tertiary > Primary",
+        "All are equally stable"
+      ],
+      "correct_option": 1,
+      "explanation": "Tertiary carbocations are the most stable due to greater hyperconjugation and inductive electron donation from alkyl groups.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "pwqiq3rf4msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is an example of a nucleophilic addition reaction?",
+      "options": [
+        "Addition of HCN to acetaldehyde",
+        "Chlorination of methane",
+        "Nitration of benzene",
+        "Combustion of propane"
+      ],
+      "correct_option": 0,
+      "explanation": "HCN adds to the electrophilic carbonyl carbon of acetaldehyde via nucleophilic addition, forming a cyanohydrin.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "5ycmpsr60msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "What is the primary structure of a protein determined by?",
+      "options": [
+        "Hydrogen bonding pattern",
+        "Sequence of amino acids",
+        "Disulfide bridges",
+        "Folding pattern in space"
+      ],
+      "correct_option": 1,
+      "explanation": "The primary structure of a protein refers to the linear sequence of amino acids linked by peptide bonds.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "0lg84sbqwmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is a nitrogenous base found only in RNA?",
+      "options": [
+        "Adenine",
+        "Guanine",
+        "Uracil",
+        "Cytosine"
+      ],
+      "correct_option": 2,
+      "explanation": "Uracil replaces thymine in RNA, while thymine is found only in DNA.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "u4qzp3l7imsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which vitamin deficiency causes scurvy?",
+      "options": [
+        "Vitamin A",
+        "Vitamin B12",
+        "Vitamin C",
+        "Vitamin D"
+      ],
+      "correct_option": 2,
+      "explanation": "Vitamin C (ascorbic acid) deficiency leads to scurvy, characterized by bleeding gums and poor wound healing.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "70dp2xd1zmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following carbohydrates is a disaccharide?",
+      "options": [
+        "Glucose",
+        "Fructose",
+        "Sucrose",
+        "Starch"
+      ],
+      "correct_option": 2,
+      "explanation": "Sucrose is a disaccharide formed by the glycosidic linkage of glucose and fructose.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "lbpa8srximsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which amino acid functional groups are involved in peptide bond formation?",
+      "options": [
+        "-OH and -COOH",
+        "-NH2 and -COOH",
+        "-SH and -NH2",
+        "-COOH and -CHO"
+      ],
+      "correct_option": 1,
+      "explanation": "A peptide bond forms between the carboxyl group of one amino acid and the amino group of another, releasing water.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "hwyge3bkkmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is the monomer of natural rubber?",
+      "options": [
+        "Ethylene",
+        "Isoprene",
+        "Styrene",
+        "Vinyl chloride"
+      ],
+      "correct_option": 1,
+      "explanation": "Natural rubber is a polymer of isoprene (2-methylbuta-1,3-diene) units linked in a cis configuration.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "pdyyqqyy0msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "What is the product of ozonolysis of an alkene?",
+      "options": [
+        "Alcohols",
+        "Carbonyl compounds",
+        "Carboxylic acids only",
+        "Alkyl halides"
+      ],
+      "correct_option": 1,
+      "explanation": "Ozonolysis cleaves the C=C double bond to give two carbonyl compounds (aldehydes and/or ketones).",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "z3emc0b30msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is an example of a condensation polymer?",
+      "options": [
+        "PVC",
+        "Polystyrene",
+        "Nylon-6,6",
+        "Polypropylene"
+      ],
+      "correct_option": 2,
+      "explanation": "Nylon-6,6 is formed by condensation polymerization between hexamethylenediamine and adipic acid, releasing water.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "masodlgdtmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following polymers is formed by addition polymerization?",
+      "options": [
+        "Nylon-6,6",
+        "Polythene",
+        "Terylene",
+        "Bakelite"
+      ],
+      "correct_option": 1,
+      "explanation": "Polythene is formed by addition polymerization of ethylene monomers without loss of any small molecule.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "ischrxwcumsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is a reducing sugar test reagent?",
+      "options": [
+        "Fehling's solution",
+        "Lucas reagent",
+        "Grignard reagent",
+        "Tollens' reagent for alkenes"
+      ],
+      "correct_option": 0,
+      "explanation": "Fehling's solution is used to test for reducing sugars, giving a brick-red precipitate of Cu2O upon oxidation.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "kjqpow7jamsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which spectroscopic technique is used to identify the presence of a carbonyl group?",
+      "options": [
+        "UV spectroscopy",
+        "IR spectroscopy",
+        "Mass spectrometry",
+        "NMR spectroscopy only"
+      ],
+      "correct_option": 1,
+      "explanation": "IR spectroscopy detects characteristic C=O stretching vibrations around 1700 cm-1, confirming carbonyl groups.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "n3q5bd6q2msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "What is formed when ethyne reacts with two moles of HBr?",
+      "options": [
+        "1,1-dibromoethane",
+        "1,2-dibromoethane",
+        "Vinyl bromide",
+        "Bromoethane"
+      ],
+      "correct_option": 0,
+      "explanation": "Following Markovnikov addition twice, ethyne with two moles of HBr forms 1,1-dibromoethane (ethylidene bromide).",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "rp0te3tecmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following compounds is a vicinal dihalide?",
+      "options": [
+        "CH3-CHCl-CH2Cl",
+        "CH2Cl-CH2Cl",
+        "CH3-CCl2-CH3",
+        "Both A and B"
+      ],
+      "correct_option": 3,
+      "explanation": "Vicinal dihalides have halogens on adjacent carbon atoms, as seen in both options A and B.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "nt6l2zcvqmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which catalyst is used in the Friedel-Crafts alkylation reaction?",
+      "options": [
+        "AlCl3",
+        "NaOH",
+        "H2SO4 dilute",
+        "KMnO4"
+      ],
+      "correct_option": 0,
+      "explanation": "Anhydrous AlCl3 acts as a Lewis acid catalyst in Friedel-Crafts alkylation, generating the carbocation electrophile.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "hs29f80zbmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is the correct order of acidity: phenol, ethanol, water?",
+      "options": [
+        "Ethanol > Water > Phenol",
+        "Phenol > Water > Ethanol",
+        "Water > Phenol > Ethanol",
+        "Phenol > Ethanol > Water"
+      ],
+      "correct_option": 1,
+      "explanation": "Phenol's conjugate base is stabilized by resonance, making it more acidic than water, which is more acidic than ethanol.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "9pnjovwmmmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which reaction is used to convert an alkyl halide into an alcohol?",
+      "options": [
+        "Hydrolysis with aqueous NaOH",
+        "Dehydrohalogenation",
+        "Wurtz reaction",
+        "Friedel-Crafts reaction"
+      ],
+      "correct_option": 0,
+      "explanation": "Alkyl halides undergo nucleophilic substitution with aqueous NaOH to form alcohols.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "55ql8o7j7msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "What is the hybridization of the oxygen atom in a carbonyl group?",
+      "options": [
+        "sp",
+        "sp2",
+        "sp3",
+        "sp3d"
+      ],
+      "correct_option": 1,
+      "explanation": "The oxygen in a carbonyl group is sp2 hybridized, similar to the carbon it is doubly bonded to.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "ktsygw0tcmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following alkanes has the highest boiling point?",
+      "options": [
+        "Methane",
+        "Ethane",
+        "Propane",
+        "Butane"
+      ],
+      "correct_option": 3,
+      "explanation": "Boiling point increases with increasing molecular mass and surface area due to stronger van der Waals forces.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "0su7bisenmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which functional group is present in amides?",
+      "options": [
+        "-CONH2",
+        "-COOH",
+        "-CN",
+        "-NH2"
+      ],
+      "correct_option": 0,
+      "explanation": "Amides contain the -CONH2 functional group, formed from a carboxylic acid derivative and an amine.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "us7woollemsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is an example of a free radical mechanism?",
+      "options": [
+        "Halogenation of alkanes",
+        "Hydration of alkenes",
+        "Esterification",
+        "Nucleophilic substitution"
+      ],
+      "correct_option": 0,
+      "explanation": "Halogenation of alkanes proceeds via a free radical chain mechanism involving initiation, propagation, and termination.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "1sqgyf4apmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following reagents is used to distinguish between 1°, 2°, and 3° alcohols?",
+      "options": [
+        "Lucas reagent",
+        "Tollens' reagent",
+        "Fehling's solution",
+        "Grignard reagent"
+      ],
+      "correct_option": 0,
+      "explanation": "Lucas reagent (ZnCl2/HCl) distinguishes alcohols based on the rate of turbidity formation.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "233o0te2xmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "What is the product of the reaction between a carboxylic acid and an alcohol in presence of conc. H2SO4?",
+      "options": [
+        "Ether",
+        "Ester",
+        "Amide",
+        "Ketone"
+      ],
+      "correct_option": 1,
+      "explanation": "This Fischer esterification reaction forms an ester and water in the presence of an acid catalyst.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "n97axk1qwmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is the strongest base?",
+      "options": [
+        "Aniline",
+        "Ammonia",
+        "Methylamine",
+        "Diphenylamine"
+      ],
+      "correct_option": 2,
+      "explanation": "Methylamine's alkyl group donates electron density to nitrogen, increasing basicity compared to ammonia and aromatic amines.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "koeh55kp2msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following statements about resonance in benzene is true?",
+      "options": [
+        "All C-C bonds have equal length",
+        "Alternating single and double bonds are fixed",
+        "Benzene has only single bonds",
+        "Benzene lacks delocalized electrons"
+      ],
+      "correct_option": 0,
+      "explanation": "Resonance delocalizes the pi electrons in benzene, making all C-C bond lengths equal and intermediate between single and double bonds.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "xis9gb2nvmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "What is the functional group present in ketones?",
+      "options": [
+        "-CHO",
+        ">C=O (between two carbons)",
+        "-COOH",
+        "-OH"
+      ],
+      "correct_option": 1,
+      "explanation": "Ketones have a carbonyl group (C=O) bonded to two carbon atoms on either side.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "chndv8hximsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which compound is produced by the reaction of an acid chloride with ammonia?",
+      "options": [
+        "Amide",
+        "Amine",
+        "Ester",
+        "Nitrile"
+      ],
+      "correct_option": 0,
+      "explanation": "Acid chlorides react with ammonia to form amides, releasing HCl.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "yzaok1wodmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "What type of reaction occurs when benzene reacts with Cl2 in the presence of FeCl3?",
+      "options": [
+        "Addition",
+        "Electrophilic substitution",
+        "Nucleophilic substitution",
+        "Elimination"
+      ],
+      "correct_option": 1,
+      "explanation": "FeCl3 acts as a catalyst generating an electrophile (Cl+), enabling electrophilic aromatic substitution on benzene.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "mvxqlo0fimsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is a characteristic of aldehydes but not ketones?",
+      "options": [
+        "Carbonyl group",
+        "One hydrogen attached to carbonyl carbon",
+        "Reaction with Grignard reagents",
+        "Reaction with HCN"
+      ],
+      "correct_option": 1,
+      "explanation": "Aldehydes have a hydrogen atom directly attached to the carbonyl carbon, unlike ketones.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "bpbkv24w1msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following compounds gives a positive iodoform test?",
+      "options": [
+        "Ethanol",
+        "Methanol",
+        "Propan-1-ol",
+        "Butan-1-ol"
+      ],
+      "correct_option": 0,
+      "explanation": "Ethanol has a CH3-CH(OH)- group, giving a positive iodoform test forming yellow CHI3 precipitate.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "tujeoafmzmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is used in Wurtz reaction to prepare alkanes?",
+      "options": [
+        "Alkyl halide with Na metal in dry ether",
+        "Alkyl halide with Mg",
+        "Alkyl halide with KOH",
+        "Alkyl halide with H2/Pd"
+      ],
+      "correct_option": 0,
+      "explanation": "Wurtz reaction couples two alkyl halides using sodium metal in dry ether to form a higher alkane.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "i5vn69q71msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following alkyl halides reacts fastest via SN2 mechanism?",
+      "options": [
+        "Methyl halide",
+        "Primary halide",
+        "Secondary halide",
+        "Tertiary halide"
+      ],
+      "correct_option": 0,
+      "explanation": "Methyl halides have the least steric hindrance, favoring a fast SN2 backside attack.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "ngsjqqqf8msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which reagent converts nitriles to primary amines?",
+      "options": [
+        "LiAlH4",
+        "KMnO4",
+        "Br2/NaOH",
+        "HNO3"
+      ],
+      "correct_option": 0,
+      "explanation": "LiAlH4 reduces nitriles (R-CN) to primary amines (R-CH2-NH2).",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "r3hcx5txtmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is an aromatic compound?",
+      "options": [
+        "Cyclohexane",
+        "Benzene",
+        "Hexane",
+        "Cyclopentane"
+      ],
+      "correct_option": 1,
+      "explanation": "Benzene is aromatic due to its planar ring, conjugated pi system, and 4n+2 pi electrons (Huckel's rule).",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "1j15c02tzmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "What is the IUPAC name of HCOOH?",
+      "options": [
+        "Methanoic acid",
+        "Ethanoic acid",
+        "Propanoic acid",
+        "Formic aldehyde"
+      ],
+      "correct_option": 0,
+      "explanation": "HCOOH, common name formic acid, is IUPAC named methanoic acid.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "xfb87tltnmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following alcohols cannot be oxidized to a carboxylic acid?",
+      "options": [
+        "Primary alcohol",
+        "Secondary alcohol",
+        "Tertiary alcohol",
+        "All can be oxidized"
+      ],
+      "correct_option": 2,
+      "explanation": "Tertiary alcohols lack a hydrogen on the carbon bearing -OH, so they cannot be oxidized to carboxylic acids.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "kjc486hv6msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which compound is formed when acetylene reacts with water in presence of Hg2+/H2SO4?",
+      "options": [
+        "Acetaldehyde",
+        "Ethanol",
+        "Acetic acid",
+        "Ethylene glycol"
+      ],
+      "correct_option": 0,
+      "explanation": "Acetylene undergoes Kucherov's reaction (hydration) with mercuric sulfate catalyst to form acetaldehyde.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "zl2kan6xcmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following best describes Markovnikov addition?",
+      "options": [
+        "Anti-addition of halogen",
+        "Addition following the rule that H goes to carbon with more H atoms",
+        "Random addition of atoms",
+        "Free radical addition mechanism only"
+      ],
+      "correct_option": 1,
+      "explanation": "Markovnikov addition follows the principle where hydrogen adds to the carbon already bearing more hydrogens.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "z5buulzf9msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which functional group is present in esters?",
+      "options": [
+        "-COOH",
+        "-COOR",
+        "-CHO",
+        "-CONH2"
+      ],
+      "correct_option": 1,
+      "explanation": "Esters have the -COOR (alkoxycarbonyl) functional group formed from an acid and alcohol.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "km6kuc5b6msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is used as a solvent and is prepared by dehydration of ethanol?",
+      "options": [
+        "Diethyl ether",
+        "Acetone",
+        "Formaldehyde",
+        "Methanol"
+      ],
+      "correct_option": 0,
+      "explanation": "Diethyl ether is prepared by intermolecular dehydration of ethanol using concentrated H2SO4 at lower temperature.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "0etfrz89dmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "What is the hybridization of the carbon atom in methane?",
+      "options": [
+        "sp",
+        "sp2",
+        "sp3",
+        "sp3d"
+      ],
+      "correct_option": 2,
+      "explanation": "Methane's carbon is sp3 hybridized, forming four equivalent sigma bonds in a tetrahedral shape.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "ayble1t0ymsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which is a characteristic reaction of alkenes?",
+      "options": [
+        "Substitution",
+        "Addition",
+        "Condensation",
+        "Neutralization"
+      ],
+      "correct_option": 1,
+      "explanation": "Alkenes undergo addition reactions due to the presence of a reactive pi bond.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "ulxvbsg3vmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is the correct order of boiling points: alcohol, ether, alkane (similar molar mass)?",
+      "options": [
+        "Alkane > Ether > Alcohol",
+        "Alcohol > Ether > Alkane",
+        "Ether > Alcohol > Alkane",
+        "Alkane > Alcohol > Ether"
+      ],
+      "correct_option": 1,
+      "explanation": "Alcohols have hydrogen bonding, giving them higher boiling points than ethers and alkanes of similar mass.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "ey82m4w59msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following shows chain isomerism?",
+      "options": [
+        "n-Butane and isobutane",
+        "Ethanol and dimethyl ether",
+        "Propan-1-ol and propan-2-ol",
+        "Butan-1-ol and but-1-ene"
+      ],
+      "correct_option": 0,
+      "explanation": "n-Butane and isobutane have the same molecular formula but differ in the carbon skeleton arrangement.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "98kbe923gmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "What is the common name for the compound CH3COCH3?",
+      "options": [
+        "Formaldehyde",
+        "Acetone",
+        "Acetaldehyde",
+        "Acetic acid"
+      ],
+      "correct_option": 1,
+      "explanation": "CH3COCH3 is commonly known as acetone.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "aaq2n0kaumsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which reagent is used to test for unsaturation in organic compounds?",
+      "options": [
+        "Bromine water",
+        "Litmus solution",
+        "Sodium metal",
+        "Fehling's solution"
+      ],
+      "correct_option": 0,
+      "explanation": "Bromine water decolorizes rapidly in the presence of unsaturated compounds like alkenes and alkynes.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "exn2qg9edmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is an example of geometrical isomerism?",
+      "options": [
+        "But-2-ene (cis/trans)",
+        "Propan-1-ol",
+        "Butane",
+        "Ethyne"
+      ],
+      "correct_option": 0,
+      "explanation": "But-2-ene shows cis-trans isomerism due to restricted rotation around the C=C double bond.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "lbnobzbdsmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "What is the product when ethanol reacts with concentrated H2SO4 at 443 K?",
+      "options": [
+        "Diethyl ether",
+        "Ethene",
+        "Acetaldehyde",
+        "Acetic acid"
+      ],
+      "correct_option": 1,
+      "explanation": "At 443 K, concentrated sulfuric acid dehydrates ethanol to form ethene.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "raqrl2ntvmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which mechanism is favored by tertiary alkyl halides in substitution reactions?",
+      "options": [
+        "SN1",
+        "SN2",
+        "E2 only",
+        "Radical substitution"
+      ],
+      "correct_option": 0,
+      "explanation": "Tertiary alkyl halides form stable carbocations, favoring the SN1 mechanism.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "geyssvf15msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is a nucleophile?",
+      "options": [
+        "H+",
+        "NH3",
+        "BF3",
+        "AlCl3"
+      ],
+      "correct_option": 1,
+      "explanation": "Ammonia (NH3) has a lone pair of electrons that it can donate, making it a nucleophile.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "vb9f7padimsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "What is the IUPAC name of CH3-CO-CH3?",
+      "options": [
+        "Propanal",
+        "Propan-2-ol",
+        "Propanone",
+        "Propanoic acid"
+      ],
+      "correct_option": 2,
+      "explanation": "CH3-CO-CH3 is acetone, IUPAC named propanone, a simple ketone.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "g4rdo4fiemsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following undergoes electrophilic substitution reactions readily?",
+      "options": [
+        "Benzene",
+        "Ethene",
+        "Ethyne",
+        "Cyclohexane"
+      ],
+      "correct_option": 0,
+      "explanation": "Benzene's stable aromatic ring favors electrophilic substitution over addition to preserve aromaticity.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "zll6ukby2msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which functional group characterizes carboxylic acids?",
+      "options": [
+        "-CHO",
+        "-COOH",
+        "-CO-",
+        "-OH"
+      ],
+      "correct_option": 1,
+      "explanation": "Carboxylic acids contain the -COOH (carboxyl) functional group.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "a52tnezqnmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "What is the product of oxidation of a primary alcohol with excess acidified K2Cr2O7?",
+      "options": [
+        "Aldehyde",
+        "Carboxylic acid",
+        "Ketone",
+        "Ether"
+      ],
+      "correct_option": 1,
+      "explanation": "Primary alcohols are oxidized first to aldehydes and then further to carboxylic acids under excess oxidizing conditions.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "5kp00ax5ymsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which reaction converts an alkyl halide to an alkene?",
+      "options": [
+        "Hydrogenation",
+        "Dehydrohalogenation",
+        "Halogenation",
+        "Hydration"
+      ],
+      "correct_option": 1,
+      "explanation": "Elimination of HX from an alkyl halide (dehydrohalogenation) using alcoholic KOH produces an alkene.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "ew9krb5n7msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which compound is an example of a homologous series member of alkanes?",
+      "options": [
+        "C2H4",
+        "C3H8",
+        "C2H2",
+        "C6H6"
+      ],
+      "correct_option": 1,
+      "explanation": "C3H8 (propane) fits the general alkane formula CnH2n+2.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "g4p8ptel1msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "What is the hybridization of carbon atoms in a triple bond?",
+      "options": [
+        "sp3",
+        "sp2",
+        "sp",
+        "sp3d"
+      ],
+      "correct_option": 2,
+      "explanation": "Each carbon in a triple bond is sp hybridized, forming one sigma and two pi bonds.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "g0y3x3lqnmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which test distinguishes aldehydes from ketones?",
+      "options": [
+        "Litmus test",
+        "Tollens' test",
+        "Flame test",
+        "Baeyer's test"
+      ],
+      "correct_option": 1,
+      "explanation": "Tollens' reagent gives a silver mirror with aldehydes (easily oxidized) but not with ketones.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "z6b5qd8dkmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which is the strongest acid among the following?",
+      "options": [
+        "CH3COOH",
+        "CH3CH2COOH",
+        "ClCH2COOH",
+        "CH3CH2CH2COOH"
+      ],
+      "correct_option": 2,
+      "explanation": "The electron-withdrawing chlorine stabilizes the conjugate base via the inductive effect, increasing acidity.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "uidzpntzgmsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "In Markovnikov's rule, addition of HX to an unsymmetrical alkene results in:",
+      "options": [
+        "H attaching to the carbon with fewer hydrogens",
+        "H attaching to the carbon with more hydrogens",
+        "X attaching randomly",
+        "No addition occurs"
+      ],
+      "correct_option": 1,
+      "explanation": "Markovnikov's rule states H adds to the carbon already bearing more hydrogens, while X adds to the more substituted carbon.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "iqivbvjiomsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following compounds shows optical isomerism?",
+      "options": [
+        "A compound with a plane of symmetry",
+        "A compound with a chiral carbon",
+        "Any symmetric alkane",
+        "Ethene"
+      ],
+      "correct_option": 1,
+      "explanation": "Optical isomerism arises when a carbon is bonded to four different groups, called a chiral centre.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "j6fm0wwg9msb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which reagent converts an alkene to an alcohol via hydration?",
+      "options": [
+        "Dilute H2SO4 with water",
+        "KMnO4 (cold, dilute)",
+        "HCl gas",
+        "Br2 in CCl4"
+      ],
+      "correct_option": 0,
+      "explanation": "Acid-catalyzed hydration of alkenes with dilute sulfuric acid and water follows Markovnikov's rule.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "rwfv2wndimsb5ht6l",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "What is the general formula for alkynes?",
+      "options": [
+        "CnH2n",
+        "CnH2n+2",
+        "CnH2n-2",
+        "CnH2n-6"
+      ],
+      "correct_option": 2,
+      "explanation": "Alkynes contain one triple bond, giving the general formula CnH2n-2.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.509Z"
+    },
+    {
+      "_id": "ou4zw9ovcmsb5ht6k",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which type of isomerism is shown by butan-1-ol and butan-2-ol?",
+      "options": [
+        "Chain isomerism",
+        "Position isomerism",
+        "Functional isomerism",
+        "Geometrical isomerism"
+      ],
+      "correct_option": 1,
+      "explanation": "Both compounds share the same formula and functional group but the -OH is positioned differently on the chain.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.508Z"
+    },
+    {
+      "_id": "7xu6o1zaomsb5ht6k",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is an example of a nucleophilic substitution reaction?",
+      "options": [
+        "Addition of HBr to ethene",
+        "Reaction of alkyl halide with NaOH",
+        "Combustion of methane",
+        "Polymerization of ethylene"
+      ],
+      "correct_option": 1,
+      "explanation": "Alkyl halides react with hydroxide ions (a nucleophile) to substitute the halogen, forming an alcohol.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.508Z"
+    },
+    {
+      "_id": "0cded6kp8msb5ht6k",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "What is the IUPAC name of CH3-CH2-CH2-OH?",
+      "options": [
+        "Propan-1-ol",
+        "Propan-2-ol",
+        "Ethanol",
+        "Butan-1-ol"
+      ],
+      "correct_option": 0,
+      "explanation": "The three-carbon chain with -OH on the terminal carbon is named propan-1-ol.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.508Z"
+    },
+    {
+      "_id": "0u2fqzaoemsb5ht6k",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which functional group is present in alcohols?",
+      "options": [
+        "-COOH",
+        "-OH",
+        "-CHO",
+        "-NH2"
+      ],
+      "correct_option": 1,
+      "explanation": "Alcohols are characterized by the hydroxyl (-OH) functional group attached to a saturated carbon atom.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:57:52.508Z"
+    },
+    {
+      "_id": "4h2o8eajvmsb4tdjp",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which test is used to distinguish between aldehydes and ketones?",
+      "options": [
+        "Litmus test",
+        "Tollens' test",
+        "Flame test",
+        "Baeyer's test"
+      ],
+      "correct_option": 1,
+      "explanation": "Tollens' reagent (ammoniacal silver nitrate) gives a positive silver mirror test with aldehydes but does not react with simple ketones, making it a key functional group test.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:38:52.501Z"
+    },
+    {
+      "_id": "s469ibdecmsb4tdjp",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is the strongest acid?",
+      "options": [
+        "CH3COOH (acetic acid)",
+        "CH3CH2COOH (propanoic acid)",
+        "ClCH2COOH (chloroacetic acid)",
+        "CH3CH2CH2COOH (butanoic acid)"
+      ],
+      "correct_option": 2,
+      "explanation": "The electron-withdrawing chlorine atom stabilizes the conjugate base through the inductive effect (-I effect), making chloroacetic acid significantly stronger than non-halogenated carboxylic acids.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:38:52.501Z"
+    },
+    {
+      "_id": "7ofhb5olzmsb4tdjp",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "In the Markovnikov's rule, the addition of HX to an unsymmetrical alkene results in:",
+      "options": [
+        "H attaching to the carbon with fewer hydrogens",
+        "H attaching to the carbon with more hydrogens",
+        "X attaching randomly",
+        "No addition occurs"
+      ],
+      "correct_option": 1,
+      "explanation": "Markovnikov's rule states that in electrophilic addition of HX to an unsymmetrical alkene, the hydrogen atom adds to the carbon with more hydrogen atoms, forming the more stable carbocation intermediate.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:38:52.501Z"
+    },
+    {
+      "_id": "3zihdztn9msb4tdjp",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following compounds shows optical isomerism?",
+      "options": [
+        "A compound with a plane of symmetry",
+        "A compound with a chiral carbon",
+        "Any symmetric alkane",
+        "Ethene"
+      ],
+      "correct_option": 1,
+      "explanation": "Optical isomerism (chirality) arises when a carbon atom is bonded to four different groups, creating non-superimposable mirror images (enantiomers).",
+      "is_active": true,
+      "created_at": "2026-08-02T01:38:52.501Z"
+    },
+    {
+      "_id": "2lmdrgnnlmsb4tdjp",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which reagent is commonly used to convert an alkene to an alcohol via hydration?",
+      "options": [
+        "Dilute H2SO4 with water",
+        "KMnO4 (cold, dilute)",
+        "HCl gas",
+        "Br2 in CCl4"
+      ],
+      "correct_option": 0,
+      "explanation": "Acid-catalyzed hydration of alkenes using dilute sulfuric acid and water follows Markovnikov's rule to produce secondary or tertiary alcohols as major products.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:38:52.501Z"
+    },
+    {
+      "_id": "00kt67w7jmsb4tdjp",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "What is the general formula for alkynes?",
+      "options": [
+        "CnH2n",
+        "CnH2n+2",
+        "CnH2n-2",
+        "CnH2n-6"
+      ],
+      "correct_option": 2,
+      "explanation": "Alkynes contain one triple bond (one sigma and two pi bonds), giving them the general molecular formula CnH2n-2.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:38:52.501Z"
+    },
+    {
+      "_id": "ihanhadxlmsb4tdjp",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which type of isomerism is shown by butan-1-ol and butan-2-ol?",
+      "options": [
+        "Chain isomerism",
+        "Position isomerism",
+        "Functional isomerism",
+        "Geometrical isomerism"
+      ],
+      "correct_option": 1,
+      "explanation": "Both compounds have the same molecular formula (C4H10O) and functional group (-OH), but the hydroxyl group is attached to different carbon positions (C-1 vs C-2), which represents position isomerism.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:38:52.501Z"
+    },
+    {
+      "_id": "4ml1b3qbemsb4tdjp",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which of the following is an example of a nucleophilic substitution reaction?",
+      "options": [
+        "Addition of HBr to ethene",
+        "Reaction of alkyl halide with NaOH",
+        "Combustion of methane",
+        "Polymerization of ethylene"
+      ],
+      "correct_option": 1,
+      "explanation": "Alkyl halides react with hydroxide ions (a nucleophile) to substitute the halogen atom, forming an alcohol. This is a classic example of nucleophilic substitution (SN1/SN2).",
+      "is_active": true,
+      "created_at": "2026-08-02T01:38:52.501Z"
+    },
+    {
+      "_id": "d9j6k97qimsb4tdjp",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "What is the IUPAC name of CH3-CH2-CH2-OH?",
+      "options": [
+        "Propan-1-ol",
+        "Propan-2-ol",
+        "Ethanol",
+        "Butan-1-ol"
+      ],
+      "correct_option": 0,
+      "explanation": "The three-carbon chain with -OH on the terminal carbon is named propan-1-ol.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:38:52.501Z"
+    },
+    {
+      "_id": "guro20qnpmsb4tdjp",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which functional group is present in alcohols?",
+      "options": [
+        "-COOH",
+        "-OH",
+        "-CHO",
+        "-NH2"
+      ],
+      "correct_option": 1,
+      "explanation": "Alcohols are characterized by the hydroxyl (-OH) functional group attached to a saturated carbon atom.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:38:52.501Z"
+    },
+    {
+      "_id": "tutkprpajmsb4ndps",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "question_text": "Which functional group is present in alcohols?",
+      "options": [
+        "-COOH",
+        "-OH",
+        "-CHO",
+        "-NH2"
+      ],
+      "correct_option": 0,
+      "explanation": "Option A (-COOH) is the correct answer based on standard principles.",
+      "is_active": true,
+      "created_at": "2026-08-02T01:34:12.784Z"
+    },
+    {
+      "_id": "ke3pdswxhms7g2oj0",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Physics - KInjkhad",
+      "question_text": "A train moving at 20 m/s comes to rest in 10 seconds. What is its acceleration?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 1,
+      "explanation": "Acceleration = (v - u) / t = (0 - 20) / 10 = -2 m/s².",
+      "is_active": true,
+      "created_at": "2026-07-30T11:42:57.708Z"
+    },
+    {
+      "_id": "dgqc2it05ms7g2oj0",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Physics - KInjkhad",
+      "question_text": "Displacement is a:",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 1,
+      "explanation": "Displacement has both magnitude and direction, making it a vector quantity.",
+      "is_active": true,
+      "created_at": "2026-07-30T11:42:57.708Z"
+    },
+    {
+      "_id": "bh48am8yjms7g2oj0",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Physics - KInjkhad",
+      "question_text": "An object moves with an initial velocity of 10 m/s and accelerates at 2 m/s² for 5 seconds. What distance does it cover?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 1,
+      "explanation": "s = ut + ½at² = (10×5) + ½×2×25 = 50 + 25 = 75 m.",
+      "is_active": true,
+      "created_at": "2026-07-30T11:42:57.708Z"
+    },
+    {
+      "_id": "kdbkzl44ums7g2oj0",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Physics - KInjkhad",
+      "question_text": "The slope of a velocity-time graph represents:",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 2,
+      "explanation": "The slope of a velocity-time graph gives the acceleration.",
+      "is_active": true,
+      "created_at": "2026-07-30T11:42:57.708Z"
+    },
+    {
+      "_id": "w6d45tukqms7g2oj0",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Physics - KInjkhad",
+      "question_text": "A ball is dropped from a height. What is its initial velocity?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 2,
+      "explanation": "A dropped object starts from rest, so its initial velocity is zero.",
+      "is_active": true,
+      "created_at": "2026-07-30T11:42:57.708Z"
+    },
+    {
+      "_id": "6nf3v71qzms7g2oj0",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Physics - KInjkhad",
+      "question_text": "Which graph represents uniform motion?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 1,
+      "explanation": "Uniform motion is represented by a straight line on a distance-time graph.",
+      "is_active": true,
+      "created_at": "2026-07-30T11:42:57.708Z"
+    },
+    {
+      "_id": "gpllsjuptms7g2oj0",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Physics - KInjkhad",
+      "question_text": "A cyclist travels 120 m in 20 seconds. What is the average speed?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 2,
+      "explanation": "Average speed = Distance ÷ Time = 120 ÷ 20 = 6 m/s.",
+      "is_active": true,
+      "created_at": "2026-07-30T11:42:57.708Z"
+    },
+    {
+      "_id": "ule2g7e4rms7g2oj0",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Physics - KInjkhad",
+      "question_text": "A body moving with constant velocity has:",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 1,
+      "explanation": "If velocity is constant, there is no change in velocity, so acceleration is zero.",
+      "is_active": true,
+      "created_at": "2026-07-30T11:42:57.708Z"
+    },
+    {
+      "_id": "q86d4ubevms7g2oj0",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Physics - KInjkhad",
+      "question_text": "The SI unit of acceleration is:",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 1,
+      "explanation": "Acceleration is the rate of change of velocity, measured in m/s².",
+      "is_active": true,
+      "created_at": "2026-07-30T11:42:57.708Z"
+    },
+    {
+      "_id": "ysytt3xwwms7g2oj0",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "topic_tag": "Physics - KInjkhad",
+      "question_text": "A car starts from rest and accelerates uniformly at 3 m/s² for 6 seconds. What is its final velocity?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 2,
+      "explanation": "Using v = u + at = 0 + (3 × 6) = 18 m/s.",
+      "is_active": true,
+      "created_at": "2026-07-30T11:42:57.708Z"
+    },
+    {
+      "_id": "ulwv4r32lms7d8a4p",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Physics - keimanatics",
+      "question_text": "A train moving at 20 m/s comes to rest in 10 seconds. What is its acceleration?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 1,
+      "explanation": "Acceleration = (v - u) / t = (0 - 20) / 10 = -2 m/s².",
+      "is_active": true,
+      "created_at": "2026-07-30T10:23:20.137Z"
+    },
+    {
+      "_id": "mpcue74zjms7d8a4p",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Physics - keimanatics",
+      "question_text": "Displacement is a:",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 1,
+      "explanation": "Displacement has both magnitude and direction, making it a vector quantity.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:23:20.137Z"
+    },
+    {
+      "_id": "bw1k5odfkms7d8a4p",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Physics - keimanatics",
+      "question_text": "An object moves with an initial velocity of 10 m/s and accelerates at 2 m/s² for 5 seconds. What distance does it cover?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 1,
+      "explanation": "s = ut + ½at² = (10×5) + ½×2×25 = 50 + 25 = 75 m.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:23:20.137Z"
+    },
+    {
+      "_id": "r91z6j1lfms7d8a4p",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Physics - keimanatics",
+      "question_text": "The slope of a velocity-time graph represents:",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 2,
+      "explanation": "The slope of a velocity-time graph gives the acceleration.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:23:20.137Z"
+    },
+    {
+      "_id": "sfrbsi11mms7d8a4p",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Physics - keimanatics",
+      "question_text": "A ball is dropped from a height. What is its initial velocity?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 2,
+      "explanation": "A dropped object starts from rest, so its initial velocity is zero.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:23:20.137Z"
+    },
+    {
+      "_id": "ozmhoolqdms7d8a4p",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Physics - keimanatics",
+      "question_text": "Which graph represents uniform motion?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 1,
+      "explanation": "Uniform motion is represented by a straight line on a distance-time graph.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:23:20.137Z"
+    },
+    {
+      "_id": "te12iknx4ms7d8a4p",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Physics - keimanatics",
+      "question_text": "A cyclist travels 120 m in 20 seconds. What is the average speed?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 2,
+      "explanation": "Average speed = Distance ÷ Time = 120 ÷ 20 = 6 m/s.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:23:20.137Z"
+    },
+    {
+      "_id": "0tg3tcynwms7d8a4p",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Physics - keimanatics",
+      "question_text": "A body moving with constant velocity has:",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 1,
+      "explanation": "If velocity is constant, there is no change in velocity, so acceleration is zero.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:23:20.137Z"
+    },
+    {
+      "_id": "0n4ioyhvyms7d8a4p",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Physics - keimanatics",
+      "question_text": "The SI unit of acceleration is:",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 1,
+      "explanation": "Acceleration is the rate of change of velocity, measured in m/s².",
+      "is_active": true,
+      "created_at": "2026-07-30T10:23:20.137Z"
+    },
+    {
+      "_id": "uotmvuo83ms7d8a4p",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Physics - keimanatics",
+      "question_text": "A car starts from rest and accelerates uniformly at 3 m/s² for 6 seconds. What is its final velocity?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 2,
+      "explanation": "Using v = u + at = 0 + (3 × 6) = 18 m/s.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:23:20.137Z"
+    },
+    {
+      "_id": "sowmflcfwms7cype0",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Biology - Botany",
+      "question_text": "Which gas is released by plants during photosynthesis?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 2,
+      "explanation": "Oxygen is released as a by-product of photosynthesis.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:15:53.352Z"
+    },
+    {
+      "_id": "myaz2ckirms7cype0",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Biology - Botany",
+      "question_text": "Which cell organelle is known as the site of photosynthesis?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 2,
+      "explanation": "Chloroplasts contain chlorophyll and carry out photosynthesis.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:15:53.352Z"
+    },
+    {
+      "_id": "erzlblvyhms7cype0",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Biology - Botany",
+      "question_text": "The food prepared during photosynthesis is stored in plants mainly as:",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 2,
+      "explanation": "Plants commonly store excess glucose in the form of starch.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:15:53.352Z"
+    },
+    {
+      "_id": "vwdxgsrfnms7cype0",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Biology - Botany",
+      "question_text": "Which of the following is a non-flowering plant?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 2,
+      "explanation": "Ferns reproduce through spores and do not produce flowers.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:15:53.352Z"
+    },
+    {
+      "_id": "yebun5qanms7cype0",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Biology - Botany",
+      "question_text": "Stomata are mainly found in the:",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 2,
+      "explanation": "Stomata are tiny pores located mainly in the leaf epidermis.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:15:53.352Z"
+    },
+    {
+      "_id": "82l2ovnzyms7cype0",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Biology - Botany",
+      "question_text": "Which plant hormone promotes cell elongation?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 0,
+      "explanation": "Auxin stimulates cell elongation and controls plant growth.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:15:53.352Z"
+    },
+    {
+      "_id": "aja4bo1dcms7cype0",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Biology - Botany",
+      "question_text": "Which part of the flower develops into a fruit after fertilization?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 2,
+      "explanation": "The ovary develops into the fruit, while the ovules become seeds.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:15:53.352Z"
+    },
+    {
+      "_id": "sakisbb1qms7cype0",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Biology - Botany",
+      "question_text": "Which plant tissue is responsible for transporting water and minerals?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 2,
+      "explanation": "Xylem transports water and dissolved minerals from roots to the rest of the plant.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:15:53.352Z"
+    },
+    {
+      "_id": "2xy10qi4lms7cype0",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Biology - Botany",
+      "question_text": "The process by which plants lose water through their leaves is called:",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 2,
+      "explanation": "Transpiration is the loss of water vapor through the stomata of leaves.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:15:53.352Z"
+    },
+    {
+      "_id": "aq8l2w9foms7cype0",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Biology - Botany",
+      "question_text": "Which pigment is primarily responsible for photosynthesis in plants?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 1,
+      "explanation": "Chlorophyll-a is the primary photosynthetic pigment that captures light energy.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:15:53.352Z"
+    },
+    {
+      "_id": "cieoqqjbims7cx62h",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Chemistry - Oraganic",
+      "question_text": "Which of the following is an isomer of butane (C4H10)?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 0,
+      "explanation": "Butane (C4H10) has two structural isomers: unbranched n-butane and branched isobutane (2-methylpropane).",
+      "is_active": true,
+      "created_at": "2026-07-30T10:14:41.657Z"
+    },
+    {
+      "_id": "w0aumgbrrms7cx62h",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Chemistry - Oraganic",
+      "question_text": "The oxidation of a primary alcohol generally produces:",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 1,
+      "explanation": "Primary alcohols are oxidized first to aldehydes, which upon further oxidation yield carboxylic acids.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:14:41.657Z"
+    },
+    {
+      "_id": "fa2ka6swpms7cx62h",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Chemistry - Oraganic",
+      "question_text": "Which compound is an aromatic hydrocarbon?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 1,
+      "explanation": "Benzene (C6H6) is a classic aromatic hydrocarbon containing a planar ring with delocalized pi electrons satisfying Huckel's rule.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:14:41.657Z"
+    },
+    {
+      "_id": "toe8gmo45ms7cx62h",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Chemistry - Oraganic",
+      "question_text": "Which of the following compounds undergoes nucleophilic substitution most readily?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 0,
+      "explanation": "Methyl chloride undergoes nucleophilic substitution reactions because the polar C-Cl bond leaves the carbon electron-deficient.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:14:41.657Z"
+    },
+    {
+      "_id": "lxd6v7gqfms7cx62h",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Chemistry - Oraganic",
+      "question_text": "What is the hybridization of carbon atoms in ethene (C2H4)?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 1,
+      "explanation": "Each carbon atom in ethene (CH2=CH2) forms three sigma bonds in a trigonal planar geometry, corresponding to sp² hybridization.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:14:41.657Z"
+    },
+    {
+      "_id": "iddxyx3klms7cx62h",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Chemistry - Oraganic",
+      "question_text": "Which reagent is commonly used to distinguish alkenes from alkanes?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 0,
+      "explanation": "Alkenes undergo electrophilic addition with bromine water (Br2/H2O), decolorizing the orange-brown solution.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:14:41.657Z"
+    },
+    {
+      "_id": "85pgoxneems7cx62h",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Chemistry - Oraganic",
+      "question_text": "The general formula of alkanes is:",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 1,
+      "explanation": "Alkanes are saturated hydrocarbons with single C-C bonds and follow the general molecular formula CnH2n+2.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:14:41.657Z"
+    },
+    {
+      "_id": "q13o87k5qms7cx62h",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Chemistry - Oraganic",
+      "question_text": "Which hydrocarbon belongs to the alkene family?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 1,
+      "explanation": "Ethene (C2H4) contains a carbon-carbon double bond, placing it in the alkene homologous series.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:14:41.657Z"
+    },
+    {
+      "_id": "dfx1168e2ms7cx62h",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Chemistry - Oraganic",
+      "question_text": "What is the IUPAC name of CH3COOH?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 1,
+      "explanation": "CH3COOH has a two-carbon parent chain with a carboxylic acid functional group, giving it the IUPAC name ethanoic acid.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:14:41.657Z"
+    },
+    {
+      "_id": "tyalhjui0ms7cx62h",
+      "course_id": "1339osvcems5xpvjb",
+      "topic_tag": "Chemistry - Oraganic",
+      "question_text": "Which functional group is present in ethanol?",
+      "options": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D"
+      ],
+      "correct_option": 1,
+      "explanation": "Ethanol (CH3CH2OH) contains the hydroxyl (-OH) functional group.",
+      "is_active": true,
+      "created_at": "2026-07-30T10:14:41.657Z"
+    },
+    {
+      "_id": "89ntsf4g7ms60o4uo",
+      "course_id": "course_jee_2027",
+      "topic_tag": "Physics - Electrostatics",
+      "question_text": "The electric field lines around a positive point charge are:",
+      "options": [
+        "Directed towards the charge",
+        "Circular",
+        "Directed away from the charge",
+        "Random"
+      ],
+      "correct_option": 2,
+      "explanation": "Electric field lines originate from positive charges and terminate at negative charges, radiating radially outward away from a positive point charge.",
+      "is_active": true,
+      "created_at": "2026-07-29T11:43:58.608Z"
+    },
+    {
+      "_id": "ay6091h9gms60o4uo",
+      "course_id": "course_jee_2027",
+      "topic_tag": "Physics - Electrostatics",
+      "question_text": "Which of the following is an insulator?",
+      "options": [
+        "Copper",
+        "Aluminum",
+        "Rubber",
+        "Silver"
+      ],
+      "correct_option": 2,
+      "explanation": "Rubber is an insulator because its electrons are tightly bound within atoms and cannot flow freely to conduct electric current.",
+      "is_active": true,
+      "created_at": "2026-07-29T11:43:58.608Z"
+    },
+    {
+      "_id": "0wcal1eocms60o4uo",
+      "course_id": "course_jee_2027",
+      "topic_tag": "Physics - Electrostatics",
+      "question_text": "If the distance between two charges is doubled, the electrostatic force becomes:",
+      "options": [
+        "Twice",
+        "Half",
+        "One-fourth",
+        "Four times"
+      ],
+      "correct_option": 2,
+      "explanation": "According to Coulomb's Law (F = k * q1 * q2 / r²), doubling the distance (r -> 2r) decreases the electrostatic force to one-fourth of its initial magnitude.",
+      "is_active": true,
+      "created_at": "2026-07-29T11:43:58.608Z"
+    },
+    {
+      "_id": "5bm2ugd6jms60o4uo",
+      "course_id": "course_jee_2027",
+      "topic_tag": "Physics - Electrostatics",
+      "question_text": "Which law is used to calculate the electric field due to a symmetric charge distribution?",
+      "options": [
+        "Ohm's Law",
+        "Gauss's Law",
+        "Faraday's Law",
+        "Kirchhoff's Law"
+      ],
+      "correct_option": 1,
+      "explanation": "Gauss's Law states that the total electric flux through a closed surface is equal to the net enclosed charge divided by the permittivity of free space.",
+      "is_active": true,
+      "created_at": "2026-07-29T11:43:58.608Z"
+    },
+    {
+      "_id": "om8w4qnabms60o4uo",
+      "course_id": "course_jee_2027",
+      "topic_tag": "Physics - Electrostatics",
+      "question_text": "Electric potential is measured in:",
+      "options": [
+        "Joule",
+        "Volt",
+        "Newton",
+        "Tesla"
+      ],
+      "correct_option": 1,
+      "explanation": "Electric potential is defined as potential energy per unit charge and is measured in Volts (1 Volt = 1 Joule per Coulomb).",
+      "is_active": true,
+      "created_at": "2026-07-29T11:43:58.608Z"
+    },
+    {
+      "_id": "95pslkhcnms60o4uo",
+      "course_id": "course_jee_2027",
+      "topic_tag": "Physics - Electrostatics",
+      "question_text": "The electric field inside a conductor in electrostatic equilibrium is:",
+      "options": [
+        "Maximum",
+        "Constant",
+        "Zero",
+        "Infinite"
+      ],
+      "correct_option": 2,
+      "explanation": "Inside a conductor in electrostatic equilibrium, free charges redistribute to the surface until the net internal electric field becomes zero.",
+      "is_active": true,
+      "created_at": "2026-07-29T11:43:58.608Z"
+    },
+    {
+      "_id": "jkyegql8mms60o4uo",
+      "course_id": "course_jee_2027",
+      "topic_tag": "Physics - Electrostatics",
+      "question_text": "The direction of the electric field at any point is the direction of the force acting on a:",
+      "options": [
+        "Negative test charge",
+        "Positive test charge",
+        "Neutral particle",
+        "Electron only"
+      ],
+      "correct_option": 1,
+      "explanation": "The direction of an electric field vector at any point is defined as the force direction experienced by a positive test charge placed at that location.",
+      "is_active": true,
+      "created_at": "2026-07-29T11:43:58.608Z"
+    },
+    {
+      "_id": "zmljtfixoms60o4uo",
+      "course_id": "course_jee_2027",
+      "topic_tag": "Physics - Electrostatics",
+      "question_text": "Two positive charges are brought close to each other. They will:",
+      "options": [
+        "Attract each other",
+        "Repel each other",
+        "Become neutral",
+        "Exchange charge"
+      ],
+      "correct_option": 1,
+      "explanation": "Like electric charges (positive and positive, or negative and negative) repel each other due to electrostatic forces.",
+      "is_active": true,
+      "created_at": "2026-07-29T11:43:58.608Z"
+    },
+    {
+      "_id": "gyiih2tx0ms60o4uo",
+      "course_id": "course_jee_2027",
+      "topic_tag": "Physics - Electrostatics",
+      "question_text": "The SI unit of electric charge is:",
+      "options": [
+        "Volt",
+        "Ampere",
+        "Coulomb",
+        "Farad"
+      ],
+      "correct_option": 2,
+      "explanation": "The SI unit of electric charge is the Coulomb (C), defined as the charge transported by a constant current of 1 Ampere in 1 second.",
+      "is_active": true,
+      "created_at": "2026-07-29T11:43:58.608Z"
+    },
+    {
+      "_id": "jvjrhm0ooms60o4uo",
+      "course_id": "course_jee_2027",
+      "topic_tag": "Physics - Electrostatics",
+      "question_text": "According to Coulomb's law, the electrostatic force between two point charges is directly proportional to:",
+      "options": [
+        "The distance between the charges",
+        "The product of the charges",
+        "The square of the distance",
+        "The sum of the charges"
+      ],
+      "correct_option": 1,
+      "explanation": "According to Coulomb's Law, the electrostatic force between two point charges is directly proportional to the product of the charges.",
+      "is_active": true,
+      "created_at": "2026-07-29T11:43:58.608Z"
+    }
+  ],
+  "mockTests": [
+    {
+      "_id": "wf8nr3qjxms7ddfk2",
+      "course_id": "1339osvcems5xpvjb",
+      "title": "NEET Standard Full-Length Paper 2024",
+      "type": "full",
+      "duration_minutes": 200,
+      "cutoff_marks": 520,
+      "question_ids": [
+        "ozmhoolqdms7d8a4p",
+        "te12iknx4ms7d8a4p",
+        "0tg3tcynwms7d8a4p",
+        "0n4ioyhvyms7d8a4p",
+        "uotmvuo83ms7d8a4p",
+        "sowmflcfwms7cype0",
+        "myaz2ckirms7cype0",
+        "erzlblvyhms7cype0",
+        "iddxyx3klms7cx62h",
+        "lxd6v7gqfms7cx62h",
+        "toe8gmo45ms7cx62h",
+        "85pgoxneems7cx62h"
+      ],
+      "is_active": true,
+      "created_at": "2026-07-30T10:27:20.450Z"
+    },
+    {
+      "_id": "4ahxjxl6gms7am0gq",
+      "course_id": "course_jee_2027",
+      "title": "JEE Main Grand Mock Examination",
+      "type": "full",
+      "duration_minutes": 180,
+      "cutoff_marks": 120,
+      "question_ids": [
+        "89ntsf4g7ms60o4uo",
+        "ay6091h9gms60o4uo",
+        "0wcal1eocms60o4uo",
+        "5bm2ugd6jms60o4uo",
+        "om8w4qnabms60o4uo",
+        "jkyegql8mms60o4uo",
+        "95pslkhcnms60o4uo",
+        "zmljtfixoms60o4uo",
+        "gyiih2tx0ms60o4uo",
+        "jvjrhm0ooms60o4uo"
+      ],
+      "is_active": true,
+      "created_at": "2026-07-30T09:10:01.946Z"
+    },
+    {
+      "_id": "7gl0z9umfms66d0j8",
+      "course_id": "course_jee_2027",
+      "title": "ert",
+      "type": "full",
+      "duration_minutes": 180,
+      "cutoff_marks": 120,
+      "question_ids": [
+        "5bm2ugd6jms60o4uo",
+        "om8w4qnabms60o4uo",
+        "95pslkhcnms60o4uo"
+      ],
+      "is_active": false,
+      "created_at": "2026-07-29T14:23:17.492Z"
+    }
+  ],
+  "attempts": [
+    {
+      "_id": "otzfpi55tms68mmfv",
+      "student_id": "quq6x39tmms5woyjl",
+      "course_id": "course_jee_2027",
+      "test_id": "7gl0z9umfms66d0j8",
+      "type": "mock",
+      "responses": [
+        {
+          "question_id": "5bm2ugd6jms60o4uo",
+          "selected_option": 1,
+          "is_correct": true
+        },
+        {
+          "question_id": "om8w4qnabms60o4uo",
+          "selected_option": 2,
+          "is_correct": false
+        },
+        {
+          "question_id": "95pslkhcnms60o4uo",
+          "selected_option": 3,
+          "is_correct": false
+        }
+      ],
+      "score": 2,
+      "accuracy": 33,
+      "submission_type": "manual",
+      "created_at": "2026-07-29T15:26:45.019Z"
+    },
+    {
+      "_id": "2drc4ydtcms68ule0",
+      "student_id": "quq6x39tmms5woyjl",
+      "course_id": "course_jee_2027",
+      "type": "practice",
+      "topic_tag": "Physics - Electrostatics",
+      "responses": [
+        {
+          "question_id": "ay6091h9gms60o4uo",
+          "selected_option": 0,
+          "is_correct": false
+        },
+        {
+          "question_id": "0wcal1eocms60o4uo",
+          "selected_option": 0,
+          "is_correct": false
+        },
+        {
+          "question_id": "5bm2ugd6jms60o4uo",
+          "selected_option": 0,
+          "is_correct": false
+        },
+        {
+          "question_id": "om8w4qnabms60o4uo",
+          "selected_option": 0,
+          "is_correct": false
+        },
+        {
+          "question_id": "95pslkhcnms60o4uo",
+          "selected_option": 0,
+          "is_correct": false
+        },
+        {
+          "question_id": "jkyegql8mms60o4uo",
+          "selected_option": 0,
+          "is_correct": false
+        },
+        {
+          "question_id": "zmljtfixoms60o4uo",
+          "selected_option": 0,
+          "is_correct": false
+        },
+        {
+          "question_id": "gyiih2tx0ms60o4uo",
+          "selected_option": 0,
+          "is_correct": false
+        },
+        {
+          "question_id": "jvjrhm0ooms60o4uo",
+          "selected_option": 0,
+          "is_correct": false
+        }
+      ],
+      "score": 0,
+      "accuracy": 0,
+      "submission_type": "manual",
+      "created_at": "2026-07-29T15:32:56.904Z"
+    },
+    {
+      "_id": "7juayu2azms7an6ew",
+      "student_id": "quq6x39tmms5woyjl",
+      "course_id": "course_jee_2027",
+      "test_id": "4ahxjxl6gms7am0gq",
+      "type": "mock",
+      "responses": [
+        {
+          "question_id": "gyiih2tx0ms60o4uo",
+          "selected_option": 1,
+          "is_correct": false
+        },
+        {
+          "question_id": "jvjrhm0ooms60o4uo",
+          "selected_option": 1,
+          "is_correct": true
+        }
+      ],
+      "score": 3,
+      "accuracy": 50,
+      "submission_type": "manual",
+      "created_at": "2026-07-30T09:10:56.312Z"
+    },
+    {
+      "_id": "98fgvnxqsms7bmb16",
+      "student_id": "quq6x39tmms5woyjl",
+      "course_id": "course_jee_2027",
+      "type": "practice",
+      "topic_tag": "Physics - Electrostatics",
+      "responses": [
+        {
+          "question_id": "89ntsf4g7ms60o4uo",
+          "selected_option": 0,
+          "is_correct": false
+        },
+        {
+          "question_id": "ay6091h9gms60o4uo",
+          "selected_option": 1,
+          "is_correct": false
+        },
+        {
+          "question_id": "0wcal1eocms60o4uo",
+          "selected_option": 3,
+          "is_correct": false
+        },
+        {
+          "question_id": "5bm2ugd6jms60o4uo",
+          "selected_option": 2,
+          "is_correct": false
+        },
+        {
+          "question_id": "om8w4qnabms60o4uo",
+          "selected_option": 3,
+          "is_correct": false
+        },
+        {
+          "question_id": "95pslkhcnms60o4uo",
+          "selected_option": 3,
+          "is_correct": false
+        }
+      ],
+      "score": 0,
+      "accuracy": 0,
+      "submission_type": "manual",
+      "created_at": "2026-07-30T09:38:15.258Z"
+    },
+    {
+      "_id": "73v0tpwzhms7bn1ae",
+      "student_id": "quq6x39tmms5woyjl",
+      "course_id": "course_jee_2027",
+      "type": "practice",
+      "topic_tag": "Physics - Electrostatics",
+      "responses": [
+        {
+          "question_id": "89ntsf4g7ms60o4uo",
+          "selected_option": 0,
+          "is_correct": false
+        },
+        {
+          "question_id": "ay6091h9gms60o4uo",
+          "selected_option": 3,
+          "is_correct": false
+        },
+        {
+          "question_id": "0wcal1eocms60o4uo",
+          "selected_option": 2,
+          "is_correct": true
+        },
+        {
+          "question_id": "5bm2ugd6jms60o4uo",
+          "selected_option": 1,
+          "is_correct": true
+        },
+        {
+          "question_id": "om8w4qnabms60o4uo",
+          "selected_option": 2,
+          "is_correct": false
+        },
+        {
+          "question_id": "95pslkhcnms60o4uo",
+          "selected_option": 0,
+          "is_correct": false
+        },
+        {
+          "question_id": "jkyegql8mms60o4uo",
+          "selected_option": 2,
+          "is_correct": false
+        },
+        {
+          "question_id": "zmljtfixoms60o4uo",
+          "selected_option": 3,
+          "is_correct": false
+        },
+        {
+          "question_id": "gyiih2tx0ms60o4uo",
+          "selected_option": 0,
+          "is_correct": false
+        },
+        {
+          "question_id": "jvjrhm0ooms60o4uo",
+          "selected_option": 2,
+          "is_correct": false
+        }
+      ],
+      "score": 2,
+      "accuracy": 20,
+      "submission_type": "manual",
+      "created_at": "2026-07-30T09:38:49.286Z"
+    },
+    {
+      "_id": "5prrs6tu7ms7cv4jd",
+      "student_id": "quq6x39tmms5woyjl",
+      "course_id": "course_jee_2027",
+      "test_id": "4ahxjxl6gms7am0gq",
+      "type": "mock",
+      "responses": [
+        {
+          "question_id": "89ntsf4g7ms60o4uo",
+          "selected_option": 1,
+          "is_correct": false
+        },
+        {
+          "question_id": "ay6091h9gms60o4uo",
+          "selected_option": 2,
+          "is_correct": true
+        }
+      ],
+      "score": 3,
+      "accuracy": 50,
+      "submission_type": "manual",
+      "created_at": "2026-07-30T10:13:06.361Z"
+    },
+    {
+      "_id": "hbvqa93vrms7dgmoh",
+      "student_id": "v1m9vudjkms7dfwni",
+      "course_id": "1339osvcems5xpvjb",
+      "type": "practice",
+      "topic_tag": "Weekly DPP - neetet",
+      "responses": [
+        {
+          "question_id": "r91z6j1lfms7d8a4p",
+          "selected_option": 0,
+          "is_correct": false
+        },
+        {
+          "question_id": "sfrbsi11mms7d8a4p",
+          "selected_option": 2,
+          "is_correct": true
+        },
+        {
+          "question_id": "ozmhoolqdms7d8a4p",
+          "selected_option": 1,
+          "is_correct": true
+        },
+        {
+          "question_id": "te12iknx4ms7d8a4p",
+          "selected_option": 2,
+          "is_correct": true
+        },
+        {
+          "question_id": "yebun5qanms7cype0",
+          "selected_option": 3,
+          "is_correct": false
+        }
+      ],
+      "score": 3,
+      "accuracy": 60,
+      "submission_type": "manual",
+      "created_at": "2026-07-30T10:29:49.649Z"
+    },
+    {
+      "_id": "3vx439wbgms7dh4u5",
+      "student_id": "v1m9vudjkms7dfwni",
+      "course_id": "1339osvcems5xpvjb",
+      "test_id": "wf8nr3qjxms7ddfk2",
+      "type": "mock",
+      "responses": [],
+      "score": 0,
+      "accuracy": 0,
+      "submission_type": "manual",
+      "created_at": "2026-07-30T10:30:13.181Z"
+    },
+    {
+      "_id": "5r64qion6ms7g48j8",
+      "student_id": "quq6x39tmms5woyjl",
+      "course_id": "course_jee_2027",
+      "test_id": "4ahxjxl6gms7am0gq",
+      "type": "mock",
+      "responses": [],
+      "score": 0,
+      "accuracy": 0,
+      "submission_type": "manual",
+      "created_at": "2026-07-30T11:44:10.292Z"
+    },
+    {
+      "_id": "cchxpvns9msb6as9t",
+      "student_id": "qv0yzg7yrmsb4yhs9",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "type": "practice",
+      "topic_tag": "Chemistry - Organic Chemistry",
+      "responses": [
+        {
+          "question_id": "km6kuc5b6msb5ht6l",
+          "selected_option": 0,
+          "is_correct": true
+        },
+        {
+          "question_id": "q5b9ty6k6msb5ht6l",
+          "selected_option": 1,
+          "is_correct": false
+        },
+        {
+          "question_id": "raqrl2ntvmsb5ht6l",
+          "selected_option": 0,
+          "is_correct": true
+        },
+        {
+          "question_id": "dgt8nxeromsb5ht6l",
+          "selected_option": 3,
+          "is_correct": false
+        },
+        {
+          "question_id": "z6b5qd8dkmsb5ht6l",
+          "selected_option": 1,
+          "is_correct": false
+        },
+        {
+          "question_id": "7ofhb5olzmsb4tdjp",
+          "selected_option": 0,
+          "is_correct": false
+        },
+        {
+          "question_id": "s469ibdecmsb4tdjp",
+          "selected_option": 3,
+          "is_correct": false
+        },
+        {
+          "question_id": "n97axk1qwmsb5ht6l",
+          "selected_option": 1,
+          "is_correct": false
+        },
+        {
+          "question_id": "70dp2xd1zmsb5ht6l",
+          "selected_option": 2,
+          "is_correct": true
+        },
+        {
+          "question_id": "4ml1b3qbemsb4tdjp",
+          "selected_option": 0,
+          "is_correct": false
+        }
+      ],
+      "score": 3,
+      "accuracy": 30,
+      "submission_type": "manual",
+      "created_at": "2026-08-02T02:20:24.353Z"
+    }
+  ],
+  "xpTransactions": [
+    {
+      "_id": "9cnhcmp1mms68mmfv",
+      "student_id": "quq6x39tmms5woyjl",
+      "attempt_id": "otzfpi55tms68mmfv",
+      "xp_amount": 27,
+      "reason": "+27 XP for Mock Test",
+      "created_at": "2026-07-29T15:26:45.019Z"
+    },
+    {
+      "_id": "fxde3y6ddms7an6ew",
+      "student_id": "quq6x39tmms5woyjl",
+      "attempt_id": "7juayu2azms7an6ew",
+      "xp_amount": 27,
+      "reason": "+27 XP for Mock Test",
+      "created_at": "2026-07-30T09:10:56.312Z"
+    },
+    {
+      "_id": "wdk31n2gyms7bn1ae",
+      "student_id": "quq6x39tmms5woyjl",
+      "attempt_id": "73v0tpwzhms7bn1ae",
+      "xp_amount": 54,
+      "reason": "+54 XP for practice set (2 correct answers)",
+      "created_at": "2026-07-30T09:38:49.286Z"
+    },
+    {
+      "_id": "6phbgi2u0ms7cv4jd",
+      "student_id": "quq6x39tmms5woyjl",
+      "attempt_id": "5prrs6tu7ms7cv4jd",
+      "xp_amount": 27,
+      "reason": "+27 XP for Mock Test",
+      "created_at": "2026-07-30T10:13:06.361Z"
+    },
+    {
+      "_id": "p2ofd8lxhms7dgmoh",
+      "student_id": "v1m9vudjkms7dfwni",
+      "attempt_id": "hbvqa93vrms7dgmoh",
+      "xp_amount": 81,
+      "reason": "+81 XP for practice set (3 correct answers)",
+      "created_at": "2026-07-30T10:29:49.649Z"
+    },
+    {
+      "_id": "95sgnwvximsb6as9t",
+      "student_id": "qv0yzg7yrmsb4yhs9",
+      "attempt_id": "cchxpvns9msb6as9t",
+      "xp_amount": 81,
+      "reason": "+81 XP for practice set (3 correct answers)",
+      "created_at": "2026-08-02T02:20:24.353Z"
+    }
+  ],
+  "admins": [
+    {
+      "_id": "e28r37qvwms7afsyp",
+      "name": "Aditya",
+      "email": "krypton@gmail.com",
+      "password_hash": "$2a$10$0vSI3iVnAvQy9C6ze6o6.eZK93Z6YFWSFnHjniYFMEbM/nzHOb87y",
+      "role": "Exam Controller",
+      "permissions": [
+        "manage_courses",
+        "manage_mock_tests"
+      ],
+      "allowed_courses": [
+        "all"
+      ],
+      "created_at": "2026-07-30T09:05:12.289Z"
+    },
+    {
+      "_id": "iubv9rtb2ms7acron",
+      "name": "Aranya",
+      "email": "veilside@gmail.com",
+      "password_hash": "$2a$10$UaS8KdzBYKrtOQ6q7XlA3OcqyCjmbgXPQewtsr7FRj9O6mff3fZRS",
+      "role": "Question Contributor",
+      "permissions": [
+        "manage_questions",
+        "manage_mock_tests"
+      ],
+      "allowed_courses": [
+        "course_jee_2027"
+      ],
+      "created_at": "2026-07-30T09:02:50.663Z"
+    },
+    {
+      "_id": "admin_master_1",
+      "name": "Master Controller",
+      "email": "admin",
+      "password_hash": "$2a$10$wE.64R3oX5p97Z0kZ6w9UeB55p97Z0kZ6w9UeB55p97Z0kZ6w9Ue",
+      "role": "Super Admin",
+      "created_at": "2026-07-29T09:40:00.000Z",
+      "permissions": [
+        "all"
+      ],
+      "allowed_courses": [
+        "all"
+      ]
+    }
+  ],
+  "auditLogs": [
+    {
+      "_id": "myh7g5c1umsb5m6bl",
+      "admin_id": "admin_master_1",
+      "admin_name": "Admin",
+      "action_type": "ADD_QUESTION",
+      "affected_entity_id": "b1jvrowhcmsb5m6bl",
+      "details": "Added new question under topic \"Physics - TestTopic\"",
+      "timestamp": "2026-08-02T02:01:16.161Z"
+    },
+    {
+      "_id": "4u861hbzvmsb5ht6m",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "BULK_ADD_QUESTIONS",
+      "affected_entity_id": "batch_100",
+      "details": "Bulk uploaded 100 questions into question bank",
+      "timestamp": "2026-08-02T01:57:52.510Z"
+    },
+    {
+      "_id": "l1xxg08pdmsb4u39h",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "DELETE_USER",
+      "affected_entity_id": "quq6x39tmms5woyjl",
+      "details": "Deleted student account ID quq6x39tmms5woyjl and anonymized PII per data-retention policy",
+      "timestamp": "2026-08-02T01:39:25.829Z"
+    },
+    {
+      "_id": "khc5wk46vmsb4u1l9",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "DELETE_USER",
+      "affected_entity_id": "gqah4tu0nms66dwls",
+      "details": "Deleted student account ID gqah4tu0nms66dwls and anonymized PII per data-retention policy",
+      "timestamp": "2026-08-02T01:39:23.661Z"
+    },
+    {
+      "_id": "pims5t7t5msb4twrk",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "DELETE_USER",
+      "affected_entity_id": "v1m9vudjkms7dfwni",
+      "details": "Deleted student account ID v1m9vudjkms7dfwni and anonymized PII per data-retention policy",
+      "timestamp": "2026-08-02T01:39:17.408Z"
+    },
+    {
+      "_id": "sd9y1ip64msb4tdjq",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "BULK_ADD_QUESTIONS",
+      "affected_entity_id": "batch_10",
+      "details": "Bulk uploaded 10 questions into question bank",
+      "timestamp": "2026-08-02T01:38:52.502Z"
+    },
+    {
+      "_id": "qq305f2lymsb4ndpt",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "BULK_ADD_QUESTIONS",
+      "affected_entity_id": "batch_1",
+      "details": "Bulk uploaded 1 questions into question bank",
+      "timestamp": "2026-08-02T01:34:12.785Z"
+    },
+    {
+      "_id": "vlq1uvzqimsb4inot",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "DELETE_QUESTION",
+      "affected_entity_id": "xe0mpnwa6msb4ddd2",
+      "details": "Deactivated question ID xe0mpnwa6msb4ddd2 (soft-delete per RULE-07)",
+      "timestamp": "2026-08-02T01:30:32.429Z"
+    },
+    {
+      "_id": "c5iioo2exmsb4ilfj",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "DELETE_QUESTION",
+      "affected_entity_id": "vcstr7sj5msb4ddd2",
+      "details": "Deactivated question ID vcstr7sj5msb4ddd2 (soft-delete per RULE-07)",
+      "timestamp": "2026-08-02T01:30:29.503Z"
+    },
+    {
+      "_id": "na77ja6i8msb4ik1c",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "DELETE_QUESTION",
+      "affected_entity_id": "qg9ogxwvomsb4ddd2",
+      "details": "Deactivated question ID qg9ogxwvomsb4ddd2 (soft-delete per RULE-07)",
+      "timestamp": "2026-08-02T01:30:27.696Z"
+    },
+    {
+      "_id": "84icnyb78msb4iijx",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "DELETE_QUESTION",
+      "affected_entity_id": "ttdhq3zaqmsb4ddd2",
+      "details": "Deactivated question ID ttdhq3zaqmsb4ddd2 (soft-delete per RULE-07)",
+      "timestamp": "2026-08-02T01:30:25.773Z"
+    },
+    {
+      "_id": "2eiyru6p4msb4ddd3",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "BULK_ADD_QUESTIONS",
+      "affected_entity_id": "batch_4",
+      "details": "Bulk uploaded 4 questions into question bank",
+      "timestamp": "2026-08-02T01:26:25.767Z"
+    },
+    {
+      "_id": "yxyunezxxms7g2oj1",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "BULK_ADD_QUESTIONS",
+      "affected_entity_id": "batch_10",
+      "details": "Bulk uploaded 10 questions into question bank",
+      "timestamp": "2026-07-30T11:42:57.709Z"
+    },
+    {
+      "_id": "e69rucu7ums7g1ytt",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "ADD_COURSE",
+      "affected_entity_id": "ynzp9kszdms7g1ytt",
+      "details": "Created new course \"NEET\" with subjects: Physics, Chemistry, Mathematics",
+      "timestamp": "2026-07-30T11:42:24.401Z"
+    },
+    {
+      "_id": "cg0zvwriqms7ddfk2",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "CREATE_MOCK_TEST",
+      "affected_entity_id": "wf8nr3qjxms7ddfk2",
+      "details": "Created new mock test \"NEET Standard Full-Length Paper 2024\" (12 questions, 200 mins)",
+      "timestamp": "2026-07-30T10:27:20.450Z"
+    },
+    {
+      "_id": "6k9umvivqms7d8a4q",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "BULK_ADD_QUESTIONS",
+      "affected_entity_id": "batch_10",
+      "details": "Bulk uploaded 10 questions into question bank",
+      "timestamp": "2026-07-30T10:23:20.138Z"
+    },
+    {
+      "_id": "m6nlenmm4ms7cype1",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "BULK_ADD_QUESTIONS",
+      "affected_entity_id": "batch_10",
+      "details": "Bulk uploaded 10 questions into question bank",
+      "timestamp": "2026-07-30T10:15:53.353Z"
+    },
+    {
+      "_id": "cqd66l34kms7cx62i",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "BULK_ADD_QUESTIONS",
+      "affected_entity_id": "batch_10",
+      "details": "Bulk uploaded 10 questions into question bank",
+      "timestamp": "2026-07-30T10:14:41.658Z"
+    },
+    {
+      "_id": "9wtq7r4g4ms7am0gq",
+      "admin_id": "e28r37qvwms7afsyp",
+      "admin_name": "Aditya",
+      "action_type": "CREATE_MOCK_TEST",
+      "affected_entity_id": "4ahxjxl6gms7am0gq",
+      "details": "Created new mock test \"JEE Main Grand Mock Examination\" (10 questions, 180 mins)",
+      "timestamp": "2026-07-30T09:10:01.946Z"
+    },
+    {
+      "_id": "mfbni8dz1ms7afsyp",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "ASSIGN_ADMIN",
+      "affected_entity_id": "e28r37qvwms7afsyp",
+      "details": "Assigned new admin user \"krypton@gmail.com\" with role \"Exam Controller\" and All Courses",
+      "timestamp": "2026-07-30T09:05:12.289Z"
+    },
+    {
+      "_id": "ldvemmgn4ms7acron",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "ASSIGN_ADMIN",
+      "affected_entity_id": "iubv9rtb2ms7acron",
+      "details": "Assigned new admin user \"veilside@gmail.com\" with role \"Question Contributor\" and 1 assigned courses",
+      "timestamp": "2026-07-30T09:02:50.663Z"
+    },
+    {
+      "_id": "lu9od7ei3ms6959l7",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "DELETE_MOCK_TEST",
+      "affected_entity_id": "7gl0z9umfms66d0j8",
+      "details": "Deactivated mock test ID 7gl0z9umfms66d0j8",
+      "timestamp": "2026-07-29T15:41:14.827Z"
+    },
+    {
+      "_id": "ph7kg4ewjms66d0j8",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "CREATE_MOCK_TEST",
+      "affected_entity_id": "7gl0z9umfms66d0j8",
+      "details": "Created new mock test \"ert\" (3 questions, 180 mins)",
+      "timestamp": "2026-07-29T14:23:17.492Z"
+    },
+    {
+      "_id": "5epgh0g5xms60o4up",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "BULK_ADD_QUESTIONS",
+      "affected_entity_id": "batch_10",
+      "details": "Bulk uploaded 10 questions into question bank",
+      "timestamp": "2026-07-29T11:43:58.609Z"
+    }
+  ],
+  "weeklyDpps": [
+    {
+      "_id": "d7yp3ss6ilb",
+      "course_id": "1339osvcems5xpvjb",
+      "title": "neetet",
+      "duration_minutes": 30,
+      "question_ids": [
+        "r91z6j1lfms7d8a4p",
+        "sfrbsi11mms7d8a4p",
+        "ozmhoolqdms7d8a4p",
+        "te12iknx4ms7d8a4p",
+        "sakisbb1qms7cype0",
+        "2xy10qi4lms7cype0",
+        "aja4bo1dcms7cype0",
+        "82l2ovnzyms7cype0",
+        "yebun5qanms7cype0",
+        "dfx1168e2ms7cx62h",
+        "q13o87k5qms7cx62h",
+        "85pgoxneems7cx62h",
+        "iddxyx3klms7cx62h",
+        "lxd6v7gqfms7cx62h"
+      ],
+      "is_active": true,
+      "created_at": "2026-07-30T10:27:55.631Z"
+    },
+    {
+      "_id": "jor2l6fr9r",
+      "course_id": "course_jee_2027",
+      "title": "ereek",
+      "duration_minutes": 30,
+      "question_ids": [
+        "89ntsf4g7ms60o4uo",
+        "ay6091h9gms60o4uo",
+        "0wcal1eocms60o4uo",
+        "5bm2ugd6jms60o4uo",
+        "om8w4qnabms60o4uo",
+        "95pslkhcnms60o4uo",
+        "jkyegql8mms60o4uo",
+        "zmljtfixoms60o4uo",
+        "gyiih2tx0ms60o4uo",
+        "jvjrhm0ooms60o4uo"
+      ],
+      "is_active": true,
+      "created_at": "2026-07-30T10:01:13.020Z"
+    }
+  ]
+}

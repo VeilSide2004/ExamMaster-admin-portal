@@ -2,7 +2,13 @@ import fs from 'fs';
 import path from 'path';
 import bcrypt from 'bcryptjs';
 
-const DB_PATH = path.join(process.cwd(), '..', 'shared-db.json');
+function getDbPath(): string {
+  const p1 = path.join(process.cwd(), '..', 'shared-db.json');
+  if (fs.existsSync(p1)) return p1;
+  const p2 = path.join(process.cwd(), 'shared-db.json');
+  if (fs.existsSync(p2)) return p2;
+  return path.join('/tmp', 'shared-db.json');
+}
 
 export interface SharedDbData {
   users: any[];
@@ -29,11 +35,12 @@ const initialDb: SharedDbData = {
 };
 
 export function readSharedDb(): SharedDbData {
+  const dbPath = getDbPath();
   try {
-    if (!fs.existsSync(DB_PATH)) {
+    if (!fs.existsSync(dbPath)) {
       writeSharedDb(initialDb);
     }
-    const raw = fs.readFileSync(DB_PATH, 'utf-8');
+    const raw = fs.readFileSync(dbPath, 'utf-8');
     const data = JSON.parse(raw);
 
     // Ensure default admin exists
@@ -46,28 +53,10 @@ export function readSharedDb(): SharedDbData {
           email: 'admin@exammaster.com',
           password_hash: hashedAdminPassword,
           role: 'Super Admin',
-          permissions: ['all'],
-          allowed_courses: ['all'],
           created_at: new Date().toISOString(),
         },
       ];
       writeSharedDb(data);
-    } else {
-      // Backfill missing fields for existing admins
-      let updated = false;
-      data.admins.forEach((a: any) => {
-        if (!a.permissions) {
-          a.permissions = a.role === 'Super Admin' ? ['all'] : ['manage_questions'];
-          updated = true;
-        }
-        if (!a.allowed_courses) {
-          a.allowed_courses = ['all'];
-          updated = true;
-        }
-      });
-      if (updated) {
-        writeSharedDb(data);
-      }
     }
 
     return data;
@@ -78,8 +67,13 @@ export function readSharedDb(): SharedDbData {
 }
 
 export function writeSharedDb(data: SharedDbData): void {
+  const dbPath = getDbPath();
   try {
-    fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
+    const dir = path.dirname(dbPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(dbPath, JSON.stringify(data, null, 2), 'utf-8');
   } catch (error) {
     console.error('Error writing to shared database:', error);
   }
