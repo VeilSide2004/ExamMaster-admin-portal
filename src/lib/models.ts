@@ -25,6 +25,7 @@ const UserSchema = new Schema<IUser>({
 export interface ICourse extends Document {
   name: string;
   description: string;
+  category?: 'Competitive Exams' | 'School Exams';
   subjects?: string[];
   marking_scheme: {
     marks_per_correct: number;
@@ -37,6 +38,7 @@ export interface ICourse extends Document {
 const CourseSchema = new Schema<ICourse>({
   name: { type: String, required: true, unique: true },
   description: { type: String, required: true },
+  category: { type: String, enum: ['Competitive Exams', 'School Exams'], default: 'Competitive Exams' },
   subjects: [{ type: String }],
   marking_scheme: {
     marks_per_correct: { type: Number, default: 4 },

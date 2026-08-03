@@ -26,11 +26,13 @@ export async function POST(req: Request) {
     const admin = getAuthenticatedAdmin();
     const body = await req.json();
 
-    const { name, description, subjects, marks_per_correct, penalty_per_incorrect } = body;
+    const { name, description, category, subjects, marks_per_correct, penalty_per_incorrect } = body;
 
     if (!name || !description) {
       return NextResponse.json({ error: 'Name and description are required' }, { status: 400 });
     }
+
+    const courseCategory = category === 'School Exams' ? 'School Exams' : 'Competitive Exams';
 
     const parsedSubjects = Array.isArray(subjects) && subjects.length > 0
       ? subjects
@@ -51,6 +53,7 @@ export async function POST(req: Request) {
         _id: generateId(),
         name,
         description,
+        category: courseCategory,
         subjects: parsedSubjects,
         marking_scheme: {
           marks_per_correct: marks_per_correct !== undefined ? Number(marks_per_correct) : 4,
@@ -69,7 +72,7 @@ export async function POST(req: Request) {
         admin_name: admin?.name || 'Admin',
         action_type: 'ADD_COURSE',
         affected_entity_id: newCourse._id,
-        details: `Created new course "${name}" with subjects: ${parsedSubjects.join(', ')}`,
+        details: `Created new course "${name}" (${courseCategory}) with subjects: ${parsedSubjects.join(', ')}`,
         timestamp: new Date().toISOString(),
       });
 
@@ -86,6 +89,7 @@ export async function POST(req: Request) {
     const course = await Course.create({
       name,
       description,
+      category: courseCategory,
       subjects: parsedSubjects,
       marking_scheme: {
         marks_per_correct: marks_per_correct !== undefined ? Number(marks_per_correct) : 4,
@@ -99,7 +103,7 @@ export async function POST(req: Request) {
       admin_name: admin?.name || 'Admin',
       action_type: 'ADD_COURSE',
       affected_entity_id: course._id.toString(),
-      details: `Created new course "${name}" with subjects: ${parsedSubjects.join(', ')}`,
+      details: `Created new course "${name}" (${courseCategory}) with subjects: ${parsedSubjects.join(', ')}`,
     });
 
     return NextResponse.json({ success: true, course });

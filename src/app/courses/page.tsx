@@ -3,14 +3,16 @@
 import React, { useEffect, useState } from 'react';
 import { AdminSidebar } from '@/components/layout/AdminSidebar';
 import { AdminHeader } from '@/components/layout/AdminHeader';
-import { BookOpen, Plus, Trash2, AlertTriangle, X, Layers, Tag } from 'lucide-react';
+import { BookOpen, Plus, Trash2, AlertTriangle, X, Trophy, GraduationCap, Sparkles } from 'lucide-react';
 
 export default function CourseManagementPage() {
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [activeCatalogTab, setActiveCatalogTab] = useState<'all' | 'competitive' | 'school'>('all');
 
   const [name, setName] = useState('');
+  const [category, setCategory] = useState<'Competitive Exams' | 'School Exams'>('Competitive Exams');
   const [description, setDescription] = useState('');
   const [subjectsInput, setSubjectsInput] = useState('Physics, Chemistry, Mathematics');
   const [marksPerCorrect, setMarksPerCorrect] = useState(4);
@@ -51,6 +53,7 @@ export default function CourseManagementPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name,
+          category,
           description,
           subjects: parsedSubjects,
           marks_per_correct: marksPerCorrect,
@@ -64,8 +67,11 @@ export default function CourseManagementPage() {
       } else {
         setShowAddModal(false);
         setName('');
+        setCategory('Competitive Exams');
         setDescription('');
         setSubjectsInput('Physics, Chemistry, Mathematics');
+        setMarksPerCorrect(4);
+        setPenaltyPerIncorrect(1);
         fetchCourses();
       }
     } catch (err: any) {
@@ -86,95 +92,226 @@ export default function CourseManagementPage() {
     }
   };
 
+  const competitiveCourses = courses.filter((c) => !c.category || c.category === 'Competitive Exams');
+  const schoolCourses = courses.filter((c) => c.category === 'School Exams');
+
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
       <AdminSidebar />
 
       <div className="flex-1 flex flex-col min-w-0">
-        <AdminHeader title="Course Management" subtitle="Manage course catalogue, subject structures, and marking schemes (FR-33, FR-34, FR-35)" />
+        <AdminHeader title="Course Management" subtitle="Manage course catalogue across Competitive & School Exams (FR-33, FR-34, FR-35)" />
 
         <main className="p-8 space-y-6 flex-1 overflow-y-auto">
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h2 className="text-xl font-bold text-slate-900 dark:text-white">Active Course Catalogue</h2>
               <p className="text-xs text-slate-500">Newly added courses automatically populate in student selection and question management.</p>
             </div>
-            <button
-              onClick={() => setShowAddModal(true)}
-              type="button"
-              className="px-4 py-2 bg-[#0B192C] hover:bg-[#060E18] text-white text-xs font-bold rounded-lg flex items-center gap-2 transition-colors shadow-sm"
-            >
-              <Plus className="w-4 h-4" />
-              Create New Course
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {loading ? (
-              <div className="col-span-full p-8 text-center text-xs text-slate-500">Loading course catalogue...</div>
-            ) : courses.length === 0 ? (
-              <div className="col-span-full p-8 text-center text-xs text-slate-500">No active courses in catalogue.</div>
-            ) : (
-              courses.map((course) => (
-                <div
-                  key={course._id}
-                  className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-5 shadow-xs flex flex-col justify-between"
+            
+            <div className="flex items-center gap-3">
+              {/* Filter Tabs */}
+              <div className="flex items-center bg-slate-200/70 dark:bg-slate-800 p-1 rounded-lg text-xs font-semibold">
+                <button
+                  onClick={() => setActiveCatalogTab('all')}
+                  className={`px-3 py-1.5 rounded-md transition-colors ${
+                    activeCatalogTab === 'all' ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs font-bold' : 'text-slate-600 dark:text-slate-400'
+                  }`}
                 >
-                  <div>
-                    <div className="flex justify-between items-start mb-3">
-                      <span className="p-2.5 bg-brand-50 text-brand-800 dark:bg-brand-950 dark:text-brand-300 rounded-lg">
-                        <BookOpen className="w-5 h-5" />
-                      </span>
-                      <span
-                        className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${
-                          course.is_active
-                            ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400'
-                            : 'bg-slate-100 text-slate-500'
-                        }`}
-                      >
-                        {course.is_active ? 'Active & Selectable' : 'Deactivated'}
-                      </span>
-                    </div>
+                  All ({courses.length})
+                </button>
+                <button
+                  onClick={() => setActiveCatalogTab('competitive')}
+                  className={`px-3 py-1.5 rounded-md transition-colors flex items-center gap-1 ${
+                    activeCatalogTab === 'competitive' ? 'bg-amber-500 text-white shadow-xs font-bold' : 'text-slate-600 dark:text-slate-400'
+                  }`}
+                >
+                  <Trophy className="w-3 h-3" /> Competitive ({competitiveCourses.length})
+                </button>
+                <button
+                  onClick={() => setActiveCatalogTab('school')}
+                  className={`px-3 py-1.5 rounded-md transition-colors flex items-center gap-1 ${
+                    activeCatalogTab === 'school' ? 'bg-emerald-600 text-white shadow-xs font-bold' : 'text-slate-600 dark:text-slate-400'
+                  }`}
+                >
+                  <GraduationCap className="w-3 h-3" /> School Class 6-12 ({schoolCourses.length})
+                </button>
+              </div>
 
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">{course.name}</h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-3 line-clamp-2">{course.description}</p>
-
-                    {/* Included Subjects Badges */}
-                    <div className="mb-4 space-y-1">
-                      <span className="text-[10px] font-extrabold uppercase text-slate-400 block">Configured Subjects:</span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {(course.subjects || ['Physics', 'Chemistry', 'Mathematics']).map((subj: string, sIdx: number) => (
-                          <span
-                            key={sIdx}
-                            className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-bold border border-slate-200/60 dark:border-slate-700"
-                          >
-                            {subj}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="border-t border-slate-200 dark:border-slate-800 pt-3 flex justify-between items-center">
-                    <div className="text-xs text-slate-600 dark:text-slate-400 font-medium">
-                      <span>Marking Scheme: </span>
-                      <strong className="text-slate-900 dark:text-white">
-                        +{course.marking_scheme?.marks_per_correct || 4} / -{course.marking_scheme?.penalty_per_incorrect || 1}
-                      </strong>
-                    </div>
-
-                    <button
-                      onClick={() => setDeletingCourse(course)}
-                      className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-bold text-xs rounded-lg flex items-center gap-1.5 transition-colors"
-                      title="Remove Course"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" /> Remove
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
+              <button
+                onClick={() => setShowAddModal(true)}
+                type="button"
+                className="px-4 py-2 bg-[#0B192C] hover:bg-[#060E18] text-white text-xs font-bold rounded-lg flex items-center gap-2 transition-colors shadow-sm"
+              >
+                <Plus className="w-4 h-4" />
+                Create New Course
+              </button>
+            </div>
           </div>
+
+          {loading ? (
+            <div className="p-8 text-center text-xs text-slate-500">Loading course catalogue...</div>
+          ) : courses.length === 0 ? (
+            <div className="p-8 text-center text-xs text-slate-500">No active courses in catalogue.</div>
+          ) : (
+            <div className="space-y-8">
+              {/* Competitive Exams Section */}
+              {(activeCatalogTab === 'all' || activeCatalogTab === 'competitive') && (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+                    <div className="p-1.5 bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400 rounded-md">
+                      <Trophy className="w-4 h-4" />
+                    </div>
+                    <h3 className="text-sm font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">
+                      Competitive Entrance Exams ({competitiveCourses.length})
+                    </h3>
+                  </div>
+
+                  {competitiveCourses.length === 0 ? (
+                    <p className="text-xs text-slate-400 italic">No competitive exam courses added yet.</p>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {competitiveCourses.map((course) => (
+                        <div
+                          key={course._id}
+                          className="bg-white dark:bg-slate-900 border border-amber-200/60 dark:border-amber-900/30 rounded-xl p-5 shadow-xs flex flex-col justify-between"
+                        >
+                          <div>
+                            <div className="flex justify-between items-start mb-3">
+                              <span className="px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 text-[10px] font-extrabold flex items-center gap-1">
+                                <Trophy className="w-3 h-3" /> Competitive
+                              </span>
+                              <span
+                                className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${
+                                  course.is_active
+                                    ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400'
+                                    : 'bg-slate-100 text-slate-500'
+                                }`}
+                              >
+                                {course.is_active ? 'Active' : 'Inactive'}
+                              </span>
+                            </div>
+
+                            <h4 className="text-base font-bold text-slate-900 dark:text-white mb-1">{course.name}</h4>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mb-3 line-clamp-2">{course.description}</p>
+
+                            <div className="mb-4 space-y-1">
+                              <span className="text-[10px] font-extrabold uppercase text-slate-400 block">Subjects:</span>
+                              <div className="flex flex-wrap gap-1.5">
+                                {(course.subjects || ['Physics', 'Chemistry', 'Mathematics']).map((subj: string, sIdx: number) => (
+                                  <span
+                                    key={sIdx}
+                                    className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-bold border border-slate-200/60 dark:border-slate-700"
+                                  >
+                                    {subj}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="border-t border-slate-200 dark:border-slate-800 pt-3 flex justify-between items-center">
+                            <div className="text-xs text-slate-600 dark:text-slate-400 font-medium">
+                              <span>Marking: </span>
+                              <strong className="text-slate-900 dark:text-white">
+                                +{course.marking_scheme?.marks_per_correct || 4} / -{course.marking_scheme?.penalty_per_incorrect || 1}
+                              </strong>
+                            </div>
+
+                            <button
+                              onClick={() => setDeletingCourse(course)}
+                              className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-bold text-xs rounded-lg flex items-center gap-1.5 transition-colors"
+                              title="Remove Course"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" /> Remove
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* School Exams Section */}
+              {(activeCatalogTab === 'all' || activeCatalogTab === 'school') && (
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+                    <div className="p-1.5 bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 rounded-md">
+                      <GraduationCap className="w-4 h-4" />
+                    </div>
+                    <h3 className="text-sm font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">
+                      School Exams (Class 6 to 12) ({schoolCourses.length})
+                    </h3>
+                  </div>
+
+                  {schoolCourses.length === 0 ? (
+                    <p className="text-xs text-slate-400 italic">No school exam courses added yet.</p>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {schoolCourses.map((course) => (
+                        <div
+                          key={course._id}
+                          className="bg-white dark:bg-slate-900 border border-emerald-200/60 dark:border-emerald-900/30 rounded-xl p-5 shadow-xs flex flex-col justify-between"
+                        >
+                          <div>
+                            <div className="flex justify-between items-start mb-3">
+                              <span className="px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[10px] font-extrabold flex items-center gap-1">
+                                <GraduationCap className="w-3 h-3" /> Class 6-12
+                              </span>
+                              <span
+                                className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${
+                                  course.is_active
+                                    ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400'
+                                    : 'bg-slate-100 text-slate-500'
+                                }`}
+                              >
+                                {course.is_active ? 'Active' : 'Inactive'}
+                              </span>
+                            </div>
+
+                            <h4 className="text-base font-bold text-slate-900 dark:text-white mb-1">{course.name}</h4>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mb-3 line-clamp-2">{course.description}</p>
+
+                            <div className="mb-4 space-y-1">
+                              <span className="text-[10px] font-extrabold uppercase text-slate-400 block">Subjects:</span>
+                              <div className="flex flex-wrap gap-1.5">
+                                {(course.subjects || ['Science', 'Mathematics']).map((subj: string, sIdx: number) => (
+                                  <span
+                                    key={sIdx}
+                                    className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-bold border border-slate-200/60 dark:border-slate-700"
+                                  >
+                                    {subj}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="border-t border-slate-200 dark:border-slate-800 pt-3 flex justify-between items-center">
+                            <div className="text-xs text-slate-600 dark:text-slate-400 font-medium">
+                              <span>Marking: </span>
+                              <strong className="text-slate-900 dark:text-white">
+                                +{course.marking_scheme?.marks_per_correct || 1} / -{course.marking_scheme?.penalty_per_incorrect || 0}
+                              </strong>
+                            </div>
+
+                            <button
+                              onClick={() => setDeletingCourse(course)}
+                              className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-bold text-xs rounded-lg flex items-center gap-1.5 transition-colors"
+                              title="Remove Course"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" /> Remove
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </main>
       </div>
 
@@ -192,6 +329,54 @@ export default function CourseManagementPage() {
             {error && <div className="mb-3 p-2 bg-rose-50 text-rose-600 text-xs rounded border border-rose-200">{error}</div>}
 
             <form onSubmit={handleCreateCourse} className="space-y-4 text-xs">
+              {/* Category Selector */}
+              <div>
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Course Category / Exam Type</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCategory('Competitive Exams');
+                      setSubjectsInput('Physics, Chemistry, Mathematics');
+                      setMarksPerCorrect(4);
+                      setPenaltyPerIncorrect(1);
+                    }}
+                    className={`p-2.5 rounded-lg border text-left flex items-center gap-2 transition-all ${
+                      category === 'Competitive Exams'
+                        ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-300 font-bold'
+                        : 'border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400'
+                    }`}
+                  >
+                    <Trophy className="w-4 h-4 text-amber-500" />
+                    <div>
+                      <div className="text-xs">Competitive Exams</div>
+                      <div className="text-[10px] text-slate-400 font-normal">JEE, NEET, etc.</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCategory('School Exams');
+                      setSubjectsInput('Science, Mathematics, Social Studies');
+                      setMarksPerCorrect(1);
+                      setPenaltyPerIncorrect(0);
+                    }}
+                    className={`p-2.5 rounded-lg border text-left flex items-center gap-2 transition-all ${
+                      category === 'School Exams'
+                        ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-300 font-bold'
+                        : 'border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400'
+                    }`}
+                  >
+                    <GraduationCap className="w-4 h-4 text-emerald-500" />
+                    <div>
+                      <div className="text-xs">School Exams</div>
+                      <div className="text-[10px] text-slate-400 font-normal">Class 6 to 12</div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
               <div>
                 <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Course Title</label>
                 <input
@@ -199,7 +384,7 @@ export default function CourseManagementPage() {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. NEET 2027 or JEE MAINS 2027"
+                  placeholder={category === 'Competitive Exams' ? 'e.g. NEET 2027 or JEE MAINS 2027' : 'e.g. Class 10 CBSE Board Exam'}
                   className="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
                 />
               </div>
@@ -235,16 +420,23 @@ export default function CourseManagementPage() {
                   <button
                     type="button"
                     onClick={() => setSubjectsInput('Physics, Chemistry, Biology')}
-                    className="px-2.5 py-1 bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 rounded text-[11px] font-extrabold border border-emerald-200"
+                    className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded text-[10px] font-bold border border-slate-300 dark:border-slate-700"
                   >
-                    🧬 NEET Preset (Physics, Chemistry, Biology)
+                    🧬 NEET Preset
                   </button>
                   <button
                     type="button"
                     onClick={() => setSubjectsInput('Physics, Chemistry, Mathematics')}
-                    className="px-2.5 py-1 bg-blue-50 text-blue-800 dark:bg-blue-950 dark:text-blue-300 rounded text-[11px] font-extrabold border border-blue-200"
+                    className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded text-[10px] font-bold border border-slate-300 dark:border-slate-700"
                   >
-                    ⚡ JEE Preset (Physics, Chemistry, Maths)
+                    ⚡ JEE Preset
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSubjectsInput('Science, Mathematics, Social Studies')}
+                    className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded text-[10px] font-bold border border-slate-300 dark:border-slate-700"
+                  >
+                    🎓 School Class 6-10 Preset
                   </button>
                 </div>
               </div>
