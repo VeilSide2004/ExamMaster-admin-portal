@@ -59,17 +59,56 @@
       "xp_total": 81,
       "locked_course_id": "ynzp9kszdms7g1ytt",
       "created_at": "2026-08-02T01:42:51.273Z"
+    },
+    {
+      "_id": "nakaymym3msd3w2qg",
+      "name": "Me",
+      "email": "me@gamil.com",
+      "password_hash": "$2a$10$n.p137R0o.C2MsCFmxOeqe5I7ztnb7fHrJ/0pnOh0A6HNyuxtJgai",
+      "status": "Active",
+      "xp_total": 0,
+      "locked_course_id": "course_class_10_2027",
+      "created_at": "2026-08-03T10:48:31.192Z"
+    },
+    {
+      "_id": "t39s5yy8imsejvw8m",
+      "name": "aranya",
+      "email": "aranya@gmail.com",
+      "password_hash": "$2a$10$wssQFbdJBzSIuY06wDsS0.BNGSQJLbG5tQOl1WxoKqDFlmyMwiBG.",
+      "status": "Active",
+      "xp_total": 0,
+      "locked_course_id": null,
+      "created_at": "2026-08-04T11:04:02.806Z"
     }
   ],
   "courses": [
     {
+      "_id": "kjx0k9x51msd3o1gr",
+      "name": "Class 8 Science & Maths",
+      "description": "School syllabus for Class 8 students.",
+      "category": "School Exams",
+      "subjects": [
+        "Science",
+        "Mathematics"
+      ],
+      "marking_scheme": {
+        "marks_per_correct": 4,
+        "penalty_per_incorrect": 1
+      },
+      "board": "ICSE",
+      "curriculum": "CISCE Class 8 Foundation Curriculum",
+      "is_active": true,
+      "created_at": "2026-08-03T10:42:16.299Z"
+    },
+    {
       "_id": "ynzp9kszdms7g1ytt",
       "name": "NEET",
-      "description": "dlksahfihjfo",
+      "category": "Competitive Exams",
+      "description": "Medical entrance exam preparation covering Physics, Chemistry, and Biology.",
       "subjects": [
         "Physics",
         "Chemistry",
-        "Mathematics"
+        "Biology"
       ],
       "marking_scheme": {
         "marks_per_correct": 4,
@@ -81,6 +120,7 @@
     {
       "_id": "1339osvcems5xpvjb",
       "name": "NEET 2027",
+      "category": "Competitive Exams",
       "description": "Full medical entrance exam syllabus with Biology (Botany & Zoology), Physics, and Chemistry.",
       "subjects": [
         "Physics",
@@ -97,6 +137,7 @@
     {
       "_id": "course_jee_2027",
       "name": "JEE MAINS 2027",
+      "category": "Competitive Exams",
       "description": "Comprehensive preparation track for JEE Advanced & Main covering Physics, Chemistry, and Mathematics.",
       "subjects": [
         "Physics",
@@ -109,9 +150,75 @@
       },
       "is_active": true,
       "created_at": "2026-07-29T09:40:00.000Z"
+    },
+    {
+      "_id": "course_class_10_2027",
+      "name": "Class 10 CBSE Board Exam",
+      "category": "School Exams",
+      "description": "Comprehensive curriculum coverage for Class 10 Board examinations in Science, Mathematics, and Social Studies.",
+      "subjects": [
+        "Science",
+        "Mathematics",
+        "Social Studies"
+      ],
+      "marking_scheme": {
+        "marks_per_correct": 1,
+        "penalty_per_incorrect": 0
+      },
+      "board": "CBSE",
+      "curriculum": "Central Board of Secondary Education - NCERT Aligned Curriculum",
+      "is_active": true,
+      "created_at": "2026-08-03T16:00:00.000Z"
+    },
+    {
+      "_id": "course_class_12_2027",
+      "name": "Class 12 Science Board Exam",
+      "category": "School Exams",
+      "description": "Focused Board Exam preparation for Class 12 Science stream covering Physics, Chemistry, and Mathematics/Biology.",
+      "subjects": [
+        "Physics",
+        "Chemistry",
+        "Mathematics",
+        "Biology"
+      ],
+      "marking_scheme": {
+        "marks_per_correct": 1,
+        "penalty_per_incorrect": 0
+      },
+      "board": "CBSE",
+      "curriculum": "Central Board of Secondary Education - Grade 12 Science Stream",
+      "is_active": true,
+      "created_at": "2026-08-03T16:05:00.000Z"
     }
   ],
   "questions": [
+    {
+      "_id": "q_class10_sa_01",
+      "course_id": "course_class_10_2027",
+      "topic_tag": "Science - Chemical Reactions",
+      "question_type": "Short Answer",
+      "question_text": "State the law of conservation of mass in a chemical reaction and give one example.",
+      "options": [],
+      "correct_option": 0,
+      "sample_answer": "1. Law: Mass can neither be created nor destroyed in a chemical reaction. Total mass of reactants equals total mass of products.\n2. Example: C + O2 -> CO2 (12g Carbon + 32g Oxygen = 44g Carbon Dioxide).",
+      "marks": 2,
+      "explanation": "Mass of reactants before reaction is equal to mass of products after reaction.",
+      "is_active": true,
+      "created_at": "2026-08-04T11:20:00.000Z"
+    },
+    {
+      "_id": "q_class10_la_01",
+      "course_id": "course_class_10_2027",
+      "topic_tag": "Science - Electricity",
+      "question_text": "State Ohm's Law. Draw a circuit diagram to verify Ohm's law and explain how resistance depends on length and area of cross-section of a conductor.",
+      "options": [],
+      "correct_option": 0,
+      "sample_answer": "1. Ohm's Law: Current (I) flowing through a conductor is directly proportional to potential difference (V) across its ends at constant temperature: V = I * R.\n2. Circuit Diagram: Battery, Ammeter in series, Voltmeter in parallel across resistor, Rheostat, and Key.\n3. Dependence of Resistance:\n   - Directly proportional to length (R ∝ L)\n   - Inversely proportional to cross-sectional area (R ∝ 1/A)\n   - R = ρ * (L / A), where ρ is resistivity.",
+      "marks": 5,
+      "explanation": "V=IR formula derivation, factors affecting resistance, circuit component positioning.",
+      "is_active": true,
+      "created_at": "2026-08-04T11:21:00.000Z"
+    },
     {
       "_id": "6599spcqtmsb5ht6l",
       "course_id": "ynzp9kszdms7g1ytt",
@@ -3214,6 +3321,15 @@
     }
   ],
   "auditLogs": [
+    {
+      "_id": "np499njlfmsd3o1gr",
+      "admin_id": "admin_master_1",
+      "admin_name": "Admin",
+      "action_type": "ADD_COURSE",
+      "affected_entity_id": "kjx0k9x51msd3o1gr",
+      "details": "Created new course \"Class 8 Science & Maths\" (School Exams) with subjects: Science, Mathematics",
+      "timestamp": "2026-08-03T10:42:16.299Z"
+    },
     {
       "_id": "myh7g5c1umsb5m6bl",
       "admin_id": "admin_master_1",

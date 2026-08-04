@@ -3,10 +3,10 @@ import path from 'path';
 import bcrypt from 'bcryptjs';
 
 function getDbPath(): string {
-  const p1 = path.join(process.cwd(), '..', 'shared-db.json');
-  if (fs.existsSync(p1)) return p1;
   const p2 = path.join(process.cwd(), 'shared-db.json');
   if (fs.existsSync(p2)) return p2;
+  const p1 = path.join(process.cwd(), '..', 'shared-db.json');
+  if (fs.existsSync(p1)) return p1;
   return path.join('/tmp', 'shared-db.json');
 }
 
@@ -73,7 +73,18 @@ export function writeSharedDb(data: SharedDbData): void {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    fs.writeFileSync(dbPath, JSON.stringify(data, null, 2), 'utf-8');
+    const jsonStr = JSON.stringify(data, null, 2);
+    fs.writeFileSync(dbPath, jsonStr, 'utf-8');
+
+    // Sync to root parent shared-db.json if present
+    const parentPath = path.join(process.cwd(), '..', 'shared-db.json');
+    if (fs.existsSync(parentPath) && parentPath !== dbPath) {
+      try { fs.writeFileSync(parentPath, jsonStr, 'utf-8'); } catch (e) {}
+    }
+    const localPath = path.join(process.cwd(), 'shared-db.json');
+    if (fs.existsSync(localPath) && localPath !== dbPath) {
+      try { fs.writeFileSync(localPath, jsonStr, 'utf-8'); } catch (e) {}
+    }
   } catch (error) {
     console.error('Error writing to shared database:', error);
   }
