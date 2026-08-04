@@ -35,10 +35,16 @@ export async function POST(req: Request) {
     const admin = getAuthenticatedAdmin();
 
     const body = await req.json();
-    const { course_id, topic_tag, question_text, options, correct_option, explanation } = body;
+    const { course_id, topic_tag, question_type, question_text, options, correct_option, sample_answer, marks, explanation } = body;
 
-    if (!course_id || !topic_tag || !question_text || !options || options.length < 2 || correct_option === undefined) {
+    const qType = question_type === 'Short Answer' || question_type === 'Long Answer' ? question_type : 'MCQ';
+
+    if (!course_id || !topic_tag || !question_text) {
       return NextResponse.json({ error: 'Missing required question fields' }, { status: 400 });
+    }
+
+    if (qType === 'MCQ' && (!options || options.length < 2 || correct_option === undefined)) {
+      return NextResponse.json({ error: 'MCQ questions require at least 2 options and a correct option index' }, { status: 400 });
     }
 
     // RBAC validation
@@ -56,6 +62,8 @@ export async function POST(req: Request) {
       }
     }
 
+    const calculatedMarks = marks !== undefined ? Number(marks) : (qType === 'Long Answer' ? 5 : qType === 'Short Answer' ? 2 : 1);
+
     if (isMemoryMode) {
       const db = readSharedDb();
       if (!db.questions) db.questions = [];
@@ -64,9 +72,12 @@ export async function POST(req: Request) {
         _id: generateId(),
         course_id,
         topic_tag,
+        question_type: qType,
         question_text,
-        options,
-        correct_option: Number(correct_option),
+        options: qType === 'MCQ' ? (options || []) : [],
+        correct_option: qType === 'MCQ' ? Number(correct_option || 0) : 0,
+        sample_answer: sample_answer || '',
+        marks: calculatedMarks,
         explanation: explanation || '',
         is_active: true,
         created_at: new Date().toISOString(),
@@ -80,7 +91,7 @@ export async function POST(req: Request) {
         admin_name: admin?.name || 'Admin',
         action_type: 'ADD_QUESTION',
         affected_entity_id: newQ._id,
-        details: `Added new question under topic "${topic_tag}"`,
+        details: `Added new ${qType} question under topic "${topic_tag}"`,
         timestamp: new Date().toISOString(),
       });
 
@@ -92,9 +103,12 @@ export async function POST(req: Request) {
     const question = await Question.create({
       course_id,
       topic_tag,
+      question_type: qType,
       question_text,
-      options,
-      correct_option: Number(correct_option),
+      options: qType === 'MCQ' ? (options || []) : [],
+      correct_option: qType === 'MCQ' ? Number(correct_option || 0) : 0,
+      sample_answer: sample_answer || '',
+      marks: calculatedMarks,
       explanation: explanation || '',
       is_active: true,
     });

@@ -50,10 +50,13 @@ export default function QuestionManagementPage() {
 
   // Single Question Modal
   const [showAddModal, setShowAddModal] = useState(false);
+  const [questionType, setQuestionType] = useState<'MCQ' | 'Short Answer' | 'Long Answer'>('MCQ');
   const [topicTag, setTopicTag] = useState('');
   const [questionText, setQuestionText] = useState('');
   const [options, setOptions] = useState<string[]>(['', '', '', '']);
   const [correctOption, setCorrectOption] = useState<number>(0);
+  const [sampleAnswer, setSampleAnswer] = useState('');
+  const [questionMarks, setQuestionMarks] = useState<number>(1);
   const [explanation, setExplanation] = useState('');
   const [error, setError] = useState('');
 
@@ -245,9 +248,12 @@ export default function QuestionManagementPage() {
         body: JSON.stringify({
           course_id: selectedCourseId,
           topic_tag: computedTag,
+          question_type: questionType,
           question_text: questionText,
-          options,
-          correct_option: correctOption,
+          options: questionType === 'MCQ' ? options : [],
+          correct_option: questionType === 'MCQ' ? correctOption : 0,
+          sample_answer: sampleAnswer,
+          marks: questionMarks,
           explanation,
         }),
       });
@@ -258,7 +264,10 @@ export default function QuestionManagementPage() {
       } else {
         setShowAddModal(false);
         setQuestionText('');
+        setSampleAnswer('');
         setExplanation('');
+        setQuestionType('MCQ');
+        setQuestionMarks(1);
         setOptions(['', '', '', '']);
         fetchData();
       }
@@ -785,9 +794,23 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                           className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-5 shadow-xs space-y-3 relative"
                         >
                           <div className="flex justify-between items-start">
-                            <span className="px-2 py-0.5 rounded bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-300 font-extrabold text-[10px] uppercase">
-                              {q.topic_tag || `${selectedSubject} - ${selectedTopic}`}
-                            </span>
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              <span className="px-2 py-0.5 rounded bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-300 font-extrabold text-[10px] uppercase">
+                                {q.topic_tag || `${selectedSubject} - ${selectedTopic}`}
+                              </span>
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase ${
+                                q.question_type === 'Long Answer'
+                                  ? 'bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300'
+                                  : q.question_type === 'Short Answer'
+                                  ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300'
+                                  : 'bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300'
+                              }`}>
+                                {q.question_type === 'Long Answer' ? '📄 Long Answer' : q.question_type === 'Short Answer' ? '📝 Short Answer' : '🔘 MCQ'}
+                              </span>
+                              <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-extrabold text-[10px]">
+                                {q.marks || (q.question_type === 'Long Answer' ? 5 : q.question_type === 'Short Answer' ? 2 : 1)} Mark(s)
+                              </span>
+                            </div>
 
                             <button
                               onClick={() => setDeletingQuestionId(q._id)}
@@ -800,28 +823,41 @@ Explanation: Power is the rate at which work is done or energy is transferred.
 
                           <h4 className="text-sm font-bold text-slate-900 dark:text-white">{q.question_text}</h4>
 
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-                            {q.options?.map((opt: string, idx: number) => {
-                              const isCorrect = q.correct_option === idx;
-                              return (
-                                <div
-                                  key={idx}
-                                  className={`p-2.5 rounded-lg border flex items-center gap-2 font-medium ${isCorrect
-                                    ? 'bg-emerald-50/70 border-emerald-300 text-emerald-950 dark:bg-emerald-950/40 dark:border-emerald-800 dark:text-emerald-300 font-bold'
-                                    : 'bg-slate-50/50 border-slate-200 text-slate-700 dark:bg-slate-800/40 dark:border-slate-800 dark:text-slate-300'
-                                    }`}
-                                >
-                                  <span className={`w-5 h-5 rounded-full text-[10px] font-black flex items-center justify-center ${isCorrect ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'
-                                    }`}>
-                                    {String.fromCharCode(65 + idx)}
-                                  </span>
-                                  <span>{opt}</span>
+                          {(!q.question_type || q.question_type === 'MCQ') && q.options && q.options.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                              {q.options.map((opt: string, idx: number) => {
+                                const isCorrect = q.correct_option === idx;
+                                return (
+                                  <div
+                                    key={idx}
+                                    className={`p-2.5 rounded-lg border flex items-center gap-2 font-medium ${isCorrect
+                                      ? 'bg-emerald-50/70 border-emerald-300 text-emerald-950 dark:bg-emerald-950/40 dark:border-emerald-800 dark:text-emerald-300 font-bold'
+                                      : 'bg-slate-50/50 border-slate-200 text-slate-700 dark:bg-slate-800/40 dark:border-slate-800 dark:text-slate-300'
+                                      }`}
+                                  >
+                                    <span className={`w-5 h-5 rounded-full text-[10px] font-black flex items-center justify-center ${isCorrect ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'
+                                      }`}>
+                                      {String.fromCharCode(65 + idx)}
+                                    </span>
+                                    <span>{opt}</span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            (q.sample_answer || q.explanation) && (
+                              <div className="p-3 rounded-lg border border-purple-200/60 dark:border-purple-900/50 bg-purple-50/50 dark:bg-purple-950/20 text-xs space-y-1">
+                                <span className="font-extrabold uppercase text-[10px] text-purple-700 dark:text-purple-400 block">
+                                  Model Answer & Key Points:
+                                </span>
+                                <div className="text-slate-800 dark:text-slate-200 whitespace-pre-line font-medium">
+                                  {q.sample_answer || q.explanation}
                                 </div>
-                              );
-                            })}
-                          </div>
+                              </div>
+                            )
+                          )}
 
-                          {q.explanation && (
+                          {q.explanation && (q.question_type === 'MCQ' || !q.question_type) && (
                             <p className="text-[11px] text-slate-500 italic border-t border-slate-100 dark:border-slate-800/60 pt-2">
                               Explanation: {q.explanation}
                             </p>
@@ -1257,6 +1293,58 @@ Explanation: Power is the rate at which work is done or energy is transferred.
             {error && <div className="mb-4 p-3 bg-rose-50 border border-rose-200 text-rose-600 text-xs rounded-lg">{error}</div>}
 
             <form onSubmit={handleCreateQuestion} className="space-y-4 text-xs">
+              {/* Question Type Selector */}
+              <div>
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Question Format / Type</label>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setQuestionType('MCQ');
+                      setQuestionMarks(1);
+                    }}
+                    className={`p-2 rounded-lg border text-center transition-all ${
+                      questionType === 'MCQ'
+                        ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/40 text-blue-900 dark:text-blue-300 font-bold shadow-xs'
+                        : 'border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400'
+                    }`}
+                  >
+                    <div className="text-xs font-extrabold">🔘 Objective</div>
+                    <div className="text-[10px] text-slate-400">MCQ (4 Options)</div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setQuestionType('Short Answer');
+                      setQuestionMarks(2);
+                    }}
+                    className={`p-2 rounded-lg border text-center transition-all ${
+                      questionType === 'Short Answer'
+                        ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-300 font-bold shadow-xs'
+                        : 'border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400'
+                    }`}
+                  >
+                    <div className="text-xs font-extrabold">📝 Short Answer</div>
+                    <div className="text-[10px] text-slate-400">2-3 Marks (VSA/SA)</div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setQuestionType('Long Answer');
+                      setQuestionMarks(5);
+                    }}
+                    className={`p-2 rounded-lg border text-center transition-all ${
+                      questionType === 'Long Answer'
+                        ? 'border-purple-600 bg-purple-50 dark:bg-purple-950/40 text-purple-900 dark:text-purple-300 font-bold shadow-xs'
+                        : 'border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400'
+                    }`}
+                  >
+                    <div className="text-xs font-extrabold">📄 Long Answer</div>
+                    <div className="text-[10px] text-slate-400">4-5+ Marks (LA)</div>
+                  </button>
+                </div>
+              </div>
+
               <div>
                 <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Question Prompt</label>
                 <textarea
@@ -1269,32 +1357,61 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="block font-semibold text-slate-700 dark:text-slate-300">Options (Select radio for correct answer)</label>
-                {options.map((opt, idx) => (
-                  <div key={idx} className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="correctOption"
-                      checked={correctOption === idx}
-                      onChange={() => setCorrectOption(idx)}
-                    />
-                    <span className="font-bold text-slate-400">{String.fromCharCode(65 + idx)}.</span>
-                    <input
-                      type="text"
-                      required
-                      value={opt}
-                      onChange={(e) => {
-                        const newOpts = [...options];
-                        newOpts[idx] = e.target.value;
-                        setOptions(newOpts);
-                      }}
-                      placeholder={`Option ${String.fromCharCode(65 + idx)}`}
-                      className="flex-1 p-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
-                    />
-                  </div>
-                ))}
+              {/* Marks Input */}
+              <div>
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Marks Weightage</label>
+                <input
+                  type="number"
+                  min={1}
+                  required
+                  value={questionMarks}
+                  onChange={(e) => setQuestionMarks(Number(e.target.value))}
+                  className="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
+                />
               </div>
+
+              {questionType === 'MCQ' ? (
+                <div className="space-y-2">
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300">Options (Select radio for correct answer)</label>
+                  {options.map((opt, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        name="correctOption"
+                        checked={correctOption === idx}
+                        onChange={() => setCorrectOption(idx)}
+                      />
+                      <span className="font-bold text-slate-400">{String.fromCharCode(65 + idx)}.</span>
+                      <input
+                        type="text"
+                        required
+                        value={opt}
+                        onChange={(e) => {
+                          const newOpts = [...options];
+                          newOpts[idx] = e.target.value;
+                          setOptions(newOpts);
+                        }}
+                        placeholder={`Option ${String.fromCharCode(65 + idx)}`}
+                        className="flex-1 p-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
+                      />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Model Answer / Evaluation Rubric Key
+                  </label>
+                  <textarea
+                    required
+                    rows={4}
+                    value={sampleAnswer}
+                    onChange={(e) => setSampleAnswer(e.target.value)}
+                    placeholder="Provide the complete model answer, key steps, or evaluation points..."
+                    className="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
+                  />
+                </div>
+              )}
 
               <div>
                 <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Explanation (Optional)</label>

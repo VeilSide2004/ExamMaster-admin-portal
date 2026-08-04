@@ -56,9 +56,12 @@ const CourseSchema = new Schema<ICourse>({
 export interface IQuestion extends Document {
   course_id: any;
   topic_tag: string;
+  question_type?: 'MCQ' | 'Short Answer' | 'Long Answer';
   question_text: string;
   options: string[];
   correct_option: number;
+  sample_answer?: string;
+  marks?: number;
   explanation?: string;
   is_active: boolean;
   created_at: Date;
@@ -67,9 +70,12 @@ export interface IQuestion extends Document {
 const QuestionSchema = new Schema<IQuestion>({
   course_id: { type: Schema.Types.Mixed, required: true },
   topic_tag: { type: String, required: true },
+  question_type: { type: String, enum: ['MCQ', 'Short Answer', 'Long Answer'], default: 'MCQ' },
   question_text: { type: String, required: true },
-  options: [{ type: String, required: true }],
-  correct_option: { type: Number, required: true },
+  options: [{ type: String, default: [] }],
+  correct_option: { type: Number, default: 0 },
+  sample_answer: { type: String, default: '' },
+  marks: { type: Number, default: 1 },
   explanation: { type: String, default: '' },
   is_active: { type: Boolean, default: true },
   created_at: { type: Date, default: Date.now },
