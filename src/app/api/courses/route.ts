@@ -32,7 +32,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Name and description are required' }, { status: 400 });
     }
 
-    const courseCategory = category === 'School Exams' ? 'School Exams' : 'Competitive Exams';
+    const catStr = String(category || '').toLowerCase().trim();
+    const isSchool = catStr.includes('school') || catStr.includes('class') || catStr.includes('6-12') || catStr.includes('board');
+    const courseCategory = isSchool ? 'School Exams' : 'Competitive Exams';
 
     const parsedSubjects = Array.isArray(subjects) && subjects.length > 0
       ? subjects

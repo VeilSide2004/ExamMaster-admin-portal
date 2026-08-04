@@ -92,8 +92,14 @@ export default function CourseManagementPage() {
     }
   };
 
-  const competitiveCourses = courses.filter((c) => !c.category || c.category === 'Competitive Exams');
-  const schoolCourses = courses.filter((c) => c.category === 'School Exams');
+  const isSchoolCategory = (c: any) => {
+    if (!c.category) return false;
+    const cat = String(c.category).toLowerCase().trim();
+    return cat.includes('school') || cat.includes('class') || cat.includes('6-12') || cat.includes('board');
+  };
+
+  const schoolCourses = courses.filter((c) => isSchoolCategory(c));
+  const competitiveCourses = courses.filter((c) => !isSchoolCategory(c));
 
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
