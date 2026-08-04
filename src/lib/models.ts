@@ -26,6 +26,8 @@ export interface ICourse extends Document {
   name: string;
   description: string;
   category?: 'Competitive Exams' | 'School Exams';
+  board?: string;
+  curriculum?: string;
   subjects?: string[];
   marking_scheme: {
     marks_per_correct: number;
@@ -39,6 +41,8 @@ const CourseSchema = new Schema<ICourse>({
   name: { type: String, required: true, unique: true },
   description: { type: String, required: true },
   category: { type: String, enum: ['Competitive Exams', 'School Exams'], default: 'Competitive Exams' },
+  board: { type: String, default: 'CBSE' },
+  curriculum: { type: String, default: '' },
   subjects: [{ type: String }],
   marking_scheme: {
     marks_per_correct: { type: Number, default: 4 },

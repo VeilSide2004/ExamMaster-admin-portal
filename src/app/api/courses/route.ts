@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     const admin = getAuthenticatedAdmin();
     const body = await req.json();
 
-    const { name, description, category, subjects, marks_per_correct, penalty_per_incorrect } = body;
+    const { name, description, category, board, curriculum, subjects, marks_per_correct, penalty_per_incorrect } = body;
 
     if (!name || !description) {
       return NextResponse.json({ error: 'Name and description are required' }, { status: 400 });
@@ -35,6 +35,8 @@ export async function POST(req: Request) {
     const catStr = String(category || '').toLowerCase().trim();
     const isSchool = catStr.includes('school') || catStr.includes('class') || catStr.includes('6-12') || catStr.includes('board');
     const courseCategory = isSchool ? 'School Exams' : 'Competitive Exams';
+    const courseBoard = isSchool ? String(board || 'CBSE').trim() : (board ? String(board).trim() : 'N/A');
+    const courseCurriculum = String(curriculum || '').trim();
 
     const parsedSubjects = Array.isArray(subjects) && subjects.length > 0
       ? subjects
@@ -56,6 +58,8 @@ export async function POST(req: Request) {
         name,
         description,
         category: courseCategory,
+        board: courseBoard,
+        curriculum: courseCurriculum,
         subjects: parsedSubjects,
         marking_scheme: {
           marks_per_correct: marks_per_correct !== undefined ? Number(marks_per_correct) : 4,
@@ -74,7 +78,7 @@ export async function POST(req: Request) {
         admin_name: admin?.name || 'Admin',
         action_type: 'ADD_COURSE',
         affected_entity_id: newCourse._id,
-        details: `Created new course "${name}" (${courseCategory}) with subjects: ${parsedSubjects.join(', ')}`,
+        details: `Created new course "${name}" (${courseCategory} - ${courseBoard}) with subjects: ${parsedSubjects.join(', ')}`,
         timestamp: new Date().toISOString(),
       });
 
@@ -92,6 +96,8 @@ export async function POST(req: Request) {
       name,
       description,
       category: courseCategory,
+      board: courseBoard,
+      curriculum: courseCurriculum,
       subjects: parsedSubjects,
       marking_scheme: {
         marks_per_correct: marks_per_correct !== undefined ? Number(marks_per_correct) : 4,
