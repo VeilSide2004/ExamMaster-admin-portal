@@ -63,24 +63,102 @@ body, div, header, nav, main, section, article, button, input, select, textarea,
   box-shadow: 0 10px 30px -8px rgba(15, 23, 42, 0.08), 0 4px 12px -4px rgba(15, 23, 42, 0.04) !important;
 }
 
-.dark .shadow-xs,
-.dark .shadow-sm,
-.dark .shadow-md,
-.dark .shadow-lg,
-.dark .shadow-xl,
-.dark .card-shadow {
-  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.65), 0 4px 12px -4px rgba(0, 0, 0, 0.4) !important;
+/* Custom Dark Mode Theme Palette Overrides:
+   Background: #09090B
+   Card:       #18181B
+   Primary:    #6366F1
+   Secondary:  #8B5CF6
+   Text:       #FAFAFA
+   Border:     #2A2A2A
+*/
+:root {
+  --bg-dark: #09090B;
+  --card-dark: #18181B;
+  --primary-dark: #6366F1;
+  --secondary-dark: #8B5CF6;
+  --text-dark: #FAFAFA;
+  --border-dark: #2A2A2A;
 }
 
-/* Sleek Reduced Border Radius across All Cards on Every Page */
-.rounded-2xl {
-  border-radius: 0.75rem !important; /* Reduced from 16px to sleek 12px */
-  box-shadow: 0 10px 30px -8px rgba(15, 23, 42, 0.08), 0 4px 12px -4px rgba(15, 23, 42, 0.04);
-}
-.dark .rounded-2xl {
-  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.65), 0 4px 12px -4px rgba(0, 0, 0, 0.4);
+.dark {
+  background-color: #09090B !important;
+  color: #FAFAFA !important;
 }
 
-.rounded-3xl {
-  border-radius: 1rem !important; /* Reduced from 24px to 16px */
+.dark body {
+  background-color: #09090B !important;
+  color: #FAFAFA !important;
+}
+
+/* Dark Mode Card Background Override (#18181B) */
+.dark .bg-slate-900,
+.dark .bg-slate-950,
+.dark .bg-slate-900\/92,
+.dark .bg-slate-900\/95,
+.dark .bg-slate-900\/80,
+.dark .bg-slate-900\/75,
+.dark .bg-slate-900\/60,
+.dark .bg-slate-900\/50,
+.dark .bg-slate-800,
+.dark .bg-slate-800\/80,
+.dark .bg-slate-800\/60,
+.dark .bg-slate-800\/50,
+.dark .bg-slate-800\/40 {
+  background-color: #18181B !important;
+}
+
+/* Dark Mode Sub-panels / Inner Elements (#2A2A2A & #18181B) */
+.dark .bg-slate-800\/90,
+.dark .bg-slate-800\/70,
+.dark .bg-slate-800\/30,
+.dark .bg-slate-950\/80,
+.dark .bg-slate-950\/60,
+.dark .bg-slate-950\/50 {
+  background-color: #2A2A2A !important;
+}
+
+/* Dark Mode Text Colors (#FAFAFA) */
+.dark .text-white,
+.dark .text-slate-100,
+.dark .text-slate-200,
+.dark .text-slate-300 {
+  color: #FAFAFA !important;
+}
+
+.dark .text-slate-400 {
+  color: #A1A1AA !important;
+}
+
+/* Dark Mode Border Colors (#2A2A2A) */
+.dark .border-slate-800,
+.dark .border-slate-800\/90,
+.dark .border-slate-800\/80,
+.dark .border-slate-800\/60,
+.dark .border-slate-700,
+.dark .border-slate-700\/80,
+.dark .border-slate-700\/60 {
+  border-color: #2A2A2A !important;
+}
+
+/* Dark Mode Primary (#6366F1) & Secondary (#8B5CF6) Accents */
+.dark .text-blue-400,
+.dark .text-blue-500 {
+  color: #6366F1 !important;
+}
+
+.dark .bg-blue-600,
+.dark .bg-blue-500 {
+  background-color: #6366F1 !important;
+}
+
+.dark .border-blue-500,
+.dark .border-blue-400,
+.dark .border-blue-600 {
+  border-color: #6366F1 !important;
+}
+
+.dark .text-purple-400,
+.dark .text-indigo-400,
+.dark .text-violet-400 {
+  color: #8B5CF6 !important;
 }
