@@ -63,37 +63,55 @@ body, div, header, nav, main, section, article, button, input, select, textarea,
   box-shadow: 0 10px 30px -8px rgba(15, 23, 42, 0.08), 0 4px 12px -4px rgba(15, 23, 42, 0.04) !important;
 }
 
-/* Custom Deep Black & Electric Purple Dark Mode Palette Overrides:
-   Background: #030305 (Ultra Deep Pitch Black)
-   Card:       #0F0D16 (Obsidian Card with Purple Undertone)
-   Sub-card:   #181524 (Subtle Elevated Panel)
-   Primary:    #8B5CF6 (Vibrant Electric Violet / Purple)
-   Secondary:  #A855F7 (Neon Purple Accent)
-   Text:       #F8FAFC (Crisp White Text)
-   Border:     #252038 (Purple-Tinted Dark Border)
+/* Custom 100% Pure Black & Electric Purple Dark Mode Palette Overrides:
+   Page Outer Background: #000000 (Pure Pitch Black)
+   Card Panel Background:  #0D0D12 (Pure Obsidian Black Card)
+   Sub-card / Badge:      #181622 (Elevated Dark Purple Panel)
+   Primary Accent:        #9333EA (Vibrant Electric Purple)
+   Secondary Accent:      #C084FC (Neon Purple Accent)
+   Text:                  #F8FAFC (Crisp Pure White Text)
+   Border:                #242033 (Deep Dark Purple Border)
 */
 :root {
-  --bg-dark: #030305;
-  --card-dark: #0F0D16;
-  --primary-dark: #8B5CF6;
-  --secondary-dark: #A855F7;
+  --bg-dark: #000000;
+  --card-dark: #0D0D12;
+  --primary-dark: #9333EA;
+  --secondary-dark: #C084FC;
   --text-dark: #F8FAFC;
-  --border-dark: #252038;
+  --border-dark: #242033;
+}
+
+.dark,
+.dark body,
+.dark html,
+.dark div,
+.dark main,
+.dark section,
+.dark header,
+.dark nav,
+.dark aside,
+.dark footer {
+  color-scheme: dark;
 }
 
 .dark {
-  background-color: #030305 !important;
+  background-color: #000000 !important;
   color: #F8FAFC !important;
 }
 
-.dark body {
-  background-color: #030305 !important;
+.dark body,
+.dark .min-h-screen,
+.dark main {
+  background-color: #000000 !important;
   color: #F8FAFC !important;
 }
 
-/* Dark Mode Card Background Override (#0F0D16) */
+/* Dark Mode Card Background Override (#0D0D12 - Pure Obsidian Black Card) */
 .dark .bg-slate-900,
 .dark .bg-slate-950,
+.dark .bg-[#0B132B],
+.dark .bg-[#0F172A],
+.dark .bg-[#0B1626],
 .dark .bg-slate-900\/92,
 .dark .bg-slate-900\/95,
 .dark .bg-slate-900\/80,
@@ -105,24 +123,50 @@ body, div, header, nav, main, section, article, button, input, select, textarea,
 .dark .bg-slate-800\/60,
 .dark .bg-slate-800\/50,
 .dark .bg-slate-800\/40 {
-  background-color: #0F0D16 !important;
+  background-color: #0D0D12 !important;
 }
 
-/* Dark Mode Sub-panels / Inner Elements (#181524 & #252038) */
+/* Dark Mode Sub-panels / Inner Elements (#181622 & #242033) */
 .dark .bg-slate-800\/90,
 .dark .bg-slate-800\/70,
 .dark .bg-slate-800\/30,
 .dark .bg-slate-950\/80,
 .dark .bg-slate-950\/60,
-.dark .bg-slate-950\/50 {
-  background-color: #181524 !important;
-}
-
+.dark .bg-slate-950\/50,
 .dark .bg-blue-950\/60,
 .dark .bg-blue-950\/50,
 .dark .bg-blue-950\/40,
 .dark .bg-blue-950 {
-  background-color: #1F1934 !important;
+  background-color: #181622 !important;
+}
+
+/* Absolute Override for All Dark Gradients to Pure Purple & Black */
+.dark [class*="bg-gradient-to"],
+.dark .from-blue-950,
+.dark .from-blue-900,
+.dark .from-indigo-950,
+.dark .from-indigo-900,
+.dark .via-indigo-950,
+.dark .via-indigo-900,
+.dark .to-blue-900,
+.dark .to-blue-950 {
+  background-image: linear-gradient(to right, #2E1254, #1B0B33, #090412) !important;
+}
+
+/* All Dark Mode Borders to Deep Purple / Dark Neutral #242033 */
+.dark [class*="border-slate"],
+.dark [class*="border-blue"],
+.dark .border-slate-800,
+.dark .border-slate-800\/90,
+.dark .border-slate-800\/80,
+.dark .border-slate-800\/60,
+.dark .border-slate-700,
+.dark .border-slate-700\/80,
+.dark .border-slate-700\/60,
+.dark .border-blue-900,
+.dark .border-blue-900\/40,
+.dark .border-blue-800 {
+  border-color: #242033 !important;
 }
 
 /* Dark Mode Text Colors (#F8FAFC & Electric Purple Highlights) */
@@ -134,39 +178,31 @@ body, div, header, nav, main, section, article, button, input, select, textarea,
 }
 
 .dark .text-slate-400 {
-  color: #94A3B8 !important;
+  color: #A78BFA !important;
 }
 
-/* Dark Mode Border Colors (#252038) */
-.dark .border-slate-800,
-.dark .border-slate-800\/90,
-.dark .border-slate-800\/80,
-.dark .border-slate-800\/60,
-.dark .border-slate-700,
-.dark .border-slate-700\/80,
-.dark .border-slate-700\/60 {
-  border-color: #252038 !important;
+.dark .text-blue-200\/70,
+.dark .text-blue-100 {
+  color: #E9D5FF !important;
 }
 
-/* Dark Mode Electric Purple Primary Accents (#8B5CF6 & #A855F7) */
+/* Primary Accents & Active Text Colors in Dark Mode -> ELECTRIC PURPLE */
 .dark .text-blue-400,
 .dark .text-blue-500,
 .dark .text-blue-600 {
-  color: #A855F7 !important;
+  color: #C084FC !important;
 }
 
 .dark .bg-blue-600,
 .dark .bg-blue-500,
 .dark .bg-blue-700 {
-  background-color: #8B5CF6 !important;
+  background-color: #9333EA !important;
 }
 
 .dark .border-blue-500,
 .dark .border-blue-400,
-.dark .border-blue-600,
-.dark .border-blue-800,
-.dark .border-blue-900\/60 {
-  border-color: #8B5CF6 !important;
+.dark .border-blue-600 {
+  border-color: #9333EA !important;
 }
 
 .dark .text-purple-400,
