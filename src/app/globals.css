@@ -36,6 +36,23 @@ body, div, header, nav, main, section, article, button, input, select, textarea,
   @apply bg-slate-400 dark:bg-slate-600;
 }
 
+/* Native App-Style Smooth Horizontal Page Slide & Fade Transitions */
+@keyframes pageSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(18px) scale(0.995);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.animate-page-in {
+  animation: pageSlideIn 0.34s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
+}
+
 /* Rich Card Shadow Elevation across All Cards & Pages */
 .shadow-xs,
 .shadow-sm,
