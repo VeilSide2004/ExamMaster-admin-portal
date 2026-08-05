@@ -63,34 +63,35 @@ body, div, header, nav, main, section, article, button, input, select, textarea,
   box-shadow: 0 10px 30px -8px rgba(15, 23, 42, 0.08), 0 4px 12px -4px rgba(15, 23, 42, 0.04) !important;
 }
 
-/* Custom Dark Mode Theme Palette Overrides:
-   Background: #09090B
-   Card:       #18181B
-   Primary:    #6366F1
-   Secondary:  #8B5CF6
-   Text:       #FAFAFA
-   Border:     #2A2A2A
+/* Custom Deep Black & Electric Purple Dark Mode Palette Overrides:
+   Background: #030305 (Ultra Deep Pitch Black)
+   Card:       #0F0D16 (Obsidian Card with Purple Undertone)
+   Sub-card:   #181524 (Subtle Elevated Panel)
+   Primary:    #8B5CF6 (Vibrant Electric Violet / Purple)
+   Secondary:  #A855F7 (Neon Purple Accent)
+   Text:       #F8FAFC (Crisp White Text)
+   Border:     #252038 (Purple-Tinted Dark Border)
 */
 :root {
-  --bg-dark: #09090B;
-  --card-dark: #18181B;
-  --primary-dark: #6366F1;
-  --secondary-dark: #8B5CF6;
-  --text-dark: #FAFAFA;
-  --border-dark: #2A2A2A;
+  --bg-dark: #030305;
+  --card-dark: #0F0D16;
+  --primary-dark: #8B5CF6;
+  --secondary-dark: #A855F7;
+  --text-dark: #F8FAFC;
+  --border-dark: #252038;
 }
 
 .dark {
-  background-color: #09090B !important;
-  color: #FAFAFA !important;
+  background-color: #030305 !important;
+  color: #F8FAFC !important;
 }
 
 .dark body {
-  background-color: #09090B !important;
-  color: #FAFAFA !important;
+  background-color: #030305 !important;
+  color: #F8FAFC !important;
 }
 
-/* Dark Mode Card Background Override (#18181B) */
+/* Dark Mode Card Background Override (#0F0D16) */
 .dark .bg-slate-900,
 .dark .bg-slate-950,
 .dark .bg-slate-900\/92,
@@ -104,32 +105,39 @@ body, div, header, nav, main, section, article, button, input, select, textarea,
 .dark .bg-slate-800\/60,
 .dark .bg-slate-800\/50,
 .dark .bg-slate-800\/40 {
-  background-color: #18181B !important;
+  background-color: #0F0D16 !important;
 }
 
-/* Dark Mode Sub-panels / Inner Elements (#2A2A2A & #18181B) */
+/* Dark Mode Sub-panels / Inner Elements (#181524 & #252038) */
 .dark .bg-slate-800\/90,
 .dark .bg-slate-800\/70,
 .dark .bg-slate-800\/30,
 .dark .bg-slate-950\/80,
 .dark .bg-slate-950\/60,
 .dark .bg-slate-950\/50 {
-  background-color: #2A2A2A !important;
+  background-color: #181524 !important;
 }
 
-/* Dark Mode Text Colors (#FAFAFA) */
+.dark .bg-blue-950\/60,
+.dark .bg-blue-950\/50,
+.dark .bg-blue-950\/40,
+.dark .bg-blue-950 {
+  background-color: #1F1934 !important;
+}
+
+/* Dark Mode Text Colors (#F8FAFC & Electric Purple Highlights) */
 .dark .text-white,
 .dark .text-slate-100,
 .dark .text-slate-200,
 .dark .text-slate-300 {
-  color: #FAFAFA !important;
+  color: #F8FAFC !important;
 }
 
 .dark .text-slate-400 {
-  color: #A1A1AA !important;
+  color: #94A3B8 !important;
 }
 
-/* Dark Mode Border Colors (#2A2A2A) */
+/* Dark Mode Border Colors (#252038) */
 .dark .border-slate-800,
 .dark .border-slate-800\/90,
 .dark .border-slate-800\/80,
@@ -137,28 +145,32 @@ body, div, header, nav, main, section, article, button, input, select, textarea,
 .dark .border-slate-700,
 .dark .border-slate-700\/80,
 .dark .border-slate-700\/60 {
-  border-color: #2A2A2A !important;
+  border-color: #252038 !important;
 }
 
-/* Dark Mode Primary (#6366F1) & Secondary (#8B5CF6) Accents */
+/* Dark Mode Electric Purple Primary Accents (#8B5CF6 & #A855F7) */
 .dark .text-blue-400,
-.dark .text-blue-500 {
-  color: #6366F1 !important;
+.dark .text-blue-500,
+.dark .text-blue-600 {
+  color: #A855F7 !important;
 }
 
 .dark .bg-blue-600,
-.dark .bg-blue-500 {
-  background-color: #6366F1 !important;
+.dark .bg-blue-500,
+.dark .bg-blue-700 {
+  background-color: #8B5CF6 !important;
 }
 
 .dark .border-blue-500,
 .dark .border-blue-400,
-.dark .border-blue-600 {
-  border-color: #6366F1 !important;
+.dark .border-blue-600,
+.dark .border-blue-800,
+.dark .border-blue-900\/60 {
+  border-color: #8B5CF6 !important;
 }
 
 .dark .text-purple-400,
 .dark .text-indigo-400,
 .dark .text-violet-400 {
-  color: #8B5CF6 !important;
+  color: #C084FC !important;
 }
