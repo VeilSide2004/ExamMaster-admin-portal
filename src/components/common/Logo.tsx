@@ -14,18 +14,16 @@ export const Logo: React.FC<LogoProps> = ({
   showText = true,
 }) => {
   return (
-    <div className={`flex items-center gap-3 ${className}`}>
+    <div className={`flex items-center gap-2.5 ${className}`}>
       <div
         style={{ width: size, height: size }}
-        className="rounded-xl bg-[#064E3B] dark:bg-[#064E3B] flex items-center justify-center shadow-xs shrink-0 border border-emerald-600/30"
+        className="rounded-xl bg-blue-600 flex items-center justify-center shadow-xs shrink-0 border border-blue-500/30 text-white"
       >
-        <div className="w-5 h-5 rounded-md bg-[#10B981] text-slate-950 flex items-center justify-center font-black text-xs">
-          <BookOpen className="w-3.5 h-3.5 text-slate-950" />
-        </div>
+        <BookOpen className="w-5 h-5 text-white stroke-[2.5]" />
       </div>
 
       {showText && (
-        <span className="font-extrabold text-lg tracking-tight text-slate-900 dark:text-white font-sans">
+        <span className="font-black text-lg tracking-tight text-slate-900 dark:text-white font-sans">
           ExamMaster
         </span>
       )}

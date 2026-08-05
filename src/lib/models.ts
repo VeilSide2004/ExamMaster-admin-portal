@@ -109,7 +109,7 @@ export interface IAttempt extends Document {
   student_id: any;
   course_id: any;
   test_id?: any;
-  type: 'practice' | 'mock';
+  type: 'practice' | 'mock' | 'weekly';
   topic_tag?: string;
   responses: Array<{
     question_id: any;
@@ -127,7 +127,7 @@ const AttemptSchema = new Schema<IAttempt>({
   student_id: { type: Schema.Types.Mixed, required: true },
   course_id: { type: Schema.Types.Mixed, required: true },
   test_id: { type: Schema.Types.Mixed, default: null },
-  type: { type: String, enum: ['practice', 'mock'], required: true },
+  type: { type: String, enum: ['practice', 'mock', 'weekly'], required: true },
   topic_tag: { type: String, default: '' },
   responses: [{
     question_id: { type: Schema.Types.Mixed },
@@ -217,11 +217,39 @@ const WeeklyDPPSchema = new Schema<IWeeklyDPP>({
   created_at: { type: Date, default: Date.now },
 });
 
+// Resource (PDF Books, Notes, Formula Sheets)
+export interface IResource extends Document {
+  course_id: any;
+  title: string;
+  description?: string;
+  subject?: string;
+  resource_type: 'PDF Book' | 'Study Notes' | 'Formula Sheet' | 'Reference Manual';
+  file_url: string;
+  file_size?: string;
+  page_count?: number;
+  is_active: boolean;
+  created_at: Date;
+}
+
+const ResourceSchema = new Schema<IResource>({
+  course_id: { type: Schema.Types.Mixed, required: true },
+  title: { type: String, required: true },
+  description: { type: String, default: '' },
+  subject: { type: String, default: 'General' },
+  resource_type: { type: String, enum: ['PDF Book', 'Study Notes', 'Formula Sheet', 'Reference Manual'], default: 'PDF Book' },
+  file_url: { type: String, required: true },
+  file_size: { type: String, default: '2.5 MB' },
+  page_count: { type: Number, default: 120 },
+  is_active: { type: Boolean, default: true },
+  created_at: { type: Date, default: Date.now },
+});
+
 export const User: Model<IUser> = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
 export const Course: Model<ICourse> = mongoose.models.Course || mongoose.model<ICourse>('Course', CourseSchema);
 export const Question: Model<IQuestion> = mongoose.models.Question || mongoose.model<IQuestion>('Question', QuestionSchema);
 export const MockTest: Model<IMockTest> = mongoose.models.MockTest || mongoose.model<IMockTest>('MockTest', MockTestSchema);
 export const WeeklyDPP: Model<IWeeklyDPP> = mongoose.models.WeeklyDPP || mongoose.model<IWeeklyDPP>('WeeklyDPP', WeeklyDPPSchema);
+export const Resource: Model<IResource> = mongoose.models.Resource || mongoose.model<IResource>('Resource', ResourceSchema);
 export const Attempt: Model<IAttempt> = mongoose.models.Attempt || mongoose.model<IAttempt>('Attempt', AttemptSchema);
 export const XPTransaction: Model<IXPTransaction> = mongoose.models.XPTransaction || mongoose.model<IXPTransaction>('XPTransaction', XPTransactionSchema);
 export const Admin: Model<IAdmin> = mongoose.models.Admin || mongoose.model<IAdmin>('Admin', AdminSchema);
