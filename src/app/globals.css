@@ -63,6 +63,32 @@ body, div, header, nav, main, section, article, button, input, select, textarea,
   box-shadow: 0 10px 30px -8px rgba(15, 23, 42, 0.08), 0 4px 12px -4px rgba(15, 23, 42, 0.04) !important;
 }
 
+/* Rich Obsidian Purple Shadow Elevation & Ambient Glow across Header, Navbars & All Cards */
+.dark header,
+.dark nav,
+.dark aside,
+.dark .shadow-xs,
+.dark .shadow-sm,
+.dark .shadow-md,
+.dark .shadow-lg,
+.dark .shadow-xl,
+.dark .shadow-2xl,
+.dark .card-shadow,
+.dark .rounded-2xl,
+.dark .rounded-3xl {
+  box-shadow: 
+    0 12px 40px -10px rgba(147, 51, 234, 0.22),
+    0 4px 20px -4px rgba(0, 0, 0, 0.95),
+    0 0 0 1px rgba(168, 85, 247, 0.15) !important;
+}
+
+.dark header {
+  box-shadow: 
+    0 8px 32px -8px rgba(147, 51, 234, 0.25),
+    0 4px 16px rgba(0, 0, 0, 0.98),
+    0 1px 0 0 rgba(168, 85, 247, 0.2) !important;
+}
+
 /* Custom 100% Pure Black & Electric Purple Dark Mode Palette Overrides:
    Page Outer Background: #000000 (Pure Pitch Black)
    Card Panel Background:  #0D0D12 (Pure Obsidian Black Card)
