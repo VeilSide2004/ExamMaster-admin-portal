@@ -125,31 +125,45 @@ export default function CourseManagementPage() {
             </div>
             
             <div className="flex items-center gap-3">
-              {/* Filter Tabs */}
-              <div className="flex items-center bg-slate-200/70 dark:bg-slate-800 p-1 rounded-lg text-xs font-semibold">
+              {/* Filter Tabs with Smooth Sliding Background Pill */}
+              <div className="relative flex items-center bg-slate-200/70 p-1 rounded-xl text-xs font-semibold select-none">
+                {/* Animated Sliding Background Pill */}
+                <div
+                  className={`absolute top-1 bottom-1 rounded-lg shadow-xs transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                    activeCatalogTab === 'all' ? 'bg-blue-600' : activeCatalogTab === 'competitive' ? 'bg-amber-500' : 'bg-emerald-600'
+                  }`}
+                  style={{
+                    width: 'calc(33.333% - 2px)',
+                    left: activeCatalogTab === 'all' ? '3px' : activeCatalogTab === 'competitive' ? 'calc(33.333% + 1px)' : 'calc(66.666% - 1px)',
+                  }}
+                />
+
                 <button
+                  type="button"
                   onClick={() => setActiveCatalogTab('all')}
-                  className={`px-3 py-1.5 rounded-md transition-colors ${
-                    activeCatalogTab === 'all' ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs font-bold' : 'text-slate-600 dark:text-slate-400'
+                  className={`relative z-10 px-3 py-1.5 transition-colors duration-200 flex-1 text-center ${
+                    activeCatalogTab === 'all' ? 'text-white font-black' : 'text-slate-600 hover:text-slate-900 font-bold'
                   }`}
                 >
                   All ({courses.length})
                 </button>
                 <button
+                  type="button"
                   onClick={() => setActiveCatalogTab('competitive')}
-                  className={`px-3 py-1.5 rounded-md transition-colors flex items-center gap-1 ${
-                    activeCatalogTab === 'competitive' ? 'bg-amber-500 text-white shadow-xs font-bold' : 'text-slate-600 dark:text-slate-400'
+                  className={`relative z-10 px-3 py-1.5 transition-colors duration-200 flex-1 text-center flex items-center justify-center gap-1 ${
+                    activeCatalogTab === 'competitive' ? 'text-white font-black' : 'text-slate-600 hover:text-slate-900 font-bold'
                   }`}
                 >
                   <Trophy className="w-3 h-3" /> Competitive ({competitiveCourses.length})
                 </button>
                 <button
+                  type="button"
                   onClick={() => setActiveCatalogTab('school')}
-                  className={`px-3 py-1.5 rounded-md transition-colors flex items-center gap-1 ${
-                    activeCatalogTab === 'school' ? 'bg-emerald-600 text-white shadow-xs font-bold' : 'text-slate-600 dark:text-slate-400'
+                  className={`relative z-10 px-3 py-1.5 transition-colors duration-200 flex-1 text-center flex items-center justify-center gap-1 ${
+                    activeCatalogTab === 'school' ? 'text-white font-black' : 'text-slate-600 hover:text-slate-900 font-bold'
                   }`}
                 >
-                  <GraduationCap className="w-3 h-3" /> School Class 6-12 ({schoolCourses.length})
+                  <GraduationCap className="w-3 h-3" /> School ({schoolCourses.length})
                 </button>
               </div>
 
