@@ -87,8 +87,6 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
           </span>
         </div>
 
-        <ThemeToggle />
-
         <div className="h-6 w-[1px] bg-slate-200 dark:bg-slate-800 hidden sm:block" />
 
         {/* Logged in Admin Profile Name */}
