@@ -522,12 +522,17 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         }
 
         let finalTopicTag = '';
-        if (subj && chap) {
+        if (selectedSubject && selectedTopic) {
+          finalTopicTag = `${selectedSubject} - ${selectedTopic}`;
+        } else if (subj && chap) {
           if (chap.toLowerCase().startsWith(subj.toLowerCase() + ' -')) {
             finalTopicTag = chap;
           } else {
             finalTopicTag = `${subj} - ${chap}`;
           }
+        } else if (chap) {
+          const activeSub = selectedSubject || subj || 'Physics';
+          finalTopicTag = `${activeSub} - ${chap}`;
         } else {
           finalTopicTag = defaultTag !== 'General' ? defaultTag : `${selectedSubject || 'Physics'} - ${selectedTopic || 'General'}`;
         }
@@ -669,8 +674,8 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         questionsToSubmit = parsedDocQuestions.map((q) => ({
           ...q,
           course_id: selectedCourseId,
-          subject: selectedSubject || '',
-          topic_tag: targetTopicTag,
+          subject: selectedSubject || q.subject || '',
+          topic_tag: selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : q.topic_tag || targetTopicTag,
         }));
       } else if (bulkMode === 'text') {
         if (!bulkText.trim()) {
@@ -680,8 +685,9 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         }
         questionsToSubmit = parsePlainText(bulkText, selectedCourseId).map((q) => ({
           ...q,
-          subject: selectedSubject || '',
-          topic_tag: targetTopicTag,
+          course_id: selectedCourseId,
+          subject: selectedSubject || q.subject || '',
+          topic_tag: selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : q.topic_tag || targetTopicTag,
         }));
       } else if (bulkMode === 'excel') {
         if (!parsedExcelQuestions.length) {
@@ -692,15 +698,15 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         questionsToSubmit = parsedExcelQuestions.map((q) => ({
           ...q,
           course_id: selectedCourseId,
-          subject: selectedSubject || '',
-          topic_tag: targetTopicTag,
+          subject: selectedSubject || q.subject || '',
+          topic_tag: selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : q.topic_tag || targetTopicTag,
         }));
       } else {
         questionsToSubmit = bulkFormQuestions.map((q) => ({
           ...q,
           course_id: selectedCourseId,
-          subject: selectedSubject || '',
-          topic_tag: targetTopicTag,
+          subject: selectedSubject || q.subject || '',
+          topic_tag: selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : q.topic_tag || targetTopicTag,
         }));
       }
 
