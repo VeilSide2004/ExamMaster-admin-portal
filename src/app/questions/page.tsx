@@ -821,12 +821,20 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                       <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Subject Management</h3>
                       <p className="text-xs text-slate-500">Select a subject to view and manage its topic modules.</p>
                     </div>
-                    <button
-                      onClick={() => setShowSubjectModal(true)}
-                      className="px-4 py-2 bg-[#0B192C] hover:bg-[#060E18] text-white text-xs font-bold rounded-lg flex items-center gap-1.5 shadow-xs"
-                    >
-                      <FolderPlus className="w-4 h-4" /> + Add Subject
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setShowBulkModal(true)}
+                        className="px-3 py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-slate-200 rounded-lg flex items-center gap-1.5 shadow-xs hover:border-slate-400 cursor-pointer"
+                      >
+                        <Upload className="w-4 h-4 text-slate-700 dark:text-slate-300" /> + Bulk Upload
+                      </button>
+                      <button
+                        onClick={() => setShowSubjectModal(true)}
+                        className="px-4 py-2 bg-[#0B192C] hover:bg-[#060E18] text-white text-xs font-bold rounded-lg flex items-center gap-1.5 shadow-xs"
+                      >
+                        <FolderPlus className="w-4 h-4" /> + Add Subject
+                      </button>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -878,6 +886,12 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                         className="px-3 py-2 border border-slate-300 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 rounded-lg flex items-center gap-1"
                       >
                         <ArrowLeft className="w-4 h-4" /> Back to Subjects
+                      </button>
+                      <button
+                        onClick={() => setShowBulkModal(true)}
+                        className="px-3 py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-slate-200 rounded-lg flex items-center gap-1.5 shadow-xs hover:border-slate-400 cursor-pointer"
+                      >
+                        <Upload className="w-4 h-4 text-slate-700 dark:text-slate-300" /> + Bulk Upload
                       </button>
                       <button
                         onClick={() => setShowTopicModal(true)}
