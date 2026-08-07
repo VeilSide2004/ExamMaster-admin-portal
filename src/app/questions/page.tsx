@@ -59,6 +59,7 @@ export default function QuestionManagementPage() {
   const [sampleAnswer, setSampleAnswer] = useState('');
   const [questionMarks, setQuestionMarks] = useState<number>(1);
   const [explanation, setExplanation] = useState('');
+  const [detailedExplanation, setDetailedExplanation] = useState('');
   const [error, setError] = useState('');
 
   // Bulk Question Modal
@@ -259,6 +260,7 @@ export default function QuestionManagementPage() {
           sample_answer: sampleAnswer,
           marks: questionMarks,
           explanation,
+          detailed_explanation: detailedExplanation,
         }),
       });
 
@@ -270,6 +272,7 @@ export default function QuestionManagementPage() {
         setQuestionText('');
         setSampleAnswer('');
         setExplanation('');
+        setDetailedExplanation('');
         setQuestionType('MCQ');
         setQuestionMarks(1);
         setOptions(['', '', '', '']);
@@ -420,9 +423,20 @@ Explanation: Power is the rate at which work is done or energy is transferred.
 
         const exp = String(
           normalizedRow['explanation'] ||
+          normalizedRow['normalexplanation'] ||
+          normalizedRow['shortexplanation'] ||
           normalizedRow['solution'] ||
           normalizedRow['exp'] ||
           normalizedRow['ansexplanation'] ||
+          ''
+        ).trim();
+
+        const detailedExp = String(
+          normalizedRow['detailedexplanation'] ||
+          normalizedRow['longexplanation'] ||
+          normalizedRow['detailedsolution'] ||
+          normalizedRow['stepbystep'] ||
+          normalizedRow['detaileddescription'] ||
           ''
         ).trim();
 
@@ -446,6 +460,7 @@ Explanation: Power is the rate at which work is done or energy is transferred.
             options: opts.length >= 2 ? opts : [optA || 'Option A', optB || 'Option B', optC || 'Option C', optD || 'Option D'],
             correct_option: correctIndex,
             explanation: exp || (opts[correctIndex] ? `Correct Answer: ${opts[correctIndex]}` : ''),
+            detailed_explanation: detailedExp,
           });
         }
       });
@@ -475,7 +490,8 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         'Option C': 'Volt',
         'Option D': 'Ohm',
         Answer: 'A',
-        Explanation: 'Electric charge is measured in Coulombs (C).'
+        Explanation: 'Electric charge is measured in Coulombs (C).',
+        'Detailed Explanation': 'Step 1: Electric charge is a fundamental property of matter.\nStep 2: SI unit of electric charge is Coulomb (C), named after Charles-Augustin de Coulomb.\nStep 3: 1 Coulomb is defined as charge transported by 1 Ampere current in 1 second (Q = I * t).'
       },
       {
         Subject: selectedSubject || 'Physics',
@@ -486,7 +502,8 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         'Option C': 'Equal to surface field',
         'Option D': 'Variable',
         Answer: 'B',
-        Explanation: 'According to Gauss\'s Law, net charge inside a conductor is zero, hence electric field is zero.'
+        Explanation: 'According to Gauss\'s Law, net charge inside a conductor is zero, hence electric field is zero.',
+        'Detailed Explanation': 'Step 1: Apply Gauss\'s Law to a spherical surface inside the hollow sphere.\nStep 2: Flux = Enclosed Charge / Permittivity. Since all excess charge resides on outer surface of conductor, Enclosed Charge = 0.\nStep 3: Therefore, Electric Field E = 0 at all points inside.'
       }
     ];
 
@@ -1632,12 +1649,23 @@ Explanation: Power is the rate at which work is done or energy is transferred.
               )}
 
               <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Explanation (Optional)</label>
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Normal / Short Explanation (Optional)</label>
                 <textarea
                   rows={2}
                   value={explanation}
                   onChange={(e) => setExplanation(e.target.value)}
-                  placeholder="Step-by-step solution..."
+                  placeholder="Concise explanation summary..."
+                  className="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Detailed / Step-by-Step Explanation (Optional)</label>
+                <textarea
+                  rows={4}
+                  value={detailedExplanation}
+                  onChange={(e) => setDetailedExplanation(e.target.value)}
+                  placeholder="Comprehensive step-by-step solution, formulas, and detailed derivation..."
                   className="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
                 />
               </div>

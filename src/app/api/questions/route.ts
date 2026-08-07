@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     const admin = getAuthenticatedAdmin();
 
     const body = await req.json();
-    const { course_id, topic_tag, question_type, question_text, options, correct_option, sample_answer, marks, explanation } = body;
+    const { course_id, topic_tag, question_type, question_text, options, correct_option, sample_answer, marks, explanation, detailed_explanation } = body;
 
     const qType = question_type === 'Short Answer' || question_type === 'Long Answer' ? question_type : 'MCQ';
 
@@ -79,6 +79,7 @@ export async function POST(req: Request) {
         sample_answer: sample_answer || '',
         marks: calculatedMarks,
         explanation: explanation || '',
+        detailed_explanation: detailed_explanation || '',
         is_active: true,
         created_at: new Date().toISOString(),
       };
@@ -110,6 +111,7 @@ export async function POST(req: Request) {
       sample_answer: sample_answer || '',
       marks: calculatedMarks,
       explanation: explanation || '',
+      detailed_explanation: detailed_explanation || '',
       is_active: true,
     });
 

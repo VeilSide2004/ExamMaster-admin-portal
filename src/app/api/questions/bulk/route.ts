@@ -71,6 +71,7 @@ export async function POST(req: Request) {
         options: opts,
         correct_option: Number(correctIndex),
         explanation: q.explanation || `Correct Answer: ${opts[correctIndex] || ''}`,
+        detailed_explanation: q.detailed_explanation || '',
         is_active: true,
         created_at: new Date().toISOString(),
       });
@@ -105,6 +106,7 @@ export async function POST(req: Request) {
         options: q.options,
         correct_option: q.correct_option,
         explanation: q.explanation,
+        detailed_explanation: q.detailed_explanation,
         is_active: true,
       }))
     );

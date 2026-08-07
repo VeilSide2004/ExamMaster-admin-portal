@@ -63,6 +63,7 @@ export interface IQuestion extends Document {
   sample_answer?: string;
   marks?: number;
   explanation?: string;
+  detailed_explanation?: string;
   is_active: boolean;
   created_at: Date;
 }
@@ -77,6 +78,7 @@ const QuestionSchema = new Schema<IQuestion>({
   sample_answer: { type: String, default: '' },
   marks: { type: Number, default: 1 },
   explanation: { type: String, default: '' },
+  detailed_explanation: { type: String, default: '' },
   is_active: { type: Boolean, default: true },
   created_at: { type: Date, default: Date.now },
 });
