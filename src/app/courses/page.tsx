@@ -23,6 +23,40 @@ export default function CourseManagementPage() {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  // Custom Educational Boards State
+  const [customBoards, setCustomBoards] = useState<string[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('exam_portal_custom_boards');
+        if (saved) return JSON.parse(saved);
+      } catch (e) {}
+    }
+    return [];
+  });
+
+  const handleAddCustomBoardToList = (newBName: string) => {
+    if (!newBName.trim()) return;
+    const trimmed = newBName.trim();
+    if (!customBoards.includes(trimmed)) {
+      const updated = [...customBoards, trimmed];
+      setCustomBoards(updated);
+      try {
+        localStorage.setItem('exam_portal_custom_boards', JSON.stringify(updated));
+      } catch (e) {}
+    }
+  };
+
+  const handleRemoveCustomBoard = (bNameToRemove: string) => {
+    const updated = customBoards.filter((b) => b !== bNameToRemove);
+    setCustomBoards(updated);
+    try {
+      localStorage.setItem('exam_portal_custom_boards', JSON.stringify(updated));
+    } catch (e) {}
+    if (board === bNameToRemove) {
+      setBoard('CBSE');
+    }
+  };
+
   // Remove Course Confirmation Modal
   const [deletingCourse, setDeletingCourse] = useState<any | null>(null);
 
@@ -51,6 +85,10 @@ export default function CourseManagementPage() {
     try {
       const parsedSubjects = subjectsInput.split(',').map((s) => s.trim()).filter(Boolean);
       const finalBoard = category === 'School Exams' ? (board === 'Other' ? (customBoard.trim() || 'Custom Board') : board) : 'N/A';
+
+      if (category === 'School Exams' && board === 'Other' && customBoard.trim()) {
+        handleAddCustomBoardToList(customBoard.trim());
+      }
 
       const res = await fetch('/api/courses', {
         method: 'POST',
@@ -435,8 +473,38 @@ export default function CourseManagementPage() {
                       <option value="ICSE">ICSE / CISCE (Council for Indian School Certificate Examinations)</option>
                       <option value="State Board">State Board (Secondary / Higher Secondary)</option>
                       <option value="IB / Cambridge">IB / Cambridge (International Baccalaureate / IGCSE)</option>
+                      {customBoards.map((cb) => (
+                        <option key={cb} value={cb}>
+                          {cb}
+                        </option>
+                      ))}
                       <option value="Other">+ Add Custom Board...</option>
                     </select>
+
+                    {/* Custom Added Boards List with Remove Buttons */}
+                    {customBoards.length > 0 && (
+                      <div className="space-y-1 pt-2">
+                        <span className="text-[11px] font-bold text-slate-500">Added Custom Boards (Click X to remove):</span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {customBoards.map((bName) => (
+                            <span
+                              key={bName}
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-900 dark:text-emerald-200 text-[11px] font-bold border border-emerald-300 dark:border-emerald-800 shadow-2xs"
+                            >
+                              {bName}
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveCustomBoard(bName)}
+                                className="text-emerald-700 hover:text-rose-600 dark:hover:text-rose-400 p-0.5 rounded transition-colors cursor-pointer"
+                                title={`Remove custom board "${bName}"`}
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {board === 'Other' && (
@@ -444,14 +512,29 @@ export default function CourseManagementPage() {
                       <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
                         Custom Board Name
                       </label>
-                      <input
-                        type="text"
-                        required
-                        value={customBoard}
-                        onChange={(e) => setCustomBoard(e.target.value)}
-                        placeholder="e.g. WBBSE, Maharashtra State Board, Edexcel"
-                        className="w-full p-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
-                      />
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          required
+                          value={customBoard}
+                          onChange={(e) => setCustomBoard(e.target.value)}
+                          placeholder="e.g. WBBSE, Maharashtra State Board, Edexcel"
+                          className="w-full p-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (customBoard.trim()) {
+                              handleAddCustomBoardToList(customBoard.trim());
+                              setBoard(customBoard.trim());
+                              setCustomBoard('');
+                            }
+                          }}
+                          className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shrink-0 cursor-pointer shadow-xs"
+                        >
+                          Add Board
+                        </button>
+                      </div>
                     </div>
                   )}
 
