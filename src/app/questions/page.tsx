@@ -5,6 +5,7 @@ import * as XLSX from 'xlsx';
 import { useRouter } from 'next/navigation';
 import { AdminSidebar } from '@/components/layout/AdminSidebar';
 import { AdminHeader } from '@/components/layout/AdminHeader';
+import { CustomSelect } from '@/components/ui/CustomSelect';
 import {
   BookOpen,
   FolderPlus,
@@ -936,25 +937,24 @@ Explanation: Power is the rate at which work is done or energy is transferred.
 
         <main className="p-4 sm:p-6 lg:p-8 space-y-6 flex-1 overflow-y-auto">
           {/* Top Bar Controls */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800 rounded-lg shadow-xs">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800 rounded-lg shadow-xs transition-all">
             <div className="flex items-center gap-3">
               <span className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Target Course:</span>
-              <select
+              <CustomSelect
+                options={courses.map((c) => ({
+                  value: c._id,
+                  label: c.name,
+                  badge: c.category || 'Exam',
+                }))}
                 value={selectedCourseId}
-                onChange={(e) => {
-                  setSelectedCourseId(e.target.value);
+                onChange={(val) => {
+                  setSelectedCourseId(val);
                   setCurrentLevel('subjects');
                   setSelectedSubject('');
                   setSelectedTopic('');
                 }}
-                className="text-xs p-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white font-bold"
-              >
-                {courses.map((c) => (
-                  <option key={c._id} value={c._id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
+                placeholder="Select Target Course"
+              />
             </div>
 
             {/* View Switcher */}
@@ -1027,7 +1027,7 @@ Explanation: Power is the rate at which work is done or energy is transferred.
 
               {/* LEVEL 1: SUBJECT MANAGEMENT */}
               {currentLevel === 'subjects' && (
-                <div className="space-y-4">
+                <div className="space-y-4 animate-in fade-in slide-in-from-left-4 duration-300 ease-out">
                   <div className="flex justify-between items-center">
                     <div>
                       <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Subject Management</h3>
@@ -1037,7 +1037,7 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                       {Object.keys(derivedSubjectsMap).length > 0 && (
                         <button
                           onClick={toggleSelectAllSubjects}
-                          className="px-3 py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-slate-200 rounded-lg flex items-center gap-1.5 shadow-xs hover:border-slate-400 cursor-pointer"
+                          className="px-3 py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-slate-200 rounded-lg flex items-center gap-1.5 shadow-xs hover:border-slate-400 cursor-pointer transition-colors"
                         >
                           {selectedSubjectNames.length === Object.keys(derivedSubjectsMap).length ? 'Deselect All' : `Select All (${Object.keys(derivedSubjectsMap).length})`}
                         </button>
@@ -1045,20 +1045,20 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                       {selectedSubjectNames.length > 0 && (
                         <button
                           onClick={handleBatchDeleteSubjects}
-                          className="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-lg flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer animate-in fade-in duration-150"
+                          className="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-lg flex items-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer animate-in fade-in duration-150"
                         >
                           <Trash2 className="w-4 h-4" /> Delete Selected ({selectedSubjectNames.length})
                         </button>
                       )}
                       <button
                         onClick={() => setShowBulkModal(true)}
-                        className="px-3 py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-slate-200 rounded-lg flex items-center gap-1.5 shadow-xs hover:border-slate-400 cursor-pointer"
+                        className="px-3 py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-slate-200 rounded-lg flex items-center gap-1.5 shadow-xs hover:border-slate-400 cursor-pointer transition-colors"
                       >
                         <Upload className="w-4 h-4 text-slate-700 dark:text-slate-300" /> + Bulk Upload
                       </button>
                       <button
                         onClick={() => setShowSubjectModal(true)}
-                        className="px-4 py-2 bg-[#0B192C] hover:bg-[#060E18] text-white text-xs font-bold rounded-lg flex items-center gap-1.5 shadow-xs"
+                        className="px-4 py-2 bg-[#0B192C] hover:bg-[#060E18] text-white text-xs font-bold rounded-lg flex items-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer"
                       >
                         <FolderPlus className="w-4 h-4" /> + Add Subject
                       </button>
@@ -1076,7 +1076,7 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                             setSelectedSubject(sName);
                             setCurrentLevel('topics');
                           }}
-                          className={`bg-white dark:bg-slate-900 border rounded-lg p-5 shadow-xs hover:shadow-sm transition-all cursor-pointer group flex flex-col justify-between ${
+                          className={`bg-white dark:bg-slate-900 border rounded-xl p-5 shadow-xs hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer group flex flex-col justify-between ${
                             isSelected
                               ? 'ring-2 ring-blue-500 border-blue-500 bg-blue-50/20 dark:bg-blue-950/20'
                               : 'border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600'
@@ -1098,13 +1098,13 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                               </div>
                               <button
                                 onClick={(e) => handleDeleteSubjectCard(e, sName, qList)}
-                                className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 dark:bg-rose-950/60 dark:hover:bg-rose-900 dark:text-rose-400 border border-rose-200 dark:border-rose-800/60 transition-colors cursor-pointer"
+                                className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 dark:bg-rose-950/60 dark:hover:bg-rose-900 dark:text-rose-400 border border-rose-200 dark:border-rose-800/60 transition-all active:scale-90 cursor-pointer"
                                 title={`Delete subject "${sName}" and all ${qList.length} questions inside it`}
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>
                             </div>
-                            <h4 className="text-base font-extrabold text-slate-900 dark:text-white group-hover:text-slate-700 dark:group-hover:text-slate-200 transition-colors mb-1">
+                            <h4 className="text-base font-extrabold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1">
                               {sName}
                             </h4>
                             <p className="text-xs text-slate-500">{qList.length} Questions Configured</p>
@@ -1123,7 +1123,7 @@ Explanation: Power is the rate at which work is done or energy is transferred.
 
               {/* LEVEL 2: TOPIC MANAGEMENT */}
               {currentLevel === 'topics' && (
-                <div className="space-y-4">
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300 ease-out">
                   <div className="flex justify-between items-center">
                     <div>
                       <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
@@ -1185,7 +1185,7 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                               setSelectedTopic(tName);
                               setCurrentLevel('questions');
                             }}
-                            className={`bg-white dark:bg-slate-900 border rounded-lg p-5 shadow-xs hover:shadow-sm transition-all cursor-pointer group flex flex-col justify-between ${
+                            className={`bg-white dark:bg-slate-900 border rounded-xl p-5 shadow-xs hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer group flex flex-col justify-between ${
                               isSelected
                                 ? 'ring-2 ring-blue-500 border-blue-500 bg-blue-50/20 dark:bg-blue-950/20'
                                 : 'border-slate-200 dark:border-slate-800 hover:border-slate-400'
@@ -1207,13 +1207,13 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                                 </div>
                                 <button
                                   onClick={(e) => handleDeleteTopicModule(e, tName, tQList)}
-                                  className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 dark:bg-rose-950/60 dark:hover:bg-rose-900 dark:text-rose-400 border border-rose-200 dark:border-rose-800/60 transition-colors cursor-pointer"
+                                  className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 dark:bg-rose-950/60 dark:hover:bg-rose-900 dark:text-rose-400 border border-rose-200 dark:border-rose-800/60 transition-all active:scale-90 cursor-pointer"
                                   title={`Delete topic module "${tName}" and all ${tQList.length} questions inside it`}
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </button>
                               </div>
-                              <h4 className="text-base font-extrabold text-slate-900 dark:text-white mb-1">{tName}</h4>
+                              <h4 className="text-base font-extrabold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1">{tName}</h4>
                               <p className="text-xs text-slate-500">{tQList.length} Questions</p>
                             </div>
 
@@ -1231,7 +1231,7 @@ Explanation: Power is the rate at which work is done or energy is transferred.
 
               {/* LEVEL 3: QUESTION MANAGEMENT */}
               {currentLevel === 'questions' && (
-                <div className="space-y-4">
+                <div className="space-y-4 animate-in fade-in zoom-in-95 duration-300 ease-out">
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                       <h3 className="text-base font-extrabold text-slate-900 dark:text-white">

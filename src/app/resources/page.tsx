@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { AdminHeader } from '@/components/layout/AdminHeader';
 import { AdminSidebar } from '@/components/layout/AdminSidebar';
+import { CustomSelect } from '@/components/ui/CustomSelect';
 import {
   FolderDown,
   Plus,
@@ -250,18 +251,15 @@ export default function AdminResourcesPage() {
             <div className="flex items-center gap-2 w-full md:w-auto">
               <Filter className="w-4 h-4 text-slate-400 shrink-0" />
               <span className="text-xs font-extrabold text-slate-700 dark:text-slate-300 shrink-0">Filter by Course:</span>
-              <select
+              <CustomSelect
+                options={[
+                  { value: 'All', label: `All Registered Courses (${courses.length})` },
+                  ...courses.map((c) => ({ value: c._id, label: c.name, badge: c.category })),
+                ]}
                 value={selectedCourseId}
-                onChange={(e) => setSelectedCourseId(e.target.value)}
-                className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all w-full md:w-64"
-              >
-                <option value="All">All Registered Courses ({courses.length})</option>
-                {courses.map((c) => (
-                  <option key={c._id} value={c._id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
+                onChange={(val) => setSelectedCourseId(val)}
+                className="w-full md:w-64"
+              />
             </div>
           </div>
 
