@@ -485,10 +485,10 @@ Explanation: Power is the rate at which work is done or energy is transferred.
           'q', 'content', 'questioncontent'
         ]);
 
-        let optA = findKeyMatching(row, ['optiona', 'option1', 'opta', 'opt1', 'choicea', 'choice1', 'ans1', 'a']);
-        let optB = findKeyMatching(row, ['optionb', 'option2', 'optb', 'opt2', 'choiceb', 'choice2', 'ans2', 'b']);
-        let optC = findKeyMatching(row, ['optionc', 'option3', 'optc', 'opt3', 'choicec', 'choice3', 'ans3', 'c']);
-        let optD = findKeyMatching(row, ['optiond', 'option4', 'optd', 'opt4', 'choiced', 'choice4', 'ans4', 'd']);
+        let optA = findKeyMatching(row, ['optiona', 'option1', 'opta', 'opt1', 'choicea', 'choice1', 'ans1', 'a', 'option_a', 'opt_a', 'choice_a', 'ans_a']);
+        let optB = findKeyMatching(row, ['optionb', 'option2', 'optb', 'opt2', 'choiceb', 'choice2', 'ans2', 'b', 'option_b', 'opt_b', 'choice_b', 'ans_b']);
+        let optC = findKeyMatching(row, ['optionc', 'option3', 'optc', 'opt3', 'choicec', 'choice3', 'ans3', 'c', 'option_c', 'opt_c', 'choice_c', 'ans_c']);
+        let optD = findKeyMatching(row, ['optiond', 'option4', 'optd', 'opt4', 'choiced', 'choice4', 'ans4', 'd', 'option_d', 'opt_d', 'choice_d', 'ans_d']);
 
         let rawAns = findKeyMatching(row, [
           'correctoption', 'correctanswer', 'answer', 'ans', 'correct', 'correctopt', 'key',
@@ -502,17 +502,20 @@ Explanation: Power is the rate at which work is done or energy is transferred.
           qText = findKeyMatching(row, ['question', 'prompt', 'stmt'], true);
         }
 
-        // Positional fallback for generic / headerless CSV rows
-        if (!qText && values.length >= 2) {
-          const nonEmp = values.filter(Boolean);
-          if (nonEmp.length > 0) {
-            qText = nonEmp[0];
-            if (!optA && nonEmp[1]) optA = nonEmp[1];
-            if (!optB && nonEmp[2]) optB = nonEmp[2];
-            if (!optC && nonEmp[3]) optC = nonEmp[3];
-            if (!optD && nonEmp[4]) optD = nonEmp[4];
-            if (!rawAns && nonEmp[5]) rawAns = nonEmp[5];
-          }
+        // Substring fallback for Option C and D if not found by exact candidate
+        if (!optC) optC = findKeyMatching(row, ['c', 'optc', 'optionc', 'choicec', 'opt3', 'option3'], true);
+        if (!optD) optD = findKeyMatching(row, ['d', 'optd', 'optiond', 'choiced', 'opt4', 'option4'], true);
+
+        // Positional column index fallback relative to qText column
+        if (values.length >= 2) {
+          let qColIdx = values.findIndex((v) => v === qText);
+          if (qColIdx === -1) qColIdx = 0;
+
+          if (!optA && values[qColIdx + 1] !== undefined) optA = values[qColIdx + 1];
+          if (!optB && values[qColIdx + 2] !== undefined) optB = values[qColIdx + 2];
+          if (!optC && values[qColIdx + 3] !== undefined) optC = values[qColIdx + 3];
+          if (!optD && values[qColIdx + 4] !== undefined) optD = values[qColIdx + 4];
+          if (!rawAns && values[qColIdx + 5] !== undefined) rawAns = values[qColIdx + 5];
         }
 
         if (!qText) return; // Skip completely empty rows
