@@ -8,10 +8,31 @@ export async function GET() {
   try {
     const { isMemoryMode } = await dbConnect();
 
+    const isMalformedQuestion = (qText: any, options?: any[]): boolean => {
+      if (!qText || typeof qText !== 'string') return true;
+      const cleaned = qText.trim().toLowerCase();
+      if (cleaned.length <= 2) return true;
+      const headerWords = [
+        'chemistry', 'physics', 'mathematics', 'math', 'biology', 'botany', 'zoology',
+        'inorganic chemistry', 'organic chemistry', 'physical chemistry', 'thermodynamics',
+        'kinematics', 'mechanics', 'optics', 'waves', 'magnetism', 'electrostatics',
+        'algebra', 'calculus', 'vectors', 'trigonometry', 'geometry', 'general', 'science'
+      ];
+      if (headerWords.includes(cleaned)) return true;
+      if (/^(?:subject|topic|chapter)\s*[\:\-]/i.test(cleaned)) return true;
+      if (options && Array.isArray(options) && options.length > 0) {
+        const opt0 = String(options[0] || '').trim().toLowerCase();
+        if (opt0 === cleaned && options.slice(1).every((o) => /^option\s+[b-d]$/i.test(String(o).trim()))) {
+          return true;
+        }
+      }
+      return false;
+    };
+
     if (isMemoryMode) {
       const db = readSharedDb();
       const activeQuestions = (db.questions || [])
-        .filter((q) => q.is_active)
+        .filter((q) => q.is_active !== false && !isMalformedQuestion(q.question_text, q.options))
         .map((q) => {
           const course = (db.courses || []).find((c) => c._id === q.course_id);
           return {
@@ -22,7 +43,8 @@ export async function GET() {
       return NextResponse.json({ questions: activeQuestions });
     }
 
-    const questions = await Question.find({ is_active: true }).populate('course_id', 'name').sort({ created_at: -1 });
+    const rawQuestions = await Question.find({ is_active: true }).populate('course_id', 'name').sort({ created_at: -1 });
+    const questions = rawQuestions.filter((q: any) => !isMalformedQuestion(q.question_text, q.options));
     return NextResponse.json({ questions });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

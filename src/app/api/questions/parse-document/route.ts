@@ -47,10 +47,32 @@ function parseQuestionsFromText(rawText: string, defaultTopic: string = 'General
     explanation: string;
   } | null = null;
 
+  const isMalformedQuestion = (qText: string, options?: any[]): boolean => {
+    if (!qText || typeof qText !== 'string') return true;
+    const cleaned = qText.trim().toLowerCase();
+    if (cleaned.length <= 2) return true;
+    const headerWords = [
+      'chemistry', 'physics', 'mathematics', 'math', 'biology', 'botany', 'zoology',
+      'inorganic chemistry', 'organic chemistry', 'physical chemistry', 'thermodynamics',
+      'kinematics', 'mechanics', 'optics', 'waves', 'magnetism', 'electrostatics',
+      'algebra', 'calculus', 'vectors', 'trigonometry', 'geometry', 'general', 'science'
+    ];
+    if (headerWords.includes(cleaned)) return true;
+    if (/^(?:subject|topic|chapter)\s*[\:\-]/i.test(cleaned)) return true;
+    if (options && Array.isArray(options) && options.length > 0) {
+      const opt0 = String(options[0] || '').trim().toLowerCase();
+      if (opt0 === cleaned && options.slice(1).every((o) => /^option\s+[b-d]$/i.test(String(o).trim()))) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   function pushCurrentQ() {
     if (!currentQ || !currentQ.text.trim()) return;
     const qText = currentQ.text.trim();
     if (qText.startsWith('%PDF-') || qText.startsWith('>>') || qText.length < 3) return;
+    if (isMalformedQuestion(qText, currentQ.options)) return;
 
     const qNum = currentQ.qNum || parsedQuestions.length + 1;
 
