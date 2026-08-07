@@ -448,43 +448,67 @@ Explanation: Power is the rate at which work is done or energy is transferred.
       }
 
       const defaultTag = selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : 'General';
-
       const parsedList: any[] = [];
+
       jsonRows.forEach((row) => {
-        const normalizedRow: Record<string, any> = {};
-        Object.keys(row).forEach((k) => {
-          const normKey = k.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-          normalizedRow[normKey] = row[k];
-        });
+        const keys = Object.keys(row);
+        const values = Object.values(row).map((v) => String(v || '').trim());
 
-        const qText = String(
-          normalizedRow['question'] ||
-          normalizedRow['questiontext'] ||
-          normalizedRow['prompt'] ||
-          normalizedRow['q'] ||
-          normalizedRow['questionprompt'] ||
-          ''
-        ).trim();
+        // Helper to extract by matching column names accurately
+        const getValByKeys = (possibleKeys: string[]): string => {
+          for (const pk of possibleKeys) {
+            const matchedKey = keys.find((k) => {
+              const cleaned = k.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+              return cleaned === pk;
+            });
+            if (matchedKey && String(row[matchedKey] || '').trim()) {
+              return String(row[matchedKey]).trim();
+            }
+          }
+          return '';
+        };
 
-        const optA = String(normalizedRow['optiona'] || normalizedRow['option1'] || normalizedRow['a'] || '').trim();
-        const optB = String(normalizedRow['optionb'] || normalizedRow['option2'] || normalizedRow['b'] || '').trim();
-        const optC = String(normalizedRow['optionc'] || normalizedRow['option3'] || normalizedRow['c'] || '').trim();
-        const optD = String(normalizedRow['optiond'] || normalizedRow['option4'] || normalizedRow['d'] || '').trim();
+        let subj = getValByKeys(['subject', 'sub', 'course']);
+        let chap = getValByKeys(['topic', 'chapter', 'topictag', 'tag', 'topicmodule']);
+        let qText = getValByKeys(['question', 'questiontext', 'prompt', 'questionprompt', 'mcqquestion', 'problem', 'qtext']);
+        let optA = getValByKeys(['optiona', 'option1', 'opta', 'opt1', 'choicea', 'choice1', 'ans1']);
+        let optB = getValByKeys(['optionb', 'option2', 'optb', 'opt2', 'choiceb', 'choice2', 'ans2']);
+        let optC = getValByKeys(['optionc', 'option3', 'optc', 'opt3', 'choicec', 'choice3', 'ans3']);
+        let optD = getValByKeys(['optiond', 'option4', 'optd', 'opt4', 'choiced', 'choice4', 'ans4']);
+        let rawAns = getValByKeys(['correctoption', 'correctanswer', 'answer', 'ans', 'correct', 'correctopt', 'key']);
+        let exp = getValByKeys(['explanation', 'exp', 'solution', 'normalexplanation', 'shortexplanation', 'ansexplanation']);
+        let detailedExp = getValByKeys(['detailedexplanation', 'longexplanation', 'detailedsolution', 'stepbystep', 'detaileddescription']);
 
-        const opts = [optA, optB, optC, optD].filter(Boolean);
+        // Positional fallback if explicit column names were not found (e.g. headerless CSV/XLS)
+        if (!qText) {
+          const nonEmp = values.filter(Boolean);
+          if (nonEmp.length >= 3) {
+            let qIdx = nonEmp.findIndex((v) => v.includes('?') || v.length > 15 || /^(?:q(?:uestion)?[\s\.\:]*)?\d+[\s\.\:]+/i.test(v));
+            if (qIdx === -1) qIdx = 0;
 
-        const rawAns = String(
-          normalizedRow['correctoption'] ||
-          normalizedRow['correctanswer'] ||
-          normalizedRow['answer'] ||
-          normalizedRow['ans'] ||
-          normalizedRow['correct'] ||
-          ''
-        ).trim();
+            qText = nonEmp[qIdx];
+            if (!optA && nonEmp[qIdx + 1]) optA = nonEmp[qIdx + 1];
+            if (!optB && nonEmp[qIdx + 2]) optB = nonEmp[qIdx + 2];
+            if (!optC && nonEmp[qIdx + 3]) optC = nonEmp[qIdx + 3];
+            if (!optD && nonEmp[qIdx + 4]) optD = nonEmp[qIdx + 4];
+            if (!rawAns && nonEmp[qIdx + 5]) rawAns = nonEmp[qIdx + 5];
+          }
+        }
+
+        if (!subj) subj = selectedSubject || 'Physics';
+        if (!chap) chap = selectedTopic || 'General';
+
+        // Prepare clean options (ensure 4 valid non-empty options)
+        const rawOpts = [optA, optB, optC, optD].map((o) => o.trim()).filter(Boolean);
+        const finalOpts: string[] = [...rawOpts];
+        while (finalOpts.length < 4) {
+          finalOpts.push(`Option ${String.fromCharCode(65 + finalOpts.length)}`);
+        }
+        const cleanOpts = finalOpts.slice(0, 4);
 
         let correctIndex = 0;
         if (rawAns) {
-          const upperAns = rawAns.toUpperCase();
+          const upperAns = rawAns.toUpperCase().trim();
           if (upperAns === 'A' || upperAns === '1' || upperAns === 'OPTION A' || upperAns === 'OPTION 1') correctIndex = 0;
           else if (upperAns === 'B' || upperAns === '2' || upperAns === 'OPTION B' || upperAns === 'OPTION 2') correctIndex = 1;
           else if (upperAns === 'C' || upperAns === '3' || upperAns === 'OPTION C' || upperAns === 'OPTION 3') correctIndex = 2;
@@ -492,32 +516,10 @@ Explanation: Power is the rate at which work is done or energy is transferred.
           else if (!isNaN(Number(rawAns)) && Number(rawAns) >= 0 && Number(rawAns) <= 3) {
             correctIndex = Number(rawAns);
           } else {
-            const foundIdx = opts.findIndex((o) => o.toLowerCase() === rawAns.toLowerCase());
+            const foundIdx = cleanOpts.findIndex((o) => o.toLowerCase() === rawAns.toLowerCase());
             if (foundIdx !== -1) correctIndex = foundIdx;
           }
         }
-
-        const exp = String(
-          normalizedRow['explanation'] ||
-          normalizedRow['normalexplanation'] ||
-          normalizedRow['shortexplanation'] ||
-          normalizedRow['solution'] ||
-          normalizedRow['exp'] ||
-          normalizedRow['ansexplanation'] ||
-          ''
-        ).trim();
-
-        const detailedExp = String(
-          normalizedRow['detailedexplanation'] ||
-          normalizedRow['longexplanation'] ||
-          normalizedRow['detailedsolution'] ||
-          normalizedRow['stepbystep'] ||
-          normalizedRow['detaileddescription'] ||
-          ''
-        ).trim();
-
-        const subj = String(normalizedRow['subject'] || selectedSubject || 'Physics').trim();
-        const chap = String(normalizedRow['chapter'] || normalizedRow['topic'] || normalizedRow['topictag'] || normalizedRow['tag'] || selectedTopic || '').trim();
 
         let finalTopicTag = '';
         if (subj && chap) {
@@ -526,22 +528,19 @@ Explanation: Power is the rate at which work is done or energy is transferred.
           } else {
             finalTopicTag = `${subj} - ${chap}`;
           }
-        } else if (chap) {
-          const activeSub = selectedSubject || 'Physics';
-          finalTopicTag = `${activeSub} - ${chap}`;
         } else {
           finalTopicTag = defaultTag !== 'General' ? defaultTag : `${selectedSubject || 'Physics'} - ${selectedTopic || 'General'}`;
         }
 
-        if (qText) {
+        if (qText && qText.toLowerCase() !== subj.toLowerCase() && qText.toLowerCase() !== chap.toLowerCase()) {
           parsedList.push({
             course_id: selectedCourseId,
             subject: subj,
             topic_tag: finalTopicTag,
             question_text: qText,
-            options: opts.length >= 2 ? opts : [optA || 'Option A', optB || 'Option B', optC || 'Option C', optD || 'Option D'],
+            options: cleanOpts,
             correct_option: correctIndex,
-            explanation: exp || (opts[correctIndex] ? `Correct Answer: ${opts[correctIndex]}` : ''),
+            explanation: exp || `Correct Answer: Option ${String.fromCharCode(65 + correctIndex)} (${cleanOpts[correctIndex] || ''})`,
             detailed_explanation: detailedExp,
           });
         }
@@ -554,7 +553,7 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         setParsedExcelQuestions(parsedList);
       }
     } catch (err: any) {
-      setExcelError(err.message || 'Failed to parse Excel file');
+      setExcelError(err.message || 'Failed to parse Excel/CSV file');
       setParsedExcelQuestions([]);
     } finally {
       setExcelParsing(false);
