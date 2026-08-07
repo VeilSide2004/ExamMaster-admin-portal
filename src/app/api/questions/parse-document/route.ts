@@ -1,6 +1,75 @@
 import { NextRequest, NextResponse } from 'next/server';
+import zlib from 'zlib';
 
 export const runtime = 'nodejs';
+
+function extractTextFromPdfBuffer(buffer: Buffer): string {
+  const str = buffer.toString('binary');
+  const textChunks: string[] = [];
+
+  const streamRegex = /stream[\r\n]+([\s\S]*?)endstream/gi;
+  let match: RegExpExecArray | null;
+
+  while ((match = streamRegex.exec(str)) !== null) {
+    const rawStreamData = match[1];
+    let streamText = '';
+
+    try {
+      const streamBuf = Buffer.from(rawStreamData, 'binary');
+      const decompressed = zlib.inflateSync(streamBuf);
+      streamText = decompressed.toString('utf-8');
+    } catch {
+      try {
+        const streamBuf = Buffer.from(rawStreamData, 'binary');
+        const decompressed = zlib.unzipSync(streamBuf);
+        streamText = decompressed.toString('utf-8');
+      } catch {
+        streamText = rawStreamData;
+      }
+    }
+
+    if (!streamText) continue;
+
+    // Extract PDF text operators
+    const tjArrayMatches = Array.from(streamText.matchAll(/\[\s*((?:\([^\)]*\)\s*|\-[0-9\.]+\s*|[\d\.]+\s*)*)\]\s*TJ/gi));
+    for (const tjArr of tjArrayMatches) {
+      const inner = tjArr[1];
+      const stringBits = Array.from(inner.matchAll(/\(([^\)]*)\)/g)).map((m) => m[1]);
+      if (stringBits.length > 0) {
+        textChunks.push(stringBits.join(''));
+      }
+    }
+
+    const tjSingleMatches = Array.from(streamText.matchAll(/\(([^\)]+)\)\s*Tj/gi));
+    for (const tjSingle of tjSingleMatches) {
+      if (tjSingle[1] && tjSingle[1].length > 1) {
+        textChunks.push(tjSingle[1]);
+      }
+    }
+
+    if (textChunks.length === 0) {
+      const plainLines = streamText
+        .split(/[\r\n]+/)
+        .map((l) => l.trim())
+        .filter((l) => l.length > 3 && !/^\d+\s+\d+\s+obj/i.test(l) && !/^\/.*$/i.test(l));
+      if (plainLines.length > 0) {
+        textChunks.push(...plainLines);
+      }
+    }
+  }
+
+  if (textChunks.length > 0) {
+    return textChunks.join('\n');
+  }
+
+  const cleanAscii = str.replace(/[^\x20-\x7E\n\r]/g, ' ');
+  const asciiLines = cleanAscii
+    .split(/[\r\n]+/)
+    .map((l) => l.trim())
+    .filter((l) => l.length > 3 && !/^(%pdf|xref|trailer|startxref|\d+\s+\d+\s+obj|endobj)/i.test(l));
+
+  return asciiLines.join('\n');
+}
 
 function cleanText(text: string): string {
   return text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
@@ -21,9 +90,9 @@ function parseQuestionsFromText(rawText: string, defaultTopic: string = 'General
     const keyLines = keyText.split('\n');
     for (const kLine of keyLines) {
       const pairMatches = Array.from(kLine.matchAll(/(?:q|question)?\s*(\d+)\s*[\.\:\-\)\s]+\s*([a-d1-4])/gi));
-      for (const m of pairMatches) {
+      for (const m of pairMatches as any[]) {
         const qNum = parseInt(m[1], 10);
-        const ansChar = m[2].toUpperCase();
+        const ansChar = String(m[2] || '').toUpperCase();
         let idx = 0;
         if (ansChar === 'B' || ansChar === '2') idx = 1;
         else if (ansChar === 'C' || ansChar === '3') idx = 2;
@@ -34,7 +103,7 @@ function parseQuestionsFromText(rawText: string, defaultTopic: string = 'General
   }
 
   // Step 2: Line-by-line streaming parser
-  const lines = mainBodyText.split('\n').map((l) => l.trim()).filter(Boolean);
+  const lines = mainBodyText.split('\n').map((l: string) => l.trim()).filter(Boolean);
   const parsedQuestions: any[] = [];
   let currentTopic = defaultTopic;
 
@@ -233,11 +302,16 @@ export async function POST(req: NextRequest) {
         const pdfData = await pdfParse(buffer);
         extractedText = pdfData.text || '';
       } catch (pdfErr: any) {
-        console.error('PDF parsing error:', pdfErr);
-        return NextResponse.json(
-          { error: `Could not parse PDF file: ${pdfErr?.message || 'Ensure it is a valid, text-selectable PDF.'}` },
-          { status: 400 }
-        );
+        console.warn('Standard pdf-parse failed, activating resilient PDF stream fallback parser:', pdfErr?.message);
+        try {
+          extractedText = extractTextFromPdfBuffer(buffer);
+        } catch (fallbackErr: any) {
+          console.error('Resilient PDF stream fallback failed:', fallbackErr);
+          return NextResponse.json(
+            { error: `Could not parse PDF file: ${pdfErr?.message || 'Ensure it is a valid, text-selectable PDF.'}` },
+            { status: 400 }
+          );
+        }
       }
     } else if (fileName.endsWith('.doc')) {
       extractedText = buffer.toString('utf-8').replace(/[^\x20-\x7E\n\r]/g, ' ');
