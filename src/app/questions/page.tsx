@@ -425,7 +425,7 @@ Explanation: Power is the rate at which work is done or energy is transferred.
     document.body.removeChild(link);
   };
 
-  // Excel / Spreadsheet file parsing
+  // Excel / Spreadsheet file parsing with 2D Matrix Engine
   const handleExcelFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -439,81 +439,112 @@ Explanation: Power is the rate at which work is done or energy is transferred.
       const workbook = XLSX.read(data, { type: 'array' });
       const firstSheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheetName];
-      const jsonRows: any[] = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
 
-      if (!jsonRows || jsonRows.length === 0) {
+      // Parse raw 2D array of rows from worksheet
+      const matrix: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
+
+      if (!matrix || matrix.length === 0) {
         setExcelError('The selected spreadsheet is empty or has no readable rows.');
         setParsedExcelQuestions([]);
         return;
       }
 
-      const defaultTag = selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : 'General';
+      // Filter out completely empty row arrays
+      const validRows = matrix.filter((r) => Array.isArray(r) && r.some((c) => String(c || '').trim() !== ''));
+
+      if (validRows.length === 0) {
+        setExcelError('No readable data rows found in the spreadsheet.');
+        setParsedExcelQuestions([]);
+        return;
+      }
+
+      // 1. Auto-detect header row index
+      let headerRowIdx = -1;
+      for (let i = 0; i < Math.min(validRows.length, 10); i++) {
+        const rowStr = validRows[i].map((c) => String(c || '').trim().toLowerCase()).join(' ');
+        if (
+          rowStr.includes('question') ||
+          rowStr.includes('prompt') ||
+          rowStr.includes('option') ||
+          rowStr.includes('choice') ||
+          rowStr.includes('answer')
+        ) {
+          headerRowIdx = i;
+          break;
+        }
+      }
+
+      let qCol = -1;
+      let optACol = -1;
+      let optBCol = -1;
+      let optCCol = -1;
+      let optDCol = -1;
+      let ansCol = -1;
+      let expCol = -1;
+
+      if (headerRowIdx !== -1) {
+        const headerCells = validRows[headerRowIdx].map((c) => String(c || '').trim().toLowerCase().replace(/[^a-z0-9]/g, ''));
+        headerCells.forEach((cell, idx) => {
+          if (qCol === -1 && (cell.includes('question') || cell.includes('prompt') || cell.includes('problem') || cell.includes('statement') || cell === 'q')) {
+            qCol = idx;
+          } else if (optACol === -1 && (cell.includes('optiona') || cell.includes('opta') || cell.includes('choicea') || cell === 'option1' || cell === 'opt1' || cell === 'ans1')) {
+            optACol = idx;
+          } else if (optBCol === -1 && (cell.includes('optionb') || cell.includes('optb') || cell.includes('choiceb') || cell === 'option2' || cell === 'opt2' || cell === 'ans2')) {
+            optBCol = idx;
+          } else if (optCCol === -1 && (cell.includes('optionc') || cell.includes('optc') || cell.includes('choicec') || cell === 'option3' || cell === 'opt3' || cell === 'ans3')) {
+            optCCol = idx;
+          } else if (optDCol === -1 && (cell.includes('optiond') || cell.includes('optd') || cell.includes('choiced') || cell === 'option4' || cell === 'opt4' || cell === 'ans4')) {
+            optDCol = idx;
+          } else if (ansCol === -1 && (cell.includes('answer') || cell.includes('correct') || cell === 'ans' || cell === 'key')) {
+            ansCol = idx;
+          } else if (expCol === -1 && (cell.includes('explanation') || cell.includes('exp') || cell.includes('solution'))) {
+            expCol = idx;
+          }
+        });
+      }
+
+      const dataStartIdx = headerRowIdx !== -1 ? headerRowIdx + 1 : 0;
       const parsedList: any[] = [];
 
-      const getValByHeader = (row: Record<string, any>, regex: RegExp): string => {
-        const rKeys = Object.keys(row);
-        for (const k of rKeys) {
-          const cleanK = k.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-          if (regex.test(cleanK)) {
-            const val = String(row[k] || '').trim();
-            if (val) return val;
-          }
-        }
-        return '';
-      };
+      for (let i = dataStartIdx; i < validRows.length; i++) {
+        const row = validRows[i];
+        const rowStr = row.map((c) => String(c || '').trim());
+        const nonEmp = rowStr.filter(Boolean);
+        if (nonEmp.length === 0) continue;
 
-      jsonRows.forEach((row) => {
-        const rValues = Object.values(row).map((v) => String(v || '').trim());
+        let qText = '';
+        let optA = '';
+        let optB = '';
+        let optC = '';
+        let optD = '';
+        let rawAns = '';
+        let exp = '';
 
-        // Extract fields strictly by header names first
-        let subj = getValByHeader(row, /^(subject|sub|course)$/);
-        let chap = getValByHeader(row, /^(topic|chapter|topictag|tag|topicmodule)$/);
-        let qText = getValByHeader(row, /^(question|questions|questiontext|qtext|prompt|questionprompt|mcqquestion|problem|questiontitle|title|statement|questionstatement|qcontent|questioncontent)$/);
+        if (qCol !== -1 && row[qCol] !== undefined) qText = String(row[qCol] || '').trim();
+        if (optACol !== -1 && row[optACol] !== undefined) optA = String(row[optACol] || '').trim();
+        if (optBCol !== -1 && row[optBCol] !== undefined) optB = String(row[optBCol] || '').trim();
+        if (optCCol !== -1 && row[optCCol] !== undefined) optC = String(row[optCCol] || '').trim();
+        if (optDCol !== -1 && row[optDCol] !== undefined) optD = String(row[optDCol] || '').trim();
+        if (ansCol !== -1 && row[ansCol] !== undefined) rawAns = String(row[ansCol] || '').trim();
+        if (expCol !== -1 && row[expCol] !== undefined) exp = String(row[expCol] || '').trim();
 
-        let optA = getValByHeader(row, /^(optiona|option1|opta|opt1|choicea|choice1|ans1)$/);
-        let optB = getValByHeader(row, /^(optionb|option2|optb|opt2|choiceb|choice2|ans2)$/);
-        let optC = getValByHeader(row, /^(optionc|option3|optc|opt3|choicec|choice3|ans3)$/);
-        let optD = getValByHeader(row, /^(optiond|option4|optd|opt4|choiced|choice4|ans4)$/);
-
-        let rawAns = getValByHeader(row, /^(correctoption|correctanswer|answer|ans|correct|correctopt|key|rightanswer|rightans)$/);
-        let exp = getValByHeader(row, /^(explanation|exp|solution|normalexplanation|shortexplanation|ansexplanation)$/);
-        let detailedExp = getValByHeader(row, /^(detailedexplanation|longexplanation|detailedsolution|stepbystep)$/);
-
-        // Substring fallback for Question column if exact regex didn't match
-        if (!qText) {
-          const rKeys = Object.keys(row);
-          for (const k of rKeys) {
-            const cleanK = k.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-            if (cleanK.includes('question') || cleanK.includes('prompt')) {
-              const val = String(row[k] || '').trim();
-              if (val) {
-                qText = val;
-                break;
-              }
-            }
-          }
-        }
-
-        // Positional extraction fallback ONLY if options A-D were not all found by header names
+        // If columns were not matched by header names or options were unassigned, map positionally relative to row cells!
         if (!qText || !optA || !optB || !optC || !optD) {
-          const nonEmp = rValues.filter(Boolean);
-          if (nonEmp.length >= 3) {
-            let qIdx = nonEmp.findIndex((v) => v.length > 10 || v.includes('?') || /^(?:q(?:uestion)?[\s\.\:]*)?\d+[\s\.\:]+/i.test(v));
+          if (nonEmp.length >= 2) {
+            let qIdx = nonEmp.findIndex((v) => v.length > 15 || v.includes('?') || /^(?:q(?:uestion)?[\s\.\:]*)?\d+[\s\.\:]+/i.test(v));
             if (qIdx === -1) qIdx = 0;
 
             if (!qText) qText = nonEmp[qIdx] || '';
-            if (!optA && nonEmp[qIdx + 1]) optA = nonEmp[qIdx + 1];
-            if (!optB && nonEmp[qIdx + 2]) optB = nonEmp[qIdx + 2];
-            if (!optC && nonEmp[qIdx + 3]) optC = nonEmp[qIdx + 3];
-            if (!optD && nonEmp[qIdx + 4]) optD = nonEmp[qIdx + 4];
-            if (!rawAns && nonEmp[qIdx + 5]) rawAns = nonEmp[qIdx + 5];
+            if (!optA) optA = nonEmp[qIdx + 1] || '';
+            if (!optB) optB = nonEmp[qIdx + 2] || '';
+            if (!optC) optC = nonEmp[qIdx + 3] || '';
+            if (!optD) optD = nonEmp[qIdx + 4] || '';
+            if (!rawAns) rawAns = nonEmp[qIdx + 5] || '';
+            if (!exp) exp = nonEmp[qIdx + 6] || '';
           }
         }
 
-        if (!qText) return; // Skip empty rows
-
-        if (!subj) subj = selectedSubject || 'Physics';
-        if (!chap) chap = selectedTopic || 'General';
+        if (!qText || qText.length < 3) continue;
 
         // Clean & normalize options (always 4 non-empty options A, B, C, D)
         const rawOpts = [optA, optB, optC, optD].map((o) => o.trim()).filter(Boolean);
@@ -538,33 +569,21 @@ Explanation: Power is the rate at which work is done or energy is transferred.
           }
         }
 
-        let finalTopicTag = '';
-        if (selectedSubject && selectedTopic) {
-          finalTopicTag = `${selectedSubject} - ${selectedTopic}`;
-        } else if (subj && chap) {
-          if (chap.toLowerCase().startsWith(subj.toLowerCase() + ' -')) {
-            finalTopicTag = chap;
-          } else {
-            finalTopicTag = `${subj} - ${chap}`;
-          }
-        } else if (chap) {
-          const activeSub = selectedSubject || subj || 'Physics';
-          finalTopicTag = `${activeSub} - ${chap}`;
-        } else {
-          finalTopicTag = defaultTag !== 'General' ? defaultTag : `${selectedSubject || 'Physics'} - ${selectedTopic || 'General'}`;
-        }
+        const activeSub = selectedSubject || 'Chemistry';
+        const activeTop = selectedTopic || 'General';
+        const finalTopicTag = `${activeSub} - ${activeTop}`;
 
         parsedList.push({
           course_id: selectedCourseId,
-          subject: subj,
+          subject: activeSub,
           topic_tag: finalTopicTag,
           question_text: qText,
           options: cleanOpts,
           correct_option: correctIndex,
           explanation: exp || `Correct Answer: Option ${String.fromCharCode(65 + correctIndex)} (${cleanOpts[correctIndex] || ''})`,
-          detailed_explanation: detailedExp,
+          detailed_explanation: '',
         });
-      });
+      }
 
       if (parsedList.length === 0) {
         setExcelError('No valid questions could be extracted from the file. Please check column headers.');
