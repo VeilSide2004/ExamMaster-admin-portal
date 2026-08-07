@@ -121,15 +121,20 @@ export default function UserManagementPage() {
 
   const toggleCoursePermission = (courseId: string) => {
     if (courseId === 'all') {
-      setAdminAllowedCourses(['all']);
+      if (adminAllowedCourses.includes('all')) {
+        // Uncheck 'all' and select the first course or empty array
+        setAdminAllowedCourses(courses.length > 0 ? [courses[0]._id] : []);
+      } else {
+        // Check 'all'
+        setAdminAllowedCourses(['all']);
+      }
       return;
     }
 
     setAdminAllowedCourses((prev) => {
       const filtered = prev.filter((c) => c !== 'all');
       if (filtered.includes(courseId)) {
-        const next = filtered.filter((c) => c !== courseId);
-        return next.length === 0 ? ['all'] : next;
+        return filtered.filter((c) => c !== courseId);
       } else {
         return [...filtered, courseId];
       }
