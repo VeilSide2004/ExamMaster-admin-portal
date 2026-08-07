@@ -393,7 +393,7 @@ export default function MockTestManagementPage() {
             <button
               type="button"
               onClick={() => setActiveTab('mock_tests')}
-              className={`px-4 py-2 text-xs font-extrabold rounded-lg transition-all flex items-center gap-2 ${
+              className={`px-4 py-2 text-xs font-extrabold rounded-lg transition-all duration-200 active:scale-95 flex items-center gap-2 ${
                 activeTab === 'mock_tests'
                   ? 'bg-[#0B192C] text-white shadow-xs'
                   : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800'
@@ -404,7 +404,7 @@ export default function MockTestManagementPage() {
             <button
               type="button"
               onClick={() => setActiveTab('weekly_dpp')}
-              className={`px-4 py-2 text-xs font-extrabold rounded-lg transition-all flex items-center gap-2 ${
+              className={`px-4 py-2 text-xs font-extrabold rounded-lg transition-all duration-200 active:scale-95 flex items-center gap-2 ${
                 activeTab === 'weekly_dpp'
                   ? 'bg-[#0B192C] text-white shadow-xs'
                   : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800'
@@ -416,7 +416,7 @@ export default function MockTestManagementPage() {
 
           {/* TAB 1: MOCK EXAMINATIONS */}
           {activeTab === 'mock_tests' && (
-            <div className="space-y-6">
+            <div className="space-y-6 animate-in fade-in slide-in-from-left-4 duration-300 ease-out">
               <div className="flex justify-between items-center">
                 <div>
                   <h2 className="text-xl font-bold text-slate-900 dark:text-white">Active Mock Examinations</h2>
@@ -494,7 +494,7 @@ export default function MockTestManagementPage() {
 
           {/* TAB 2: WEEKLY DPP PAPERS */}
           {activeTab === 'weekly_dpp' && (
-            <div className="space-y-6">
+            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 ease-out">
               <div className="flex justify-between items-center">
                 <div>
                   <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">

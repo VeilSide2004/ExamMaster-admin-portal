@@ -79,14 +79,20 @@ export const AdminSidebar: React.FC = () => {
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
-                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-bold transition-all ${
+                className={`group flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 active:scale-95 ${
                   isActive
-                    ? 'bg-[#DCE6F8] text-[#0B192C] dark:bg-slate-800 dark:text-white font-extrabold shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800/60'
+                    ? 'bg-blue-50/90 text-blue-900 dark:bg-slate-800 dark:text-white font-extrabold shadow-sm border-l-4 border-blue-600 dark:border-blue-400 pl-3'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 hover:translate-x-1 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800/60'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-[#0B192C] dark:text-white' : 'text-slate-500 dark:text-slate-400'}`} />
-                {item.label}
+                <Icon
+                  className={`w-4 h-4 transition-transform duration-200 ${
+                    isActive
+                      ? 'text-blue-600 dark:text-blue-400 scale-110'
+                      : 'text-slate-500 dark:text-slate-400 group-hover:scale-110 group-hover:text-blue-600 dark:group-hover:text-blue-400'
+                  }`}
+                />
+                <span className="truncate">{item.label}</span>
               </Link>
             );
           })}
