@@ -16,7 +16,8 @@ import {
   Layers,
   CheckCircle2,
   X,
-  Filter
+  Filter,
+  Upload
 } from 'lucide-react';
 
 interface CourseItem {
@@ -71,6 +72,37 @@ export default function AdminResourcesPage() {
   const [formFileSize, setFormFileSize] = useState('5.0 MB');
   const [formPageCount, setFormPageCount] = useState(120);
 
+  // Local File Upload State
+  const [uploadMode, setUploadMode] = useState<'file' | 'url'>('file');
+  const [localFileName, setLocalFileName] = useState('');
+
+  const handleLocalPdfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+      alert('Please select a valid PDF file (.pdf)');
+      return;
+    }
+
+    const sizeInMb = (file.size / (1024 * 1024)).toFixed(1);
+    setFormFileSize(`${sizeInMb} MB`);
+    setLocalFileName(file.name);
+
+    if (!formTitle) {
+      const cleanName = file.name.replace(/\.pdf$/i, '').replace(/[_\-]/g, ' ');
+      setFormTitle(cleanName);
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      if (event.target?.result) {
+        setFormFileUrl(event.target.result as string);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -112,6 +144,8 @@ export default function AdminResourcesPage() {
     setFormFileUrl('');
     setFormFileSize('5.0 MB');
     setFormPageCount(120);
+    setUploadMode('file');
+    setLocalFileName('');
     if (courses.length > 0) setFormCourseId(selectedCourseId !== 'All' ? selectedCourseId : courses[0]._id);
     setShowModal(true);
   };
@@ -126,6 +160,8 @@ export default function AdminResourcesPage() {
     setFormFileUrl(res.file_url);
     setFormFileSize(res.file_size || '3.5 MB');
     setFormPageCount(res.page_count || 100);
+    setUploadMode('url');
+    setLocalFileName('');
     setShowModal(true);
   };
 
@@ -431,17 +467,84 @@ export default function AdminResourcesPage() {
                 </div>
               </div>
 
-              {/* File URL */}
-              <div className="space-y-1">
-                <label className="text-slate-700 dark:text-slate-300 font-extrabold">PDF / File URL *</label>
-                <input
-                  type="url"
-                  value={formFileUrl}
-                  onChange={(e) => setFormFileUrl(e.target.value)}
-                  placeholder="https://example.com/books/sample.pdf or /pdf/file.pdf"
-                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-mono text-[11px]"
-                  required
-                />
+              {/* PDF File Source Switcher: Local Upload vs URL */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-slate-700 dark:text-slate-300 font-extrabold">PDF / Resource File *</label>
+                  <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700">
+                    <button
+                      type="button"
+                      onClick={() => setUploadMode('file')}
+                      className={`px-2.5 py-1 text-[11px] font-bold rounded-md transition-all ${
+                        uploadMode === 'file'
+                          ? 'bg-blue-600 text-white shadow-xs'
+                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                      }`}
+                    >
+                      📁 Upload Local PDF
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setUploadMode('url')}
+                      className={`px-2.5 py-1 text-[11px] font-bold rounded-md transition-all ${
+                        uploadMode === 'url'
+                          ? 'bg-blue-600 text-white shadow-xs'
+                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                      }`}
+                    >
+                      🔗 PDF File URL
+                    </button>
+                  </div>
+                </div>
+
+                {uploadMode === 'file' ? (
+                  <div className="space-y-2">
+                    <label className="relative flex flex-col items-center justify-center border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-400 rounded-xl p-5 bg-slate-50 dark:bg-slate-800/60 hover:bg-blue-50/40 dark:hover:bg-blue-950/20 transition-all cursor-pointer group text-center">
+                      <input
+                        type="file"
+                        accept=".pdf,application/pdf"
+                        onChange={handleLocalPdfChange}
+                        className="hidden"
+                      />
+                      <Upload className="w-8 h-8 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform mb-1.5" />
+                      <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                        {localFileName ? `Selected: ${localFileName}` : 'Click to select or drag & drop PDF from local system'}
+                      </span>
+                      <span className="text-[10px] text-slate-500 mt-0.5">Supports local PDF files up to 50MB</span>
+                    </label>
+
+                    {localFileName && (
+                      <div className="flex items-center justify-between p-2.5 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 rounded-xl text-xs">
+                        <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300 font-bold truncate">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span className="truncate">{localFileName}</span>
+                          <span className="text-[10px] bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 px-1.5 py-0.5 rounded font-mono">
+                            {formFileSize}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setLocalFileName('');
+                            setFormFileUrl('');
+                          }}
+                          className="text-rose-600 hover:text-rose-700 text-xs font-bold shrink-0 ml-2 cursor-pointer"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <input
+                    type="url"
+                    value={formFileUrl}
+                    onChange={(e) => setFormFileUrl(e.target.value)}
+                    placeholder="https://example.com/books/sample.pdf or /pdf/file.pdf"
+                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-mono text-[11px]"
+                    required={uploadMode === 'url'}
+                  />
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3">
