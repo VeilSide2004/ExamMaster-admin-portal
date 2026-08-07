@@ -298,19 +298,30 @@ export async function POST(req: NextRequest) {
       extractedText = result.value || '';
     } else if (fileName.endsWith('.pdf')) {
       try {
-        const pdfParse = require('pdf-parse/lib/pdf-parse.js');
-        const pdfData = await pdfParse(buffer);
-        extractedText = pdfData.text || '';
-      } catch (pdfErr: any) {
-        console.warn('Standard pdf-parse failed, activating resilient PDF stream fallback parser:', pdfErr?.message);
+        const PDFParser = require('pdf2json');
+        const pdfParser = new PDFParser(null, 1);
+        extractedText = await new Promise<string>((resolve, reject) => {
+          const timeout = setTimeout(() => reject(new Error('PDF parsing timed out')), 15000);
+          pdfParser.on('pdfParser_dataError', (errData: any) => {
+            clearTimeout(timeout);
+            reject(new Error(errData?.parserError || 'PDF parsing error'));
+          });
+          pdfParser.on('pdfParser_dataReady', () => {
+            clearTimeout(timeout);
+            const raw = pdfParser.getRawTextContent();
+            resolve(raw || '');
+          });
+          pdfParser.parseBuffer(buffer);
+        });
+      } catch (pErr: any) {
+        console.warn('pdf2json parser error, trying pdf-parse fallback:', pErr?.message);
         try {
+          const pdfParse = require('pdf-parse/lib/pdf-parse.js');
+          const pdfData = await pdfParse(buffer);
+          extractedText = pdfData.text || '';
+        } catch (pdfErr: any) {
+          console.warn('pdf-parse failed, activating stream fallback:', pdfErr?.message);
           extractedText = extractTextFromPdfBuffer(buffer);
-        } catch (fallbackErr: any) {
-          console.error('Resilient PDF stream fallback failed:', fallbackErr);
-          return NextResponse.json(
-            { error: `Could not parse PDF file: ${pdfErr?.message || 'Ensure it is a valid, text-selectable PDF.'}` },
-            { status: 400 }
-          );
         }
       }
     } else if (fileName.endsWith('.doc')) {
