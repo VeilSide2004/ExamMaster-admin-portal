@@ -28,18 +28,41 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Please provide a non-empty array of questions' }, { status: 400 });
     }
 
+    const isMalformedQuestion = (qText: any, options?: any[]): boolean => {
+      if (!qText || typeof qText !== 'string') return true;
+      const cleaned = qText.trim().toLowerCase();
+      if (cleaned.length <= 2) return true;
+      const headerWords = [
+        'chemistry', 'physics', 'mathematics', 'math', 'biology', 'botany', 'zoology',
+        'inorganic chemistry', 'organic chemistry', 'physical chemistry', 'thermodynamics',
+        'kinematics', 'mechanics', 'optics', 'waves', 'magnetism', 'electrostatics',
+        'algebra', 'calculus', 'vectors', 'trigonometry', 'geometry', 'general', 'science'
+      ];
+      if (headerWords.includes(cleaned)) return true;
+      if (/^(?:subject|topic|chapter)\s*[\:\-]/i.test(cleaned)) return true;
+      if (options && Array.isArray(options) && options.length > 0) {
+        const opt0 = String(options[0] || '').trim().toLowerCase();
+        if (opt0 === cleaned && options.slice(1).every((o) => /^option\s+[b-d]$/i.test(String(o).trim()))) {
+          return true;
+        }
+      }
+      return false;
+    };
+
     const preparedQuestions: any[] = [];
     for (let i = 0; i < questionsRaw.length; i++) {
       const q = questionsRaw[i];
       const qText = q.question_text || q.question || q.prompt || '';
-      const opts = Array.isArray(q.options) ? q.options : [];
+      let opts = Array.isArray(q.options) ? q.options.map((o: any) => String(o || '').trim()).filter(Boolean) : [];
 
-      if (!qText || opts.length < 2) {
-        return NextResponse.json(
-          { error: `Question #${i + 1} is missing required question prompt or options array.` },
-          { status: 400 }
-        );
+      if (!qText || isMalformedQuestion(qText, opts)) {
+        continue; // Skip malformed header lines cleanly
       }
+
+      while (opts.length < 4) {
+        opts.push(`Option ${String.fromCharCode(65 + opts.length)}`);
+      }
+      opts = opts.slice(0, 4);
 
       let correctIndex = 0;
       if (typeof q.correct_option === 'number') {
@@ -58,7 +81,7 @@ export async function POST(req: Request) {
         }
       }
 
-      const subj = q.subject || defaultSubject || 'Chemistry';
+      const subj = q.subject || defaultSubject || 'Physics';
       const chap = q.chapter || q.topic || defaultChapter || 'General';
       let topicTag = q.topic_tag || (subj && chap ? `${subj} - ${chap}` : subj || chap || 'General');
       if (topicTag && !topicTag.includes('-') && subj) {
@@ -74,11 +97,15 @@ export async function POST(req: Request) {
         question_text: qText,
         options: opts,
         correct_option: Number(correctIndex),
-        explanation: q.explanation || `Correct Answer: ${opts[correctIndex] || ''}`,
+        explanation: q.explanation || `Correct Answer: Option ${String.fromCharCode(65 + Number(correctIndex))} (${opts[correctIndex] || ''})`,
         detailed_explanation: q.detailed_explanation || '',
         is_active: true,
         created_at: new Date().toISOString(),
       });
+    }
+
+    if (preparedQuestions.length === 0) {
+      return NextResponse.json({ error: 'No valid questions found in bulk upload batch.' }, { status: 400 });
     }
 
     if (isMemoryMode) {
