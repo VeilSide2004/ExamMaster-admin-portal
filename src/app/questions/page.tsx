@@ -450,55 +450,77 @@ Explanation: Power is the rate at which work is done or energy is transferred.
       const defaultTag = selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : 'General';
       const parsedList: any[] = [];
 
-      jsonRows.forEach((row) => {
-        const keys = Object.keys(row);
-        const values = Object.values(row).map((v) => String(v || '').trim());
+      // Inspect column names across the file to detect structure
+      const sampleRow = jsonRows[0] || {};
+      const sampleKeys = Object.keys(sampleRow);
+      const cleanKeyMap: Record<string, string> = {};
+      sampleKeys.forEach((k) => {
+        cleanKeyMap[k] = k.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+      });
 
-        // Helper to extract by matching column names accurately
-        const getValByKeys = (possibleKeys: string[]): string => {
-          for (const pk of possibleKeys) {
-            const matchedKey = keys.find((k) => {
-              const cleaned = k.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-              return cleaned === pk;
-            });
-            if (matchedKey && String(row[matchedKey] || '').trim()) {
-              return String(row[matchedKey]).trim();
-            }
-          }
-          return '';
-        };
-
-        let subj = getValByKeys(['subject', 'sub', 'course']);
-        let chap = getValByKeys(['topic', 'chapter', 'topictag', 'tag', 'topicmodule']);
-        let qText = getValByKeys(['question', 'questiontext', 'prompt', 'questionprompt', 'mcqquestion', 'problem', 'qtext']);
-        let optA = getValByKeys(['optiona', 'option1', 'opta', 'opt1', 'choicea', 'choice1', 'ans1']);
-        let optB = getValByKeys(['optionb', 'option2', 'optb', 'opt2', 'choiceb', 'choice2', 'ans2']);
-        let optC = getValByKeys(['optionc', 'option3', 'optc', 'opt3', 'choicec', 'choice3', 'ans3']);
-        let optD = getValByKeys(['optiond', 'option4', 'optd', 'opt4', 'choiced', 'choice4', 'ans4']);
-        let rawAns = getValByKeys(['correctoption', 'correctanswer', 'answer', 'ans', 'correct', 'correctopt', 'key']);
-        let exp = getValByKeys(['explanation', 'exp', 'solution', 'normalexplanation', 'shortexplanation', 'ansexplanation']);
-        let detailedExp = getValByKeys(['detailedexplanation', 'longexplanation', 'detailedsolution', 'stepbystep', 'detaileddescription']);
-
-        // Positional fallback if explicit column names were not found (e.g. headerless CSV/XLS)
-        if (!qText) {
-          const nonEmp = values.filter(Boolean);
-          if (nonEmp.length >= 3) {
-            let qIdx = nonEmp.findIndex((v) => v.includes('?') || v.length > 15 || /^(?:q(?:uestion)?[\s\.\:]*)?\d+[\s\.\:]+/i.test(v));
-            if (qIdx === -1) qIdx = 0;
-
-            qText = nonEmp[qIdx];
-            if (!optA && nonEmp[qIdx + 1]) optA = nonEmp[qIdx + 1];
-            if (!optB && nonEmp[qIdx + 2]) optB = nonEmp[qIdx + 2];
-            if (!optC && nonEmp[qIdx + 3]) optC = nonEmp[qIdx + 3];
-            if (!optD && nonEmp[qIdx + 4]) optD = nonEmp[qIdx + 4];
-            if (!rawAns && nonEmp[qIdx + 5]) rawAns = nonEmp[qIdx + 5];
+      const findKeyMatching = (row: Record<string, any>, candidates: string[], substringMatch = false): string => {
+        const rKeys = Object.keys(row);
+        for (const cand of candidates) {
+          const matchedKey = rKeys.find((k) => {
+            const cleaned = k.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (substringMatch) return cleaned.includes(cand);
+            return cleaned === cand;
+          });
+          if (matchedKey && String(row[matchedKey] || '').trim()) {
+            return String(row[matchedKey]).trim();
           }
         }
+        return '';
+      };
+
+      jsonRows.forEach((row) => {
+        const values = Object.values(row).map((v) => String(v || '').trim());
+
+        // Extract fields using comprehensive candidates list
+        let subj = findKeyMatching(row, ['subject', 'sub', 'course']);
+        let chap = findKeyMatching(row, ['topic', 'chapter', 'topictag', 'tag', 'topicmodule']);
+        let qText = findKeyMatching(row, [
+          'question', 'questions', 'questiontext', 'qtext', 'prompt', 'questionprompt',
+          'mcqquestion', 'problem', 'questiontitle', 'title', 'statement', 'questionstatement',
+          'q', 'content', 'questioncontent'
+        ]);
+
+        let optA = findKeyMatching(row, ['optiona', 'option1', 'opta', 'opt1', 'choicea', 'choice1', 'ans1', 'a']);
+        let optB = findKeyMatching(row, ['optionb', 'option2', 'optb', 'opt2', 'choiceb', 'choice2', 'ans2', 'b']);
+        let optC = findKeyMatching(row, ['optionc', 'option3', 'optc', 'opt3', 'choicec', 'choice3', 'ans3', 'c']);
+        let optD = findKeyMatching(row, ['optiond', 'option4', 'optd', 'opt4', 'choiced', 'choice4', 'ans4', 'd']);
+
+        let rawAns = findKeyMatching(row, [
+          'correctoption', 'correctanswer', 'answer', 'ans', 'correct', 'correctopt', 'key',
+          'rightanswer', 'rightans', 'correctindex', 'correctidx'
+        ]);
+        let exp = findKeyMatching(row, ['explanation', 'exp', 'solution', 'normalexplanation', 'shortexplanation', 'ansexplanation']);
+        let detailedExp = findKeyMatching(row, ['detailedexplanation', 'longexplanation', 'detailedsolution', 'stepbystep', 'detaileddescription']);
+
+        // Substring fallback for Question column if not found by exact candidate
+        if (!qText) {
+          qText = findKeyMatching(row, ['question', 'prompt', 'stmt'], true);
+        }
+
+        // Positional fallback for generic / headerless CSV rows
+        if (!qText && values.length >= 2) {
+          const nonEmp = values.filter(Boolean);
+          if (nonEmp.length > 0) {
+            qText = nonEmp[0];
+            if (!optA && nonEmp[1]) optA = nonEmp[1];
+            if (!optB && nonEmp[2]) optB = nonEmp[2];
+            if (!optC && nonEmp[3]) optC = nonEmp[3];
+            if (!optD && nonEmp[4]) optD = nonEmp[4];
+            if (!rawAns && nonEmp[5]) rawAns = nonEmp[5];
+          }
+        }
+
+        if (!qText) return; // Skip completely empty rows
 
         if (!subj) subj = selectedSubject || 'Physics';
         if (!chap) chap = selectedTopic || 'General';
 
-        // Prepare clean options (ensure 4 valid non-empty options)
+        // Clean & normalize options (always 4 non-empty options A, B, C, D)
         const rawOpts = [optA, optB, optC, optD].map((o) => o.trim()).filter(Boolean);
         const finalOpts: string[] = [...rawOpts];
         while (finalOpts.length < 4) {
@@ -537,22 +559,20 @@ Explanation: Power is the rate at which work is done or energy is transferred.
           finalTopicTag = defaultTag !== 'General' ? defaultTag : `${selectedSubject || 'Physics'} - ${selectedTopic || 'General'}`;
         }
 
-        if (qText && qText.toLowerCase() !== subj.toLowerCase() && qText.toLowerCase() !== chap.toLowerCase()) {
-          parsedList.push({
-            course_id: selectedCourseId,
-            subject: subj,
-            topic_tag: finalTopicTag,
-            question_text: qText,
-            options: cleanOpts,
-            correct_option: correctIndex,
-            explanation: exp || `Correct Answer: Option ${String.fromCharCode(65 + correctIndex)} (${cleanOpts[correctIndex] || ''})`,
-            detailed_explanation: detailedExp,
-          });
-        }
+        parsedList.push({
+          course_id: selectedCourseId,
+          subject: subj,
+          topic_tag: finalTopicTag,
+          question_text: qText,
+          options: cleanOpts,
+          correct_option: correctIndex,
+          explanation: exp || `Correct Answer: Option ${String.fromCharCode(65 + correctIndex)} (${cleanOpts[correctIndex] || ''})`,
+          detailed_explanation: detailedExp,
+        });
       });
 
       if (parsedList.length === 0) {
-        setExcelError('No valid questions could be extracted. Make sure column headers include Question, Option A, Option B, Option C, Option D, Answer.');
+        setExcelError('No valid questions could be extracted from the file. Please check column headers.');
         setParsedExcelQuestions([]);
       } else {
         setParsedExcelQuestions(parsedList);
