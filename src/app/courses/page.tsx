@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { AdminSidebar } from '@/components/layout/AdminSidebar';
 import { AdminHeader } from '@/components/layout/AdminHeader';
-import { BookOpen, Plus, Trash2, AlertTriangle, X, Trophy, GraduationCap, Sparkles } from 'lucide-react';
+import { BookOpen, Plus, Trash2, AlertTriangle, X, Trophy, GraduationCap, Sparkles, ChevronDown } from 'lucide-react';
 
 export default function CourseManagementPage() {
   const [courses, setCourses] = useState<any[]>([]);
@@ -23,7 +23,8 @@ export default function CourseManagementPage() {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // Custom Educational Boards State
+  // Custom Educational Boards State & Removal
+  const [isBoardDropdownOpen, setIsBoardDropdownOpen] = useState(false);
   const [customBoards, setCustomBoards] = useState<string[]>(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -33,6 +34,29 @@ export default function CourseManagementPage() {
     }
     return [];
   });
+
+  const [removedBoards, setRemovedBoards] = useState<string[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('exam_portal_removed_boards');
+        if (saved) return JSON.parse(saved);
+      } catch (e) {}
+    }
+    return [];
+  });
+
+  const defaultBoardList = React.useMemo(() => [
+    'CBSE (Central Board of Secondary Education)',
+    'ICSE / CISCE (Council for Indian School Certificate Examinations)',
+    'State Board (Secondary / Higher Secondary)',
+    'IB / Cambridge (International Baccalaureate / IGCSE)',
+  ], []);
+
+  const allActiveBoards = React.useMemo(() => {
+    const defaultsFiltered = defaultBoardList.filter((b) => !removedBoards.includes(b));
+    const customFiltered = customBoards.filter((b) => !removedBoards.includes(b));
+    return [...defaultsFiltered, ...customFiltered];
+  }, [defaultBoardList, removedBoards, customBoards]);
 
   const handleAddCustomBoardToList = (newBName: string) => {
     if (!newBName.trim()) return;
@@ -46,14 +70,29 @@ export default function CourseManagementPage() {
     }
   };
 
-  const handleRemoveCustomBoard = (bNameToRemove: string) => {
-    const updated = customBoards.filter((b) => b !== bNameToRemove);
-    setCustomBoards(updated);
+  const handleRemoveAnyBoard = (e: React.MouseEvent, bName: string) => {
+    e.stopPropagation();
+    const updatedRemoved = [...removedBoards, bName];
+    setRemovedBoards(updatedRemoved);
     try {
-      localStorage.setItem('exam_portal_custom_boards', JSON.stringify(updated));
+      localStorage.setItem('exam_portal_removed_boards', JSON.stringify(updatedRemoved));
     } catch (e) {}
-    if (board === bNameToRemove) {
-      setBoard('CBSE');
+
+    if (customBoards.includes(bName)) {
+      const updatedCustom = customBoards.filter((c) => c !== bName);
+      setCustomBoards(updatedCustom);
+      try {
+        localStorage.setItem('exam_portal_custom_boards', JSON.stringify(updatedCustom));
+      } catch (e) {}
+    }
+
+    if (board === bName) {
+      const remaining = allActiveBoards.filter((b) => b !== bName);
+      if (remaining.length > 0) {
+        setBoard(remaining[0]);
+      } else {
+        setBoard('Other');
+      }
     }
   };
 
@@ -460,49 +499,62 @@ export default function CourseManagementPage() {
               {/* School Education Board Selector */}
               {category === 'School Exams' && (
                 <div className="space-y-3 p-3 bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900 rounded-xl">
-                  <div>
+                  <div className="relative">
                     <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
                       Educational Board / Council
                     </label>
-                    <select
-                      value={board}
-                      onChange={(e) => setBoard(e.target.value)}
-                      className="w-full p-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white font-medium"
-                    >
-                      <option value="CBSE">CBSE (Central Board of Secondary Education)</option>
-                      <option value="ICSE">ICSE / CISCE (Council for Indian School Certificate Examinations)</option>
-                      <option value="State Board">State Board (Secondary / Higher Secondary)</option>
-                      <option value="IB / Cambridge">IB / Cambridge (International Baccalaureate / IGCSE)</option>
-                      {customBoards.map((cb) => (
-                        <option key={cb} value={cb}>
-                          {cb}
-                        </option>
-                      ))}
-                      <option value="Other">+ Add Custom Board...</option>
-                    </select>
 
-                    {/* Custom Added Boards List with Remove Buttons */}
-                    {customBoards.length > 0 && (
-                      <div className="space-y-1 pt-2">
-                        <span className="text-[11px] font-bold text-slate-500">Added Custom Boards (Click X to remove):</span>
-                        <div className="flex flex-wrap gap-1.5">
-                          {customBoards.map((bName) => (
-                            <span
+                    {/* Custom Dropdown Trigger */}
+                    <button
+                      type="button"
+                      onClick={() => setIsBoardDropdownOpen((prev) => !prev)}
+                      className="w-full flex items-center justify-between p-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-bold text-xs shadow-xs hover:border-emerald-500 transition-all cursor-pointer"
+                    >
+                      <span className="truncate">{board === 'Other' ? '+ Add Custom Board...' : board}</span>
+                      <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isBoardDropdownOpen ? 'rotate-180 text-emerald-600' : ''}`} />
+                    </button>
+
+                    {/* Custom Dropdown Menu with Red Trash Remove Buttons Next to EVERY Board */}
+                    {isBoardDropdownOpen && (
+                      <div className="absolute left-0 right-0 mt-1 z-50 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl overflow-hidden py-1 max-h-64 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150">
+                        {allActiveBoards.map((bName) => {
+                          const isSelected = board === bName;
+                          return (
+                            <div
                               key={bName}
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-900 dark:text-emerald-200 text-[11px] font-bold border border-emerald-300 dark:border-emerald-800 shadow-2xs"
+                              onClick={() => {
+                                setBoard(bName);
+                                setIsBoardDropdownOpen(false);
+                              }}
+                              className={`w-full px-3 py-2.5 text-xs font-bold flex items-center justify-between transition-colors cursor-pointer group ${
+                                isSelected
+                                  ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-extrabold'
+                                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                              }`}
                             >
-                              {bName}
+                              <span className="truncate pr-2">{bName}</span>
                               <button
                                 type="button"
-                                onClick={() => handleRemoveCustomBoard(bName)}
-                                className="text-emerald-700 hover:text-rose-600 dark:hover:text-rose-400 p-0.5 rounded transition-colors cursor-pointer"
-                                title={`Remove custom board "${bName}"`}
+                                onClick={(e) => handleRemoveAnyBoard(e, bName)}
+                                className="p-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 dark:bg-rose-950/60 dark:hover:bg-rose-900 dark:text-rose-400 border border-rose-200 dark:border-rose-800/60 shrink-0 transition-all active:scale-90 cursor-pointer"
+                                title={`Remove "${bName}" from board list`}
                               >
-                                <X className="w-3.5 h-3.5" />
+                                <Trash2 className="w-3.5 h-3.5" />
                               </button>
-                            </span>
-                          ))}
-                        </div>
+                            </div>
+                          );
+                        })}
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setBoard('Other');
+                            setIsBoardDropdownOpen(false);
+                          }}
+                          className="w-full px-3 py-2.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border-t border-slate-100 dark:border-slate-800 cursor-pointer flex items-center gap-1.5 transition-colors text-left"
+                        >
+                          <Plus className="w-3.5 h-3.5" /> + Add Custom Board...
+                        </button>
                       </div>
                     )}
                   </div>
