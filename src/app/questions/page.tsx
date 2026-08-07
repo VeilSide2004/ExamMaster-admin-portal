@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import * as XLSX from 'xlsx';
 import { useRouter } from 'next/navigation';
 import { AdminSidebar } from '@/components/layout/AdminSidebar';
 import { AdminHeader } from '@/components/layout/AdminHeader';
@@ -62,8 +63,11 @@ export default function QuestionManagementPage() {
 
   // Bulk Question Modal
   const [showBulkModal, setShowBulkModal] = useState(false);
-  const [bulkMode, setBulkMode] = useState<'document' | 'text' | 'json' | 'form'>('document');
-  const [bulkJson, setBulkJson] = useState('');
+  const [bulkMode, setBulkMode] = useState<'document' | 'excel' | 'text' | 'form'>('document');
+  const [excelFileName, setExcelFileName] = useState('');
+  const [excelParsing, setExcelParsing] = useState(false);
+  const [parsedExcelQuestions, setParsedExcelQuestions] = useState<any[]>([]);
+  const [excelError, setExcelError] = useState('');
   const [bulkText, setBulkText] = useState('');
   const [docFileName, setDocFileName] = useState('');
   const [docParsing, setDocParsing] = useState(false);
@@ -342,6 +346,156 @@ Explanation: Power is the rate at which work is done or energy is transferred.
     document.body.removeChild(link);
   };
 
+  // Excel / Spreadsheet file parsing
+  const handleExcelFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setExcelFileName(file.name);
+    setExcelParsing(true);
+    setExcelError('');
+    setBulkError('');
+
+    try {
+      const data = await file.arrayBuffer();
+      const workbook = XLSX.read(data, { type: 'array' });
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName];
+      const jsonRows: any[] = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+
+      if (!jsonRows || jsonRows.length === 0) {
+        setExcelError('The selected spreadsheet is empty or has no readable rows.');
+        setParsedExcelQuestions([]);
+        return;
+      }
+
+      const defaultTag = selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : 'General';
+
+      const parsedList: any[] = [];
+      jsonRows.forEach((row) => {
+        const normalizedRow: Record<string, any> = {};
+        Object.keys(row).forEach((k) => {
+          const normKey = k.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+          normalizedRow[normKey] = row[k];
+        });
+
+        const qText = String(
+          normalizedRow['question'] ||
+          normalizedRow['questiontext'] ||
+          normalizedRow['prompt'] ||
+          normalizedRow['q'] ||
+          normalizedRow['questionprompt'] ||
+          ''
+        ).trim();
+
+        const optA = String(normalizedRow['optiona'] || normalizedRow['option1'] || normalizedRow['a'] || '').trim();
+        const optB = String(normalizedRow['optionb'] || normalizedRow['option2'] || normalizedRow['b'] || '').trim();
+        const optC = String(normalizedRow['optionc'] || normalizedRow['option3'] || normalizedRow['c'] || '').trim();
+        const optD = String(normalizedRow['optiond'] || normalizedRow['option4'] || normalizedRow['d'] || '').trim();
+
+        const opts = [optA, optB, optC, optD].filter(Boolean);
+
+        const rawAns = String(
+          normalizedRow['correctoption'] ||
+          normalizedRow['correctanswer'] ||
+          normalizedRow['answer'] ||
+          normalizedRow['ans'] ||
+          normalizedRow['correct'] ||
+          ''
+        ).trim();
+
+        let correctIndex = 0;
+        if (rawAns) {
+          const upperAns = rawAns.toUpperCase();
+          if (upperAns === 'A' || upperAns === '1' || upperAns === 'OPTION A' || upperAns === 'OPTION 1') correctIndex = 0;
+          else if (upperAns === 'B' || upperAns === '2' || upperAns === 'OPTION B' || upperAns === 'OPTION 2') correctIndex = 1;
+          else if (upperAns === 'C' || upperAns === '3' || upperAns === 'OPTION C' || upperAns === 'OPTION 3') correctIndex = 2;
+          else if (upperAns === 'D' || upperAns === '4' || upperAns === 'OPTION D' || upperAns === 'OPTION 4') correctIndex = 3;
+          else if (!isNaN(Number(rawAns)) && Number(rawAns) >= 0 && Number(rawAns) <= 3) {
+            correctIndex = Number(rawAns);
+          } else {
+            const foundIdx = opts.findIndex((o) => o.toLowerCase() === rawAns.toLowerCase());
+            if (foundIdx !== -1) correctIndex = foundIdx;
+          }
+        }
+
+        const exp = String(
+          normalizedRow['explanation'] ||
+          normalizedRow['solution'] ||
+          normalizedRow['exp'] ||
+          normalizedRow['ansexplanation'] ||
+          ''
+        ).trim();
+
+        const subj = String(normalizedRow['subject'] || '').trim();
+        const chap = String(normalizedRow['chapter'] || normalizedRow['topic'] || '').trim();
+        const tagFromRow = String(normalizedRow['topictag'] || normalizedRow['tag'] || '').trim();
+
+        let finalTopicTag = tagFromRow;
+        if (!finalTopicTag) {
+          if (subj && chap) finalTopicTag = `${subj} - ${chap}`;
+          else if (subj) finalTopicTag = subj;
+          else if (chap) finalTopicTag = chap;
+          else finalTopicTag = defaultTag;
+        }
+
+        if (qText) {
+          parsedList.push({
+            course_id: selectedCourseId,
+            topic_tag: finalTopicTag,
+            question_text: qText,
+            options: opts.length >= 2 ? opts : [optA || 'Option A', optB || 'Option B', optC || 'Option C', optD || 'Option D'],
+            correct_option: correctIndex,
+            explanation: exp || (opts[correctIndex] ? `Correct Answer: ${opts[correctIndex]}` : ''),
+          });
+        }
+      });
+
+      if (parsedList.length === 0) {
+        setExcelError('No valid questions could be extracted. Make sure column headers include Question, Option A, Option B, Option C, Option D, Answer.');
+        setParsedExcelQuestions([]);
+      } else {
+        setParsedExcelQuestions(parsedList);
+      }
+    } catch (err: any) {
+      setExcelError(err.message || 'Failed to parse Excel file');
+      setParsedExcelQuestions([]);
+    } finally {
+      setExcelParsing(false);
+    }
+  };
+
+  const downloadSampleExcelTemplate = () => {
+    const sampleData = [
+      {
+        Subject: selectedSubject || 'Physics',
+        Topic: selectedTopic || 'Electrostatics',
+        Question: 'What is the SI unit of electric charge?',
+        'Option A': 'Coulomb',
+        'Option B': 'Ampere',
+        'Option C': 'Volt',
+        'Option D': 'Ohm',
+        Answer: 'A',
+        Explanation: 'Electric charge is measured in Coulombs (C).'
+      },
+      {
+        Subject: selectedSubject || 'Physics',
+        Topic: selectedTopic || 'Electrostatics',
+        Question: 'The electric field inside a hollow conducting sphere is:',
+        'Option A': 'Infinite',
+        'Option B': 'Zero',
+        'Option C': 'Equal to surface field',
+        'Option D': 'Variable',
+        Answer: 'B',
+        Explanation: 'According to Gauss\'s Law, net charge inside a conductor is zero, hence electric field is zero.'
+      }
+    ];
+
+    const worksheet = XLSX.utils.json_to_sheet(sampleData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Questions');
+    XLSX.writeFile(workbook, 'sample_questions_template.xlsx');
+  };
+
   // Plain text parsing
   const parsePlainText = (raw: string, targetCourse: string) => {
     const blocks = raw.split(/\n\s*\n/).filter((b) => b.trim().length > 0);
@@ -420,66 +574,17 @@ Explanation: Power is the rate at which work is done or energy is transferred.
           return;
         }
         questionsToSubmit = parsePlainText(bulkText, selectedCourseId);
-      } else if (bulkMode === 'json') {
-        if (!bulkJson.trim()) {
-          setBulkError('Please paste a JSON array or object of questions');
+      } else if (bulkMode === 'excel') {
+        if (!parsedExcelQuestions.length) {
+          setBulkError('Please upload a valid Excel (.xlsx, .xls) or CSV (.csv) file containing questions.');
           setSubmitting(false);
           return;
         }
-
-        const parsed = JSON.parse(bulkJson);
-        let rawList: any[] = [];
-        let defaultSubject = '';
-        let defaultChapter = '';
-
-        if (Array.isArray(parsed)) {
-          rawList = parsed;
-        } else if (parsed && typeof parsed === 'object') {
-          defaultSubject = parsed.subject || '';
-          defaultChapter = parsed.chapter || '';
-          if (Array.isArray(parsed.questions)) {
-            rawList = parsed.questions;
-          } else if (Array.isArray(parsed.data)) {
-            rawList = parsed.data;
-          } else {
-            rawList = [parsed];
-          }
-        }
-
-        questionsToSubmit = rawList.map((q: any) => {
-          const qText = q.question_text || q.question || q.prompt || '';
-          const opts = Array.isArray(q.options) ? q.options : ['Option A', 'Option B', 'Option C', 'Option D'];
-
-          let correctIndex = 0;
-          if (typeof q.correct_option === 'number') {
-            correctIndex = q.correct_option;
-          } else if (typeof q.correctAnswer === 'number') {
-            correctIndex = q.correctAnswer;
-          } else if (typeof q.correctAnswer === 'string') {
-            const idx = opts.findIndex((o: any) => String(o).trim().toLowerCase() === q.correctAnswer.trim().toLowerCase());
-            if (idx !== -1) {
-              correctIndex = idx;
-            } else {
-              const char = q.correctAnswer.trim().toUpperCase();
-              if (char === 'B' || char === '1') correctIndex = 1;
-              else if (char === 'C' || char === '2') correctIndex = 2;
-              else if (char === 'D' || char === '3') correctIndex = 3;
-            }
-          }
-
-          const subj = q.subject || defaultSubject || selectedSubject || 'Physics';
-          const chap = q.chapter || defaultChapter || selectedTopic || 'Electrostatics';
-          const topicTag = q.topic_tag || (subj && chap ? `${subj} - ${chap}` : subj || chap || 'General');
-
-          return {
-            course_id: selectedCourseId,
-            topic_tag: topicTag,
-            question_text: qText,
-            options: opts,
-            correct_option: correctIndex,
-            explanation: q.explanation || `Correct Answer: ${opts[correctIndex] || ''}`,
-          };
-        });
+        questionsToSubmit = parsedExcelQuestions.map((q) => ({
+          ...q,
+          course_id: selectedCourseId,
+          topic_tag: q.topic_tag || (selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : 'General'),
+        }));
       } else {
         questionsToSubmit = bulkFormQuestions.map((q) => ({
           ...q,
@@ -499,7 +604,9 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         setBulkError(data.error || 'Failed to bulk upload questions');
       } else {
         setShowBulkModal(false);
-        setBulkJson('');
+        setExcelFileName('');
+        setParsedExcelQuestions([]);
+        setExcelError('');
         setBulkText('');
         setParsedDocQuestions([]);
         setDocFileName('');
@@ -1021,6 +1128,16 @@ Explanation: Power is the rate at which work is done or energy is transferred.
               </button>
               <button
                 type="button"
+                onClick={() => setBulkMode('excel')}
+                className={`pb-2.5 px-3 text-xs font-bold flex items-center gap-1.5 border-b-2 transition-colors ${bulkMode === 'excel'
+                  ? 'border-[#0B192C] text-[#0B192C] dark:border-blue-400 dark:text-blue-400'
+                  : 'border-transparent text-slate-500 hover:text-slate-800'
+                  }`}
+              >
+                <FileSpreadsheet className="w-4 h-4 text-emerald-600" /> Excel / Sheet Import (.xlsx, .csv)
+              </button>
+              <button
+                type="button"
                 onClick={() => setBulkMode('text')}
                 className={`pb-2.5 px-3 text-xs font-bold flex items-center gap-1.5 border-b-2 transition-colors ${bulkMode === 'text'
                   ? 'border-[#0B192C] text-[#0B192C] dark:border-blue-400 dark:text-blue-400'
@@ -1038,16 +1155,6 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                   }`}
               >
                 <ListPlus className="w-4 h-4 text-blue-600" /> Visual Multi-Card Form
-              </button>
-              <button
-                type="button"
-                onClick={() => setBulkMode('json')}
-                className={`pb-2.5 px-3 text-xs font-bold flex items-center gap-1.5 border-b-2 transition-colors ${bulkMode === 'json'
-                  ? 'border-[#0B192C] text-[#0B192C] dark:border-blue-400 dark:text-blue-400'
-                  : 'border-transparent text-slate-500 hover:text-slate-800'
-                  }`}
-              >
-                <Code className="w-4 h-4 text-purple-600" /> JSON Import
               </button>
             </div>
 
@@ -1191,16 +1298,127 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                 </div>
               )}
 
-              {/* TAB 3: JSON ARRAY IMPORT */}
-              {bulkMode === 'json' && (
-                <div className="flex-1 flex flex-col space-y-2">
-                  <textarea
-                    rows={12}
-                    value={bulkJson}
-                    onChange={(e) => setBulkJson(e.target.value)}
-                    placeholder='[&#10;  {&#10;    "topic_tag": "Physics - Electrostatics",&#10;    "question_text": "...",&#10;    "options": ["A", "B", "C", "D"],&#10;    "correct_option": 0,&#10;    "explanation": "..."&#10;  }&#10;]'
-                    className="w-full flex-1 p-3 bg-slate-900 text-slate-100 font-mono text-[11px] border border-slate-800 rounded-xl focus:outline-none resize-none"
-                  />
+              {/* TAB 3: EXCEL / SPREADSHEET FILE UPLOAD */}
+              {bulkMode === 'excel' && (
+                <div className="flex-1 flex flex-col space-y-4 overflow-hidden">
+                  <div className="flex justify-between items-center p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-lg">
+                    <div>
+                      <h4 className="font-bold text-emerald-900 dark:text-emerald-300 text-xs">Excel & CSV Spreadsheet Parser</h4>
+                      <p className="text-[11px] text-emerald-700 dark:text-emerald-400">Upload .xlsx, .xls, or .csv files. Columns for Question, Options (A-D), Answer, and Explanation will be parsed.</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={downloadSampleExcelTemplate}
+                      className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg flex items-center gap-1.5 shadow-xs transition-colors shrink-0"
+                    >
+                      <Download className="w-4 h-4" /> Download Excel Template
+                    </button>
+                  </div>
+
+                  {excelError && (
+                    <div className="p-3 bg-rose-100 text-rose-700 border border-rose-300 rounded-lg text-xs flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 shrink-0" />
+                      <span>{excelError}</span>
+                    </div>
+                  )}
+
+                  {!parsedExcelQuestions.length ? (
+                    <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg p-8 text-center flex flex-col items-center justify-center space-y-3 bg-slate-50/50 dark:bg-slate-800/20 flex-1">
+                      {excelParsing ? (
+                        <div className="flex flex-col items-center space-y-2 py-6">
+                          <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                          <span className="font-bold text-slate-700 dark:text-slate-300">Parsing Excel spreadsheet...</span>
+                        </div>
+                      ) : (
+                        <>
+                          <FileSpreadsheet className="w-12 h-12 text-emerald-500" />
+                          <div>
+                            <span className="font-bold text-slate-900 dark:text-white block text-sm mb-1">
+                              {excelFileName ? `Selected: ${excelFileName}` : 'Upload Excel or CSV File'}
+                            </span>
+                            <span className="text-[11px] text-slate-500 block">
+                              Supports Microsoft Excel (.xlsx, .xls) and CSV (.csv) spreadsheets with question & answer columns.
+                            </span>
+                          </div>
+
+                          <label className="cursor-pointer px-4 py-2.5 bg-[#0B192C] hover:bg-[#060E18] text-white font-bold rounded-lg shadow-xs text-xs flex items-center gap-2 transition-colors">
+                            <Upload className="w-4 h-4" /> Select Excel / CSV File
+                            <input
+                              type="file"
+                              accept=".xlsx,.xls,.csv"
+                              onChange={handleExcelFileUpload}
+                              className="hidden"
+                            />
+                          </label>
+                        </>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex-1 flex flex-col min-h-0 space-y-3">
+                      <div className="flex justify-between items-center bg-slate-100 dark:bg-slate-800 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700">
+                        <div className="flex items-center gap-2">
+                          <span className="font-extrabold text-slate-800 dark:text-slate-200">
+                            Parsed {parsedExcelQuestions.length} Questions from &quot;{excelFileName}&quot;
+                          </span>
+                        </div>
+                        <label className="cursor-pointer px-3 py-1 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 text-slate-800 dark:text-slate-200 font-bold rounded text-xs">
+                          Change File
+                          <input
+                            type="file"
+                            accept=".xlsx,.xls,.csv"
+                            onChange={handleExcelFileUpload}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
+
+                      <div className="flex-1 overflow-y-auto space-y-3 max-h-[40vh] pr-1">
+                        {parsedExcelQuestions.map((q: any, idx: number) => (
+                          <div
+                            key={idx}
+                            className="p-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800/60 space-y-2"
+                          >
+                            <div className="flex justify-between items-start">
+                              <span className="font-bold text-slate-900 dark:text-slate-100">
+                                Q{idx + 1}. {q.question_text}
+                              </span>
+                              <span className="text-[10px] px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 font-semibold rounded shrink-0 ml-2">
+                                {q.topic_tag}
+                              </span>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-1.5 text-[11px]">
+                              {q.options.map((opt: string, optIdx: number) => {
+                                const isCorrect = q.correct_option === optIdx;
+                                return (
+                                  <div
+                                    key={optIdx}
+                                    className={`p-1.5 rounded border ${
+                                      isCorrect
+                                        ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-200 font-bold'
+                                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
+                                    }`}
+                                  >
+                                    <span className="font-mono mr-1">
+                                      {String.fromCharCode(65 + optIdx)}:
+                                    </span>
+                                    {opt}
+                                    {isCorrect && <span className="ml-1 text-emerald-600 dark:text-emerald-400">✓ (Answer)</span>}
+                                  </div>
+                                );
+                              })}
+                            </div>
+
+                            {q.explanation && (
+                              <p className="text-[10px] text-slate-500 dark:text-slate-400 italic">
+                                Explanation: {q.explanation}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
