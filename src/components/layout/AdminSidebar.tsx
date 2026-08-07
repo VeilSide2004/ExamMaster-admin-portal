@@ -115,7 +115,7 @@ export const AdminSidebar: React.FC = () => {
   return (
     <>
       {/* Desktop Static Sidebar */}
-      <aside className="hidden lg:flex w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex-col justify-between h-screen sticky top-0 shrink-0 select-none">
+      <aside className="hidden lg:flex w-64 border-r border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-900 shadow-[4px_0_24px_-4px_rgba(0,0,0,0.06),2px_0_6px_-1px_rgba(0,0,0,0.03)] dark:shadow-[4px_0_24px_-4px_rgba(0,0,0,0.4)] z-40 flex-col justify-between h-screen sticky top-0 shrink-0 select-none transition-all">
         <SidebarContent />
       </aside>
 
