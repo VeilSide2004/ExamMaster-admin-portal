@@ -90,6 +90,10 @@ export default function QuestionManagementPage() {
   const [submitting, setSubmitting] = useState(false);
   const [deletingQuestionId, setDeletingQuestionId] = useState<string | null>(null);
 
+  // Multi-Selection State for Batch Delete
+  const [selectedTopicNames, setSelectedTopicNames] = useState<string[]>([]);
+  const [selectedSubjectNames, setSelectedSubjectNames] = useState<string[]>([]);
+
   // Default Subject Lists per course
   const [customSubjects, setCustomSubjects] = useState<Record<string, string[]>>({});
   const [customTopics, setCustomTopics] = useState<Record<string, string[]>>({}); // subjectKey -> topics[]
@@ -794,6 +798,119 @@ Explanation: Power is the rate at which work is done or energy is transferred.
     }
   };
 
+  const toggleSelectTopic = (e: React.MouseEvent, tName: string) => {
+    e.stopPropagation();
+    setSelectedTopicNames((prev) =>
+      prev.includes(tName) ? prev.filter((t) => t !== tName) : [...prev, tName]
+    );
+  };
+
+  const toggleSelectAllTopics = () => {
+    const allTopics = Object.keys(topicsMap);
+    if (selectedTopicNames.length === allTopics.length) {
+      setSelectedTopicNames([]);
+    } else {
+      setSelectedTopicNames(allTopics);
+    }
+  };
+
+  const handleBatchDeleteTopics = async () => {
+    if (selectedTopicNames.length === 0) return;
+
+    const questionsToDelete: any[] = [];
+    selectedTopicNames.forEach((tName) => {
+      const qList = topicsMap[tName] || [];
+      questionsToDelete.push(...qList);
+    });
+
+    const msg = `Are you sure you want to delete ${selectedTopicNames.length} selected topic module(s) and all ${questionsToDelete.length} question(s) inside them?`;
+    if (!confirm(msg)) return;
+
+    try {
+      if (questionsToDelete.length > 0) {
+        const deletePromises = questionsToDelete.map((q) => fetch(`/api/questions/${q._id}`, { method: 'DELETE' }));
+        await Promise.all(deletePromises);
+      }
+
+      const key = `${selectedCourseId}_${selectedSubject}`;
+      setCustomTopics((prev) => {
+        const updatedList = (prev[key] || []).filter((t) => !selectedTopicNames.includes(t));
+        const updated = { ...prev, [key]: updatedList };
+        try {
+          localStorage.setItem('exam_portal_custom_topics', JSON.stringify(updated));
+        } catch (err) {}
+        return updated;
+      });
+
+      setSelectedTopicNames([]);
+
+      if (typeof window !== 'undefined') {
+        (window as any).__ADMIN_QUESTIONS_CACHE__ = null;
+        (window as any).__ADMIN_DASHBOARD_CACHE__ = null;
+      }
+      fetchData();
+    } catch (err) {
+      console.error('Failed to batch delete topic modules:', err);
+      alert('Failed to delete selected topic modules');
+    }
+  };
+
+  const toggleSelectSubject = (e: React.MouseEvent, sName: string) => {
+    e.stopPropagation();
+    setSelectedSubjectNames((prev) =>
+      prev.includes(sName) ? prev.filter((s) => s !== sName) : [...prev, sName]
+    );
+  };
+
+  const toggleSelectAllSubjects = () => {
+    const allSubs = Object.keys(derivedSubjectsMap);
+    if (selectedSubjectNames.length === allSubs.length) {
+      setSelectedSubjectNames([]);
+    } else {
+      setSelectedSubjectNames(allSubs);
+    }
+  };
+
+  const handleBatchDeleteSubjects = async () => {
+    if (selectedSubjectNames.length === 0) return;
+
+    const questionsToDelete: any[] = [];
+    selectedSubjectNames.forEach((sName) => {
+      const qList = derivedSubjectsMap[sName] || [];
+      questionsToDelete.push(...qList);
+    });
+
+    const msg = `Are you sure you want to delete ${selectedSubjectNames.length} selected subject(s) and all ${questionsToDelete.length} question(s) inside them?`;
+    if (!confirm(msg)) return;
+
+    try {
+      if (questionsToDelete.length > 0) {
+        const deletePromises = questionsToDelete.map((q) => fetch(`/api/questions/${q._id}`, { method: 'DELETE' }));
+        await Promise.all(deletePromises);
+      }
+
+      setCustomSubjects((prev) => {
+        const updatedList = (prev[selectedCourseId] || []).filter((s) => !selectedSubjectNames.includes(s));
+        const updated = { ...prev, [selectedCourseId]: updatedList };
+        try {
+          localStorage.setItem('exam_portal_custom_subjects', JSON.stringify(updated));
+        } catch (err) {}
+        return updated;
+      });
+
+      setSelectedSubjectNames([]);
+
+      if (typeof window !== 'undefined') {
+        (window as any).__ADMIN_QUESTIONS_CACHE__ = null;
+        (window as any).__ADMIN_DASHBOARD_CACHE__ = null;
+      }
+      fetchData();
+    } catch (err) {
+      console.error('Failed to batch delete subjects:', err);
+      alert('Failed to delete selected subjects');
+    }
+  };
+
   const handlePageBack = () => {
     if (currentLevel === 'questions') {
       setCurrentLevel('topics');
@@ -917,6 +1034,22 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                       <p className="text-xs text-slate-500">Select a subject to view and manage its topic modules.</p>
                     </div>
                     <div className="flex items-center gap-2">
+                      {Object.keys(derivedSubjectsMap).length > 0 && (
+                        <button
+                          onClick={toggleSelectAllSubjects}
+                          className="px-3 py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-slate-200 rounded-lg flex items-center gap-1.5 shadow-xs hover:border-slate-400 cursor-pointer"
+                        >
+                          {selectedSubjectNames.length === Object.keys(derivedSubjectsMap).length ? 'Deselect All' : `Select All (${Object.keys(derivedSubjectsMap).length})`}
+                        </button>
+                      )}
+                      {selectedSubjectNames.length > 0 && (
+                        <button
+                          onClick={handleBatchDeleteSubjects}
+                          className="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-lg flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer animate-in fade-in duration-150"
+                        >
+                          <Trash2 className="w-4 h-4" /> Delete Selected ({selectedSubjectNames.length})
+                        </button>
+                      )}
                       <button
                         onClick={() => setShowBulkModal(true)}
                         className="px-3 py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-slate-200 rounded-lg flex items-center gap-1.5 shadow-xs hover:border-slate-400 cursor-pointer"
@@ -935,6 +1068,7 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                     {Object.keys(derivedSubjectsMap).map((sName) => {
                       const qList = derivedSubjectsMap[sName] || [];
+                      const isSelected = selectedSubjectNames.includes(sName);
                       return (
                         <div
                           key={sName}
@@ -942,12 +1076,25 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                             setSelectedSubject(sName);
                             setCurrentLevel('topics');
                           }}
-                          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600 rounded-lg p-5 shadow-xs hover:shadow-sm transition-all cursor-pointer group flex flex-col justify-between"
+                          className={`bg-white dark:bg-slate-900 border rounded-lg p-5 shadow-xs hover:shadow-sm transition-all cursor-pointer group flex flex-col justify-between ${
+                            isSelected
+                              ? 'ring-2 ring-blue-500 border-blue-500 bg-blue-50/20 dark:bg-blue-950/20'
+                              : 'border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600'
+                          }`}
                         >
                           <div>
                             <div className="flex items-center justify-between mb-3">
-                              <div className="w-10 h-10 rounded-lg bg-slate-100 text-[#0B192C] dark:bg-slate-800 dark:text-white flex items-center justify-center">
-                                <BookOpen className="w-5 h-5" />
+                              <div className="flex items-center gap-3">
+                                <input
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={(e) => toggleSelectSubject(e as any, sName)}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600"
+                                />
+                                <div className="w-10 h-10 rounded-lg bg-slate-100 text-[#0B192C] dark:bg-slate-800 dark:text-white flex items-center justify-center">
+                                  <BookOpen className="w-5 h-5" />
+                                </div>
                               </div>
                               <button
                                 onClick={(e) => handleDeleteSubjectCard(e, sName, qList)}
@@ -991,6 +1138,22 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                       >
                         <ArrowLeft className="w-4 h-4" /> Back to Subjects
                       </button>
+                      {Object.keys(topicsMap).length > 0 && (
+                        <button
+                          onClick={toggleSelectAllTopics}
+                          className="px-3 py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-slate-200 rounded-lg flex items-center gap-1.5 shadow-xs hover:border-slate-400 cursor-pointer"
+                        >
+                          {selectedTopicNames.length === Object.keys(topicsMap).length ? 'Deselect All' : `Select All (${Object.keys(topicsMap).length})`}
+                        </button>
+                      )}
+                      {selectedTopicNames.length > 0 && (
+                        <button
+                          onClick={handleBatchDeleteTopics}
+                          className="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-lg flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer animate-in fade-in duration-150"
+                        >
+                          <Trash2 className="w-4 h-4" /> Delete Selected ({selectedTopicNames.length})
+                        </button>
+                      )}
                       <button
                         onClick={() => setShowBulkModal(true)}
                         className="px-3 py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-slate-200 rounded-lg flex items-center gap-1.5 shadow-xs hover:border-slate-400 cursor-pointer"
@@ -1014,6 +1177,7 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                     ) : (
                       Object.keys(topicsMap).map((tName) => {
                         const tQList = topicsMap[tName] || [];
+                        const isSelected = selectedTopicNames.includes(tName);
                         return (
                           <div
                             key={tName}
@@ -1021,12 +1185,25 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                               setSelectedTopic(tName);
                               setCurrentLevel('questions');
                             }}
-                            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-400 rounded-lg p-5 shadow-xs hover:shadow-sm transition-all cursor-pointer group flex flex-col justify-between"
+                            className={`bg-white dark:bg-slate-900 border rounded-lg p-5 shadow-xs hover:shadow-sm transition-all cursor-pointer group flex flex-col justify-between ${
+                              isSelected
+                                ? 'ring-2 ring-blue-500 border-blue-500 bg-blue-50/20 dark:bg-blue-950/20'
+                                : 'border-slate-200 dark:border-slate-800 hover:border-slate-400'
+                            }`}
                           >
                             <div>
                               <div className="flex items-center justify-between mb-3">
-                                <div className="w-10 h-10 rounded-lg bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 flex items-center justify-center">
-                                  <Folder className="w-5 h-5" />
+                                <div className="flex items-center gap-3">
+                                  <input
+                                    type="checkbox"
+                                    checked={isSelected}
+                                    onChange={(e) => toggleSelectTopic(e as any, tName)}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600"
+                                  />
+                                  <div className="w-10 h-10 rounded-lg bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 flex items-center justify-center">
+                                    <Folder className="w-5 h-5" />
+                                  </div>
                                 </div>
                                 <button
                                   onClick={(e) => handleDeleteTopicModule(e, tName, tQList)}
