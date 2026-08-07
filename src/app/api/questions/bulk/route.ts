@@ -13,12 +13,12 @@ export async function POST(req: Request) {
     let questionsRaw = body.questions !== undefined ? body.questions : body;
 
     let targetCourseId = body.course_id || '';
-    let defaultSubject = '';
-    let defaultChapter = '';
+    let defaultSubject = body.subject || body.defaultSubject || '';
+    let defaultChapter = body.chapter || body.defaultTopic || '';
 
     if (questionsRaw && typeof questionsRaw === 'object' && !Array.isArray(questionsRaw)) {
-      defaultSubject = questionsRaw.subject || '';
-      defaultChapter = questionsRaw.chapter || '';
+      if (!defaultSubject) defaultSubject = questionsRaw.subject || '';
+      if (!defaultChapter) defaultChapter = questionsRaw.chapter || '';
       if (Array.isArray(questionsRaw.questions)) {
         questionsRaw = questionsRaw.questions;
       }
@@ -58,10 +58,10 @@ export async function POST(req: Request) {
         }
       }
 
-      const subj = q.subject || defaultSubject || 'Physics';
+      const subj = q.subject || defaultSubject || 'Chemistry';
       const chap = q.chapter || q.topic || defaultChapter || 'General';
       let topicTag = q.topic_tag || (subj && chap ? `${subj} - ${chap}` : subj || chap || 'General');
-      if (topicTag && !topicTag.includes('-')) {
+      if (topicTag && !topicTag.includes('-') && subj) {
         topicTag = `${subj} - ${topicTag}`;
       }
       const courseId = q.course_id || targetCourseId || 'course_jee_2027';
@@ -69,6 +69,7 @@ export async function POST(req: Request) {
       preparedQuestions.push({
         _id: generateId(),
         course_id: courseId,
+        subject: subj,
         topic_tag: topicTag,
         question_text: qText,
         options: opts,

@@ -172,24 +172,30 @@ export default function QuestionManagementPage() {
   });
 
   courseQuestions.forEach((q) => {
-    const tag = q.topic_tag || 'General';
+    const tag = (q.topic_tag || '').trim();
     let sName = '';
 
-    if (tag.includes('-')) {
+    if (q.subject && allSubNames.some((s) => s.toLowerCase() === String(q.subject).toLowerCase())) {
+      sName = allSubNames.find((s) => s.toLowerCase() === String(q.subject).toLowerCase()) || String(q.subject);
+    } else if (tag.includes('-')) {
       const candidate = tag.split('-')[0].trim();
       const matched = allSubNames.find((s) => s.toLowerCase() === candidate.toLowerCase());
-      sName = matched || candidate;
-    } else {
-      const matched = allSubNames.find((s) => tag.toLowerCase().includes(s.toLowerCase()));
+      if (matched) {
+        sName = matched;
+      }
+    } else if (tag) {
+      const matched = allSubNames.find((s) => tag.toLowerCase().includes(s.toLowerCase()) || s.toLowerCase().includes(tag.toLowerCase()));
       if (matched) {
         sName = matched;
       }
     }
 
-    // Only allow valid course subjects as top-level Subject Cards!
-    // Numeric strings (1, 2, 3) or unlisted topics automatically default to the primary subject (Physics).
-    if (!sName || !allSubNames.some((s) => s.toLowerCase() === sName.toLowerCase())) {
-      sName = allSubNames[0] || 'Physics';
+    if (!sName) {
+      if (selectedSubject && allSubNames.some((s) => s.toLowerCase() === selectedSubject.toLowerCase())) {
+        sName = selectedSubject;
+      } else {
+        sName = allSubNames[0] || 'Physics';
+      }
     }
 
     if (!derivedSubjectsMap[sName]) derivedSubjectsMap[sName] = [];
@@ -203,10 +209,18 @@ export default function QuestionManagementPage() {
   const userAddedTopics = customTopics[`${selectedCourseId}_${selectedSubject}`] || [];
 
   subjectQuestions.forEach((q) => {
-    const tag = q.topic_tag || 'General';
+    const tag = (q.topic_tag || '').trim();
     let tName = tag;
     if (tag.includes('-')) {
-      tName = tag.split('-').slice(1).join('-').trim();
+      const parts = tag.split('-').map((p: string) => p.trim());
+      if (parts[0].toLowerCase() === selectedSubject.toLowerCase()) {
+        tName = parts.slice(1).join(' - ').trim();
+      } else {
+        tName = tag;
+      }
+    }
+    if (!tName || tName.toLowerCase() === selectedSubject.toLowerCase()) {
+      tName = 'General Module';
     }
     if (!topicsMap[tName]) topicsMap[tName] = [];
     topicsMap[tName].push(q);
@@ -219,8 +233,13 @@ export default function QuestionManagementPage() {
   // Level 3 questions for selectedTopic
   const topicQuestions = (topicsMap[selectedTopic] || []).concat(
     subjectQuestions.filter((q) => {
-      const tag = q.topic_tag || '';
-      return tag === selectedTopic || tag.endsWith(selectedTopic);
+      const tag = (q.topic_tag || '').trim().toLowerCase();
+      const sTopicLower = selectedTopic.toLowerCase();
+      if (!tag) return false;
+      if (tag === sTopicLower) return true;
+      if (tag.endsWith(`- ${sTopicLower}`) || tag.endsWith(`-${sTopicLower}`)) return true;
+      if (tag.includes(sTopicLower)) return true;
+      return false;
     })
   );
 
@@ -468,7 +487,7 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         ).trim();
 
         const subj = String(normalizedRow['subject'] || selectedSubject || 'Physics').trim();
-        const chap = String(normalizedRow['chapter'] || normalizedRow['topic'] || normalizedRow['topictag'] || normalizedRow['tag'] || '').trim();
+        const chap = String(normalizedRow['chapter'] || normalizedRow['topic'] || normalizedRow['topictag'] || normalizedRow['tag'] || selectedTopic || '').trim();
 
         let finalTopicTag = '';
         if (subj && chap) {
@@ -481,12 +500,13 @@ Explanation: Power is the rate at which work is done or energy is transferred.
           const activeSub = selectedSubject || 'Physics';
           finalTopicTag = `${activeSub} - ${chap}`;
         } else {
-          finalTopicTag = defaultTag !== 'General' ? defaultTag : `${selectedSubject || 'Physics'} - General`;
+          finalTopicTag = defaultTag !== 'General' ? defaultTag : `${selectedSubject || 'Physics'} - ${selectedTopic || 'General'}`;
         }
 
         if (qText) {
           parsedList.push({
             course_id: selectedCourseId,
+            subject: subj,
             topic_tag: finalTopicTag,
             question_text: qText,
             options: opts.length >= 2 ? opts : [optA || 'Option A', optB || 'Option B', optC || 'Option C', optD || 'Option D'],
