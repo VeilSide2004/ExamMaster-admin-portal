@@ -59,8 +59,11 @@ export async function POST(req: Request) {
       }
 
       const subj = q.subject || defaultSubject || 'Physics';
-      const chap = q.chapter || defaultChapter || 'Electrostatics';
-      const topicTag = q.topic_tag || (subj && chap ? `${subj} - ${chap}` : subj || chap || 'General');
+      const chap = q.chapter || q.topic || defaultChapter || 'General';
+      let topicTag = q.topic_tag || (subj && chap ? `${subj} - ${chap}` : subj || chap || 'General');
+      if (topicTag && !topicTag.includes('-')) {
+        topicTag = `${subj} - ${topicTag}`;
+      }
       const courseId = q.course_id || targetCourseId || 'course_jee_2027';
 
       preparedQuestions.push({

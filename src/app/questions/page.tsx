@@ -157,14 +157,25 @@ export default function QuestionManagementPage() {
 
   courseQuestions.forEach((q) => {
     const tag = q.topic_tag || 'General';
-    let sName = 'General';
+    let sName = '';
+
     if (tag.includes('-')) {
-      sName = tag.split('-')[0].trim();
-    } else if (allSubNames.some((s) => tag.toLowerCase().includes(s.toLowerCase()))) {
-      sName = allSubNames.find((s) => tag.toLowerCase().includes(s.toLowerCase())) || 'General';
+      const candidate = tag.split('-')[0].trim();
+      const matched = allSubNames.find((s) => s.toLowerCase() === candidate.toLowerCase());
+      sName = matched || candidate;
     } else {
-      sName = tag;
+      const matched = allSubNames.find((s) => tag.toLowerCase().includes(s.toLowerCase()));
+      if (matched) {
+        sName = matched;
+      }
     }
+
+    // Only allow valid course subjects as top-level Subject Cards!
+    // Numeric strings (1, 2, 3) or unlisted topics automatically default to the primary subject (Physics).
+    if (!sName || !allSubNames.some((s) => s.toLowerCase() === sName.toLowerCase())) {
+      sName = allSubNames[0] || 'Physics';
+    }
+
     if (!derivedSubjectsMap[sName]) derivedSubjectsMap[sName] = [];
     derivedSubjectsMap[sName].push(q);
   });
@@ -440,16 +451,21 @@ Explanation: Power is the rate at which work is done or energy is transferred.
           ''
         ).trim();
 
-        const subj = String(normalizedRow['subject'] || '').trim();
-        const chap = String(normalizedRow['chapter'] || normalizedRow['topic'] || '').trim();
-        const tagFromRow = String(normalizedRow['topictag'] || normalizedRow['tag'] || '').trim();
+        const subj = String(normalizedRow['subject'] || selectedSubject || 'Physics').trim();
+        const chap = String(normalizedRow['chapter'] || normalizedRow['topic'] || normalizedRow['topictag'] || normalizedRow['tag'] || '').trim();
 
-        let finalTopicTag = tagFromRow;
-        if (!finalTopicTag) {
-          if (subj && chap) finalTopicTag = `${subj} - ${chap}`;
-          else if (subj) finalTopicTag = subj;
-          else if (chap) finalTopicTag = chap;
-          else finalTopicTag = defaultTag;
+        let finalTopicTag = '';
+        if (subj && chap) {
+          if (chap.toLowerCase().startsWith(subj.toLowerCase() + ' -')) {
+            finalTopicTag = chap;
+          } else {
+            finalTopicTag = `${subj} - ${chap}`;
+          }
+        } else if (chap) {
+          const activeSub = selectedSubject || 'Physics';
+          finalTopicTag = `${activeSub} - ${chap}`;
+        } else {
+          finalTopicTag = defaultTag !== 'General' ? defaultTag : `${selectedSubject || 'Physics'} - General`;
         }
 
         if (qText) {
