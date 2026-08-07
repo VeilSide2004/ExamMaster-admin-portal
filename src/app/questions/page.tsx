@@ -425,7 +425,7 @@ Explanation: Power is the rate at which work is done or energy is transferred.
     document.body.removeChild(link);
   };
 
-  // Excel / Spreadsheet file parsing with Universal Cell Extraction Engine
+  // Excel / Spreadsheet file parsing with Fail-Safe 2D Row Engine
   const handleExcelFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -437,11 +437,25 @@ Explanation: Power is the rate at which work is done or energy is transferred.
     try {
       const data = await file.arrayBuffer();
       const workbook = XLSX.read(data, { type: 'array' });
-      const firstSheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[firstSheetName];
 
-      // Parse raw 2D array of rows from worksheet
-      const matrix: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
+      // Find best worksheet (the sheet with the most data rows)
+      let bestSheetName = workbook.SheetNames[0];
+      let maxRowsCount = 0;
+
+      for (const sheetName of workbook.SheetNames) {
+        const sheet = workbook.Sheets[sheetName];
+        if (sheet) {
+          const rows: any[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, defval: '' });
+          const nonEmpCount = rows.filter((r) => Array.isArray(r) && r.some((c) => String(c || '').trim() !== '')).length;
+          if (nonEmpCount > maxRowsCount) {
+            maxRowsCount = nonEmpCount;
+            bestSheetName = sheetName;
+          }
+        }
+      }
+
+      const worksheet = workbook.Sheets[bestSheetName];
+      const matrix: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: false, defval: '' });
 
       if (!matrix || matrix.length === 0) {
         setExcelError('The selected spreadsheet is empty or has no readable rows.');
@@ -458,11 +472,10 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         return;
       }
 
-      // Detect header row index if present
+      // Detect header row index
       let headerRowIdx = -1;
       for (let i = 0; i < Math.min(validRows.length, 10); i++) {
-        const rowCells = validRows[i].map((c) => String(c || '').trim().toLowerCase());
-        const rowStr = rowCells.join(' ');
+        const rowStr = validRows[i].map((c) => String(c || '').trim().toLowerCase()).join(' ');
         if (
           rowStr.includes('question') ||
           rowStr.includes('prompt') ||
@@ -486,7 +499,7 @@ Explanation: Power is the rate at which work is done or energy is transferred.
       if (headerRowIdx !== -1) {
         const headerCells = validRows[headerRowIdx].map((c) => String(c || '').trim().toLowerCase().replace(/[^a-z0-9]/g, ''));
         headerCells.forEach((cell, idx) => {
-          if (qCol === -1 && (cell.includes('question') || cell.includes('prompt') || cell.includes('problem') || cell.includes('statement') || cell === 'q')) {
+          if (qCol === -1 && (cell.includes('question') || cell.includes('prompt') || cell.includes('problem') || cell.includes('statement') || cell.includes('mcq') || cell === 'q')) {
             qCol = idx;
           } else if (optACol === -1 && (cell.includes('optiona') || cell.includes('opta') || cell.includes('choicea') || cell === 'option1' || cell === 'opt1' || cell === 'ans1')) {
             optACol = idx;
@@ -512,7 +525,7 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         const rowCells = row.map((c) => String(c || '').trim());
         const nonEmp = rowCells.filter(Boolean);
 
-        if (nonEmp.length === 0) continue;
+        if (nonEmp.length < 2) continue;
 
         let qText = '';
         let optA = '';
@@ -522,17 +535,16 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         let rawAns = '';
         let exp = '';
 
-        if (qCol !== -1 && row[qCol] !== undefined) qText = String(row[qCol] || '').trim();
-        if (optACol !== -1 && row[optACol] !== undefined) optA = String(row[optACol] || '').trim();
-        if (optBCol !== -1 && row[optBCol] !== undefined) optB = String(row[optBCol] || '').trim();
-        if (optCCol !== -1 && row[optCCol] !== undefined) optC = String(row[optCCol] || '').trim();
-        if (optDCol !== -1 && row[optDCol] !== undefined) optD = String(row[optDCol] || '').trim();
-        if (ansCol !== -1 && row[ansCol] !== undefined) rawAns = String(row[ansCol] || '').trim();
-        if (expCol !== -1 && row[expCol] !== undefined) exp = String(row[expCol] || '').trim();
+        if (qCol !== -1 && rowCells[qCol]) qText = rowCells[qCol];
+        if (optACol !== -1 && rowCells[optACol]) optA = rowCells[optACol];
+        if (optBCol !== -1 && rowCells[optBCol]) optB = rowCells[optBCol];
+        if (optCCol !== -1 && rowCells[optCCol]) optC = rowCells[optCCol];
+        if (optDCol !== -1 && rowCells[optDCol]) optD = rowCells[optDCol];
+        if (ansCol !== -1 && rowCells[ansCol]) rawAns = rowCells[ansCol];
+        if (expCol !== -1 && rowCells[expCol]) exp = rowCells[expCol];
 
-        // Smart cell extraction if headers didn't match or options were incomplete
+        // Fallback positional extraction if header columns were not found
         if (!qText || !optA || !optB || !optC || !optD) {
-          // Find Question prompt cell in nonEmp
           let qIdx = nonEmp.findIndex(
             (v) =>
               (v.length > 15 && !v.toLowerCase().startsWith('explanation')) ||
@@ -540,27 +552,26 @@ Explanation: Power is the rate at which work is done or energy is transferred.
               /^(?:q(?:uestion)?[\s\.\:]*)?\d+[\s\.\:]+/i.test(v)
           );
 
-          // If no cell matched complex criteria, use first non-numeric/non-short cell or first cell
           if (qIdx === -1) {
-            qIdx = nonEmp.findIndex((v) => v.length > 5 && !/^\d+$/.test(v));
+            qIdx = nonEmp.findIndex((v) => v.length > 4 && !/^\d+$/.test(v));
             if (qIdx === -1) qIdx = 0;
           }
 
-          qText = qText || nonEmp[qIdx] || '';
-          if (!optA) optA = nonEmp[qIdx + 1] || '';
-          if (!optB) optB = nonEmp[qIdx + 2] || '';
-          if (!optC) optC = nonEmp[qIdx + 3] || '';
-          if (!optD) optD = nonEmp[qIdx + 4] || '';
-          if (!rawAns) rawAns = nonEmp[qIdx + 5] || '';
-          if (!exp) exp = nonEmp[qIdx + 6] || '';
+          if (!qText && nonEmp[qIdx]) qText = nonEmp[qIdx];
+          if (!optA && nonEmp[qIdx + 1]) optA = nonEmp[qIdx + 1];
+          if (!optB && nonEmp[qIdx + 2]) optB = nonEmp[qIdx + 2];
+          if (!optC && nonEmp[qIdx + 3]) optC = nonEmp[qIdx + 3];
+          if (!optD && nonEmp[qIdx + 4]) optD = nonEmp[qIdx + 4];
+          if (!rawAns && nonEmp[qIdx + 5]) rawAns = nonEmp[qIdx + 5];
+          if (!exp && nonEmp[qIdx + 6]) exp = nonEmp[qIdx + 6];
         }
 
-        // Clean question prompt formatting (strip numeric prefixes if present e.g. "Q1. ", "1. ")
+        // Clean numeric prefixes like "Q1. ", "1. " from question text
         qText = qText.replace(/^(?:q(?:uestion)?\s*\d+[\s\.\:\-]+|\d+[\s\.\:\-]+)/i, '').trim();
 
         if (!qText || qText.length < 3) continue;
 
-        // Normalize options (ensure 4 valid non-empty options A, B, C, D)
+        // Ensure 4 valid non-empty options
         const rawOpts = [optA, optB, optC, optD].map((o) => o.trim()).filter(Boolean);
         const finalOpts: string[] = [...rawOpts];
         while (finalOpts.length < 4) {
