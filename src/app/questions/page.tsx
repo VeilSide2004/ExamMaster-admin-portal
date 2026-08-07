@@ -450,75 +450,67 @@ Explanation: Power is the rate at which work is done or energy is transferred.
       const defaultTag = selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : 'General';
       const parsedList: any[] = [];
 
-      // Inspect column names across the file to detect structure
-      const sampleRow = jsonRows[0] || {};
-      const sampleKeys = Object.keys(sampleRow);
-      const cleanKeyMap: Record<string, string> = {};
-      sampleKeys.forEach((k) => {
-        cleanKeyMap[k] = k.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-      });
-
-      const findKeyMatching = (row: Record<string, any>, candidates: string[], substringMatch = false): string => {
+      const getValByHeader = (row: Record<string, any>, regex: RegExp): string => {
         const rKeys = Object.keys(row);
-        for (const cand of candidates) {
-          const matchedKey = rKeys.find((k) => {
-            const cleaned = k.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-            if (substringMatch) return cleaned.includes(cand);
-            return cleaned === cand;
-          });
-          if (matchedKey && String(row[matchedKey] || '').trim()) {
-            return String(row[matchedKey]).trim();
+        for (const k of rKeys) {
+          const cleanK = k.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+          if (regex.test(cleanK)) {
+            const val = String(row[k] || '').trim();
+            if (val) return val;
           }
         }
         return '';
       };
 
       jsonRows.forEach((row) => {
-        const values = Object.values(row).map((v) => String(v || '').trim());
+        const rValues = Object.values(row).map((v) => String(v || '').trim());
 
-        // Extract fields using comprehensive candidates list
-        let subj = findKeyMatching(row, ['subject', 'sub', 'course']);
-        let chap = findKeyMatching(row, ['topic', 'chapter', 'topictag', 'tag', 'topicmodule']);
-        let qText = findKeyMatching(row, [
-          'question', 'questions', 'questiontext', 'qtext', 'prompt', 'questionprompt',
-          'mcqquestion', 'problem', 'questiontitle', 'title', 'statement', 'questionstatement',
-          'q', 'content', 'questioncontent'
-        ]);
+        // Extract fields strictly by header names first
+        let subj = getValByHeader(row, /^(subject|sub|course)$/);
+        let chap = getValByHeader(row, /^(topic|chapter|topictag|tag|topicmodule)$/);
+        let qText = getValByHeader(row, /^(question|questions|questiontext|qtext|prompt|questionprompt|mcqquestion|problem|questiontitle|title|statement|questionstatement|qcontent|questioncontent)$/);
 
-        let optA = findKeyMatching(row, ['optiona', 'option1', 'opta', 'opt1', 'choicea', 'choice1', 'ans1', 'a', 'option_a', 'opt_a', 'choice_a', 'ans_a']);
-        let optB = findKeyMatching(row, ['optionb', 'option2', 'optb', 'opt2', 'choiceb', 'choice2', 'ans2', 'b', 'option_b', 'opt_b', 'choice_b', 'ans_b']);
-        let optC = findKeyMatching(row, ['optionc', 'option3', 'optc', 'opt3', 'choicec', 'choice3', 'ans3', 'c', 'option_c', 'opt_c', 'choice_c', 'ans_c']);
-        let optD = findKeyMatching(row, ['optiond', 'option4', 'optd', 'opt4', 'choiced', 'choice4', 'ans4', 'd', 'option_d', 'opt_d', 'choice_d', 'ans_d']);
+        let optA = getValByHeader(row, /^(optiona|option1|opta|opt1|choicea|choice1|ans1)$/);
+        let optB = getValByHeader(row, /^(optionb|option2|optb|opt2|choiceb|choice2|ans2)$/);
+        let optC = getValByHeader(row, /^(optionc|option3|optc|opt3|choicec|choice3|ans3)$/);
+        let optD = getValByHeader(row, /^(optiond|option4|optd|opt4|choiced|choice4|ans4)$/);
 
-        let rawAns = findKeyMatching(row, [
-          'correctoption', 'correctanswer', 'answer', 'ans', 'correct', 'correctopt', 'key',
-          'rightanswer', 'rightans', 'correctindex', 'correctidx'
-        ]);
-        let exp = findKeyMatching(row, ['explanation', 'exp', 'solution', 'normalexplanation', 'shortexplanation', 'ansexplanation']);
-        let detailedExp = findKeyMatching(row, ['detailedexplanation', 'longexplanation', 'detailedsolution', 'stepbystep', 'detaileddescription']);
+        let rawAns = getValByHeader(row, /^(correctoption|correctanswer|answer|ans|correct|correctopt|key|rightanswer|rightans)$/);
+        let exp = getValByHeader(row, /^(explanation|exp|solution|normalexplanation|shortexplanation|ansexplanation)$/);
+        let detailedExp = getValByHeader(row, /^(detailedexplanation|longexplanation|detailedsolution|stepbystep)$/);
 
-        // Substring fallback for Question column if not found by exact candidate
+        // Substring fallback for Question column if exact regex didn't match
         if (!qText) {
-          qText = findKeyMatching(row, ['question', 'prompt', 'stmt'], true);
+          const rKeys = Object.keys(row);
+          for (const k of rKeys) {
+            const cleanK = k.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (cleanK.includes('question') || cleanK.includes('prompt')) {
+              const val = String(row[k] || '').trim();
+              if (val) {
+                qText = val;
+                break;
+              }
+            }
+          }
         }
 
-        // Substring fallback for Option C and D if not found by exact candidate
-        if (!optC) optC = findKeyMatching(row, ['c', 'optc', 'optionc', 'choicec', 'opt3', 'option3'], true);
-        if (!optD) optD = findKeyMatching(row, ['d', 'optd', 'optiond', 'choiced', 'opt4', 'option4'], true);
+        // Positional extraction fallback ONLY if options A-D were not all found by header names
+        if (!qText || !optA || !optB || !optC || !optD) {
+          const nonEmp = rValues.filter(Boolean);
+          if (nonEmp.length >= 3) {
+            let qIdx = nonEmp.findIndex((v) => v.length > 10 || v.includes('?') || /^(?:q(?:uestion)?[\s\.\:]*)?\d+[\s\.\:]+/i.test(v));
+            if (qIdx === -1) qIdx = 0;
 
-        // Positional column index fallback relative to qText column
-        if (values.length >= 2) {
-          let qColIdx = values.findIndex((v) => v === qText);
-          if (qColIdx === -1) qColIdx = 0;
-
-          if (!optA && values[qColIdx + 1] !== undefined) optA = values[qColIdx + 1];
-          if (!optB && values[qColIdx + 2] !== undefined) optB = values[qColIdx + 2];
-          if (!optC && values[qColIdx + 3] !== undefined) optC = values[qColIdx + 3];
-          if (!optD && values[qColIdx + 4] !== undefined) optD = values[qColIdx + 4];
-          if (!rawAns && values[qColIdx + 5] !== undefined) rawAns = values[qColIdx + 5];
+            if (!qText) qText = nonEmp[qIdx] || '';
+            if (!optA && nonEmp[qIdx + 1]) optA = nonEmp[qIdx + 1];
+            if (!optB && nonEmp[qIdx + 2]) optB = nonEmp[qIdx + 2];
+            if (!optC && nonEmp[qIdx + 3]) optC = nonEmp[qIdx + 3];
+            if (!optD && nonEmp[qIdx + 4]) optD = nonEmp[qIdx + 4];
+            if (!rawAns && nonEmp[qIdx + 5]) rawAns = nonEmp[qIdx + 5];
+          }
         }
 
-        if (!qText) return; // Skip completely empty rows
+        if (!qText) return; // Skip empty rows
 
         if (!subj) subj = selectedSubject || 'Physics';
         if (!chap) chap = selectedTopic || 'General';
