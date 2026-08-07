@@ -723,6 +723,77 @@ Explanation: Power is the rate at which work is done or energy is transferred.
     }
   };
 
+  const handleDeleteTopicModule = async (e: React.MouseEvent, tName: string, qList: any[]) => {
+    e.stopPropagation();
+    const count = qList.length;
+    const msg = count > 0 
+      ? `Are you sure you want to delete topic module "${tName}" and all ${count} questions inside it?`
+      : `Are you sure you want to delete topic module "${tName}"?`;
+
+    if (!confirm(msg)) return;
+
+    try {
+      if (count > 0) {
+        const deletePromises = qList.map((q) => fetch(`/api/questions/${q._id}`, { method: 'DELETE' }));
+        await Promise.all(deletePromises);
+      }
+
+      const key = `${selectedCourseId}_${selectedSubject}`;
+      setCustomTopics((prev) => {
+        const updatedList = (prev[key] || []).filter((t) => t !== tName);
+        const updated = { ...prev, [key]: updatedList };
+        try {
+          localStorage.setItem('exam_portal_custom_topics', JSON.stringify(updated));
+        } catch (err) {}
+        return updated;
+      });
+
+      if (typeof window !== 'undefined') {
+        (window as any).__ADMIN_QUESTIONS_CACHE__ = null;
+        (window as any).__ADMIN_DASHBOARD_CACHE__ = null;
+      }
+      fetchData();
+    } catch (err) {
+      console.error('Failed to delete topic module:', err);
+      alert('Failed to delete topic module');
+    }
+  };
+
+  const handleDeleteSubjectCard = async (e: React.MouseEvent, sName: string, qList: any[]) => {
+    e.stopPropagation();
+    const count = qList.length;
+    const msg = count > 0
+      ? `Are you sure you want to delete subject "${sName}" and all ${count} questions inside it?`
+      : `Are you sure you want to delete subject "${sName}"?`;
+
+    if (!confirm(msg)) return;
+
+    try {
+      if (count > 0) {
+        const deletePromises = qList.map((q) => fetch(`/api/questions/${q._id}`, { method: 'DELETE' }));
+        await Promise.all(deletePromises);
+      }
+
+      setCustomSubjects((prev) => {
+        const updatedList = (prev[selectedCourseId] || []).filter((s) => s !== sName);
+        const updated = { ...prev, [selectedCourseId]: updatedList };
+        try {
+          localStorage.setItem('exam_portal_custom_subjects', JSON.stringify(updated));
+        } catch (err) {}
+        return updated;
+      });
+
+      if (typeof window !== 'undefined') {
+        (window as any).__ADMIN_QUESTIONS_CACHE__ = null;
+        (window as any).__ADMIN_DASHBOARD_CACHE__ = null;
+      }
+      fetchData();
+    } catch (err) {
+      console.error('Failed to delete subject:', err);
+      alert('Failed to delete subject');
+    }
+  };
+
   const handlePageBack = () => {
     if (currentLevel === 'questions') {
       setCurrentLevel('topics');
@@ -874,8 +945,17 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                           className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600 rounded-lg p-5 shadow-xs hover:shadow-sm transition-all cursor-pointer group flex flex-col justify-between"
                         >
                           <div>
-                            <div className="w-10 h-10 rounded-lg bg-slate-100 text-[#0B192C] dark:bg-slate-800 dark:text-white flex items-center justify-center mb-3">
-                              <BookOpen className="w-5 h-5" />
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="w-10 h-10 rounded-lg bg-slate-100 text-[#0B192C] dark:bg-slate-800 dark:text-white flex items-center justify-center">
+                                <BookOpen className="w-5 h-5" />
+                              </div>
+                              <button
+                                onClick={(e) => handleDeleteSubjectCard(e, sName, qList)}
+                                className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 dark:bg-rose-950/60 dark:hover:bg-rose-900 dark:text-rose-400 border border-rose-200 dark:border-rose-800/60 transition-colors cursor-pointer"
+                                title={`Delete subject "${sName}" and all ${qList.length} questions inside it`}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
                             </div>
                             <h4 className="text-base font-extrabold text-slate-900 dark:text-white group-hover:text-slate-700 dark:group-hover:text-slate-200 transition-colors mb-1">
                               {sName}
@@ -944,8 +1024,17 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                             className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-400 rounded-lg p-5 shadow-xs hover:shadow-sm transition-all cursor-pointer group flex flex-col justify-between"
                           >
                             <div>
-                              <div className="w-10 h-10 rounded-lg bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 flex items-center justify-center mb-3">
-                                <Folder className="w-5 h-5" />
+                              <div className="flex items-center justify-between mb-3">
+                                <div className="w-10 h-10 rounded-lg bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 flex items-center justify-center">
+                                  <Folder className="w-5 h-5" />
+                                </div>
+                                <button
+                                  onClick={(e) => handleDeleteTopicModule(e, tName, tQList)}
+                                  className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 dark:bg-rose-950/60 dark:hover:bg-rose-900 dark:text-rose-400 border border-rose-200 dark:border-rose-800/60 transition-colors cursor-pointer"
+                                  title={`Delete topic module "${tName}" and all ${tQList.length} questions inside it`}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
                               </div>
                               <h4 className="text-base font-extrabold text-slate-900 dark:text-white mb-1">{tName}</h4>
                               <p className="text-xs text-slate-500">{tQList.length} Questions</p>
