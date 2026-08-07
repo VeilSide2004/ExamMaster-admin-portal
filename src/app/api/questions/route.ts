@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     const admin = getAuthenticatedAdmin();
 
     const body = await req.json();
-    const { course_id, topic_tag, question_type, question_text, options, correct_option, sample_answer, marks, explanation, detailed_explanation } = body;
+    const { course_id, subject, topic_tag, question_type, question_text, options, correct_option, sample_answer, marks, explanation, detailed_explanation } = body;
 
     const qType = question_type === 'Short Answer' || question_type === 'Long Answer' ? question_type : 'MCQ';
 
@@ -71,6 +71,7 @@ export async function POST(req: Request) {
       const newQ = {
         _id: generateId(),
         course_id,
+        subject: subject || '',
         topic_tag,
         question_type: qType,
         question_text,
@@ -103,6 +104,7 @@ export async function POST(req: Request) {
     // Mongoose mode
     const question = await Question.create({
       course_id,
+      subject: subject || '',
       topic_tag,
       question_type: qType,
       question_text,

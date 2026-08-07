@@ -175,27 +175,33 @@ export default function QuestionManagementPage() {
     const tag = (q.topic_tag || '').trim();
     let sName = '';
 
-    if (q.subject && allSubNames.some((s) => s.toLowerCase() === String(q.subject).toLowerCase())) {
-      sName = allSubNames.find((s) => s.toLowerCase() === String(q.subject).toLowerCase()) || String(q.subject);
-    } else if (tag.includes('-')) {
-      const candidate = tag.split('-')[0].trim();
-      const matched = allSubNames.find((s) => s.toLowerCase() === candidate.toLowerCase());
-      if (matched) {
-        sName = matched;
-      }
-    } else if (tag) {
-      const matched = allSubNames.find((s) => tag.toLowerCase().includes(s.toLowerCase()) || s.toLowerCase().includes(tag.toLowerCase()));
-      if (matched) {
-        sName = matched;
-      }
+    // 1. Explicit q.subject property (highest priority)
+    if (q.subject) {
+      const matched = allSubNames.find((s) => s.toLowerCase() === String(q.subject).trim().toLowerCase());
+      if (matched) sName = matched;
     }
 
+    // 2. Check candidate before hyphen (e.g. "Chemistry" from "Chemistry - Organic")
+    if (!sName && tag.includes('-')) {
+      const candidate = tag.split('-')[0].trim();
+      const matched = allSubNames.find((s) => s.toLowerCase() === candidate.toLowerCase());
+      if (matched) sName = matched;
+    }
+
+    // 3. Substring match ANYWHERE inside topic_tag (e.g. "Chemistry" inside "100 - Environmental Chemistry")
+    if (!sName && tag) {
+      const matched = allSubNames.find((s) => tag.toLowerCase().includes(s.toLowerCase()));
+      if (matched) sName = matched;
+    }
+
+    // 4. If selectedSubject is active and valid, use selectedSubject
+    if (!sName && selectedSubject && allSubNames.some((s) => s.toLowerCase() === selectedSubject.toLowerCase())) {
+      sName = allSubNames.find((s) => s.toLowerCase() === selectedSubject.toLowerCase()) || selectedSubject;
+    }
+
+    // 5. Fallback to primary subject only if absolutely no match found
     if (!sName) {
-      if (selectedSubject && allSubNames.some((s) => s.toLowerCase() === selectedSubject.toLowerCase())) {
-        sName = selectedSubject;
-      } else {
-        sName = allSubNames[0] || 'Physics';
-      }
+      sName = allSubNames[0] || 'Physics';
     }
 
     if (!derivedSubjectsMap[sName]) derivedSubjectsMap[sName] = [];
@@ -298,6 +304,7 @@ export default function QuestionManagementPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           course_id: selectedCourseId,
+          subject: selectedSubject || '',
           topic_tag: computedTag,
           question_type: questionType,
           question_text: questionText,
@@ -322,6 +329,11 @@ export default function QuestionManagementPage() {
         setQuestionType('MCQ');
         setQuestionMarks(1);
         setOptions(['', '', '', '']);
+
+        if (typeof window !== 'undefined') {
+          (window as any).__ADMIN_QUESTIONS_CACHE__ = null;
+          (window as any).__ADMIN_DASHBOARD_CACHE__ = null;
+        }
         fetchData();
       }
     } catch (err: any) {
@@ -634,7 +646,8 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         questionsToSubmit = parsedDocQuestions.map((q) => ({
           ...q,
           course_id: selectedCourseId,
-          topic_tag: q.topic_tag || (selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : 'General'),
+          subject: q.subject || selectedSubject || '',
+          topic_tag: q.topic_tag || (selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : selectedSubject ? `${selectedSubject} - General` : 'General'),
         }));
       } else if (bulkMode === 'text') {
         if (!bulkText.trim()) {
@@ -642,7 +655,11 @@ Explanation: Power is the rate at which work is done or energy is transferred.
           setSubmitting(false);
           return;
         }
-        questionsToSubmit = parsePlainText(bulkText, selectedCourseId);
+        questionsToSubmit = parsePlainText(bulkText, selectedCourseId).map((q) => ({
+          ...q,
+          subject: selectedSubject || '',
+          topic_tag: q.topic_tag || (selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : selectedSubject ? `${selectedSubject} - General` : 'General'),
+        }));
       } else if (bulkMode === 'excel') {
         if (!parsedExcelQuestions.length) {
           setBulkError('Please upload a valid Excel (.xlsx, .xls) or CSV (.csv) file containing questions.');
@@ -652,13 +669,15 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         questionsToSubmit = parsedExcelQuestions.map((q) => ({
           ...q,
           course_id: selectedCourseId,
-          topic_tag: q.topic_tag || (selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : 'General'),
+          subject: q.subject || selectedSubject || '',
+          topic_tag: q.topic_tag || (selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : selectedSubject ? `${selectedSubject} - General` : 'General'),
         }));
       } else {
         questionsToSubmit = bulkFormQuestions.map((q) => ({
           ...q,
           course_id: selectedCourseId,
-          topic_tag: q.topic_tag || (selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : 'General'),
+          subject: q.subject || selectedSubject || '',
+          topic_tag: q.topic_tag || (selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : selectedSubject ? `${selectedSubject} - General` : 'General'),
         }));
       }
 
@@ -680,6 +699,11 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         setParsedDocQuestions([]);
         setDocFileName('');
         setDocError('');
+
+        if (typeof window !== 'undefined') {
+          (window as any).__ADMIN_QUESTIONS_CACHE__ = null;
+          (window as any).__ADMIN_DASHBOARD_CACHE__ = null;
+        }
         fetchData();
       }
     } catch (err: any) {
