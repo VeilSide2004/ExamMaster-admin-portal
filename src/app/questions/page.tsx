@@ -425,7 +425,7 @@ Explanation: Power is the rate at which work is done or energy is transferred.
     document.body.removeChild(link);
   };
 
-  // Excel / Spreadsheet file parsing with 2D Matrix Engine
+  // Excel / Spreadsheet file parsing with Universal Cell Extraction Engine
   const handleExcelFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -458,10 +458,11 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         return;
       }
 
-      // 1. Auto-detect header row index
+      // Detect header row index if present
       let headerRowIdx = -1;
       for (let i = 0; i < Math.min(validRows.length, 10); i++) {
-        const rowStr = validRows[i].map((c) => String(c || '').trim().toLowerCase()).join(' ');
+        const rowCells = validRows[i].map((c) => String(c || '').trim().toLowerCase());
+        const rowStr = rowCells.join(' ');
         if (
           rowStr.includes('question') ||
           rowStr.includes('prompt') ||
@@ -508,8 +509,9 @@ Explanation: Power is the rate at which work is done or energy is transferred.
 
       for (let i = dataStartIdx; i < validRows.length; i++) {
         const row = validRows[i];
-        const rowStr = row.map((c) => String(c || '').trim());
-        const nonEmp = rowStr.filter(Boolean);
+        const rowCells = row.map((c) => String(c || '').trim());
+        const nonEmp = rowCells.filter(Boolean);
+
         if (nonEmp.length === 0) continue;
 
         let qText = '';
@@ -528,25 +530,37 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         if (ansCol !== -1 && row[ansCol] !== undefined) rawAns = String(row[ansCol] || '').trim();
         if (expCol !== -1 && row[expCol] !== undefined) exp = String(row[expCol] || '').trim();
 
-        // If columns were not matched by header names or options were unassigned, map positionally relative to row cells!
+        // Smart cell extraction if headers didn't match or options were incomplete
         if (!qText || !optA || !optB || !optC || !optD) {
-          if (nonEmp.length >= 2) {
-            let qIdx = nonEmp.findIndex((v) => v.length > 15 || v.includes('?') || /^(?:q(?:uestion)?[\s\.\:]*)?\d+[\s\.\:]+/i.test(v));
-            if (qIdx === -1) qIdx = 0;
+          // Find Question prompt cell in nonEmp
+          let qIdx = nonEmp.findIndex(
+            (v) =>
+              (v.length > 15 && !v.toLowerCase().startsWith('explanation')) ||
+              v.includes('?') ||
+              /^(?:q(?:uestion)?[\s\.\:]*)?\d+[\s\.\:]+/i.test(v)
+          );
 
-            if (!qText) qText = nonEmp[qIdx] || '';
-            if (!optA) optA = nonEmp[qIdx + 1] || '';
-            if (!optB) optB = nonEmp[qIdx + 2] || '';
-            if (!optC) optC = nonEmp[qIdx + 3] || '';
-            if (!optD) optD = nonEmp[qIdx + 4] || '';
-            if (!rawAns) rawAns = nonEmp[qIdx + 5] || '';
-            if (!exp) exp = nonEmp[qIdx + 6] || '';
+          // If no cell matched complex criteria, use first non-numeric/non-short cell or first cell
+          if (qIdx === -1) {
+            qIdx = nonEmp.findIndex((v) => v.length > 5 && !/^\d+$/.test(v));
+            if (qIdx === -1) qIdx = 0;
           }
+
+          qText = qText || nonEmp[qIdx] || '';
+          if (!optA) optA = nonEmp[qIdx + 1] || '';
+          if (!optB) optB = nonEmp[qIdx + 2] || '';
+          if (!optC) optC = nonEmp[qIdx + 3] || '';
+          if (!optD) optD = nonEmp[qIdx + 4] || '';
+          if (!rawAns) rawAns = nonEmp[qIdx + 5] || '';
+          if (!exp) exp = nonEmp[qIdx + 6] || '';
         }
+
+        // Clean question prompt formatting (strip numeric prefixes if present e.g. "Q1. ", "1. ")
+        qText = qText.replace(/^(?:q(?:uestion)?\s*\d+[\s\.\:\-]+|\d+[\s\.\:\-]+)/i, '').trim();
 
         if (!qText || qText.length < 3) continue;
 
-        // Clean & normalize options (always 4 non-empty options A, B, C, D)
+        // Normalize options (ensure 4 valid non-empty options A, B, C, D)
         const rawOpts = [optA, optB, optC, optD].map((o) => o.trim()).filter(Boolean);
         const finalOpts: string[] = [...rawOpts];
         while (finalOpts.length < 4) {
