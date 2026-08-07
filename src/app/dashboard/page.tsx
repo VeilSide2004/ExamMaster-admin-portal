@@ -21,9 +21,17 @@ import {
   ClipboardList,
 } from 'lucide-react';
 
+const getInitialDashboardCache = () => {
+  if (typeof window !== 'undefined' && (window as any).__ADMIN_DASHBOARD_CACHE__) {
+    return (window as any).__ADMIN_DASHBOARD_CACHE__;
+  }
+  return null;
+};
+
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const [metrics, setMetrics] = useState({
+  const initialCache = getInitialDashboardCache();
+  const [metrics, setMetrics] = useState(initialCache?.metrics || {
     totalStudents: 0,
     totalQuestions: 0,
     activeCourses: 0,
@@ -31,9 +39,9 @@ export default function AdminDashboardPage() {
     totalAttempts: 0,
     passRate: 'No attempts yet',
   });
-  const [hourlyData, setHourlyData] = useState<any[]>([]);
-  const [logs, setLogs] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [hourlyData, setHourlyData] = useState<any[]>(initialCache?.hourlyData || []);
+  const [logs, setLogs] = useState<any[]>(initialCache?.auditLogs || []);
+  const [loading, setLoading] = useState(!initialCache);
 
   useEffect(() => {
     fetch('/api/auth/me')
@@ -47,10 +55,20 @@ export default function AdminDashboardPage() {
   }, [router]);
 
   const fetchDashboardData = () => {
-    setLoading(true);
+    if (!initialCache) setLoading(true);
     fetch('/api/dashboard')
       .then((res) => res.json())
       .then((data) => {
+        if (data.metrics || data.hourlyData || data.auditLogs) {
+          const cacheObj = {
+            metrics: data.metrics,
+            hourlyData: data.hourlyData,
+            auditLogs: data.auditLogs,
+          };
+          if (typeof window !== 'undefined') {
+            (window as any).__ADMIN_DASHBOARD_CACHE__ = cacheObj;
+          }
+        }
         if (data.metrics) {
           setMetrics(data.metrics);
         }

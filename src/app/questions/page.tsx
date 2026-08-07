@@ -25,14 +25,22 @@ import {
   Search,
 } from 'lucide-react';
 
+const getInitialQuestionsCache = () => {
+  if (typeof window !== 'undefined' && (window as any).__ADMIN_QUESTIONS_CACHE__) {
+    return (window as any).__ADMIN_QUESTIONS_CACHE__;
+  }
+  return null;
+};
+
 export default function QuestionManagementPage() {
+  const initialCache = getInitialQuestionsCache();
   const router = useRouter();
-  const [courses, setCourses] = useState<any[]>([]);
-  const [questions, setQuestions] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [courses, setCourses] = useState<any[]>(initialCache?.courses || []);
+  const [questions, setQuestions] = useState<any[]>(initialCache?.questions || []);
+  const [loading, setLoading] = useState(!initialCache);
 
   // Selected Scope
-  const [selectedCourseId, setSelectedCourseId] = useState('');
+  const [selectedCourseId, setSelectedCourseId] = useState(initialCache?.courses?.[0]?._id || '');
   const [currentLevel, setCurrentLevel] = useState<'subjects' | 'topics' | 'questions'>('subjects');
   const [selectedSubject, setSelectedSubject] = useState<string>('');
   const [selectedTopic, setSelectedTopic] = useState<string>('');
@@ -89,7 +97,7 @@ export default function QuestionManagementPage() {
   const [currentAdmin, setCurrentAdmin] = useState<any>(null);
 
   const fetchData = async () => {
-    setLoading(true);
+    if (!initialCache) setLoading(true);
     try {
       // Decode admin token from cookie if available
       let adminInfo = null;
@@ -113,6 +121,14 @@ export default function QuestionManagementPage() {
       let loadedCourses = cData.courses || [];
       if (adminInfo && adminInfo.allowed_courses && !adminInfo.allowed_courses.includes('all') && adminInfo.role !== 'Super Admin') {
         loadedCourses = loadedCourses.filter((c: any) => adminInfo.allowed_courses.includes(c._id));
+      }
+
+      const newCache = {
+        courses: loadedCourses,
+        questions: qData.questions || [],
+      };
+      if (typeof window !== 'undefined') {
+        (window as any).__ADMIN_QUESTIONS_CACHE__ = newCache;
       }
 
       setCourses(loadedCourses);

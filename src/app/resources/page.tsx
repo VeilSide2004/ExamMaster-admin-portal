@@ -39,10 +39,18 @@ interface ResourceItem {
   created_at?: string;
 }
 
+const getInitialResourcesCache = () => {
+  if (typeof window !== 'undefined' && (window as any).__RESOURCES_CACHE__) {
+    return (window as any).__RESOURCES_CACHE__;
+  }
+  return null;
+};
+
 export default function AdminResourcesPage() {
-  const [courses, setCourses] = useState<CourseItem[]>([]);
-  const [resources, setResources] = useState<ResourceItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const initialCache = getInitialResourcesCache();
+  const [courses, setCourses] = useState<CourseItem[]>(initialCache?.courses || []);
+  const [resources, setResources] = useState<ResourceItem[]>(initialCache?.resources || []);
+  const [loading, setLoading] = useState(!initialCache);
 
   // Filter State
   const [selectedCourseId, setSelectedCourseId] = useState<string>('All');
@@ -69,10 +77,18 @@ export default function AdminResourcesPage() {
   }, []);
 
   const fetchData = async () => {
-    setLoading(true);
+    if (!initialCache) setLoading(true);
     try {
       const res = await fetch('/api/resources');
       const data = await res.json();
+      const newCache = {
+        courses: data.courses || [],
+        resources: data.resources || [],
+      };
+      if (typeof window !== 'undefined') {
+        (window as any).__RESOURCES_CACHE__ = newCache;
+      }
+
       if (data.courses) setCourses(data.courses);
       if (data.resources) setResources(data.resources);
 
@@ -183,7 +199,7 @@ export default function AdminResourcesPage() {
   });
 
   return (
-    <div className="flex min-h-screen bg-slate-900 text-slate-100 font-sans">
+    <div className="flex min-h-screen bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans">
       <AdminSidebar />
 
       <div className="flex-1 flex flex-col min-w-0">
@@ -192,31 +208,31 @@ export default function AdminResourcesPage() {
         <main className="flex-1 p-6 sm:p-8 space-y-6 overflow-y-auto">
           
           {/* Top Banner Header */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-800/80 border border-slate-700/80 rounded-2xl p-6 shadow-xl">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-xs">
             <div className="space-y-1">
               <div className="flex items-center gap-2.5">
-                <span className="p-2 rounded-xl bg-blue-600 text-white shadow-md shadow-blue-500/20">
+                <span className="p-2 rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400 border border-blue-100 dark:border-blue-900/60 shadow-xs">
                   <FolderDown className="w-6 h-6" />
                 </span>
-                <h1 className="text-xl font-black text-white tracking-tight">
+                <h1 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                   Course Resource & E-Book Management
                 </h1>
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Upload and manage course-specific PDF textbooks, formula sheets, study notes, and reference manuals.
               </p>
             </div>
 
             <button
               onClick={handleOpenAdd}
-              className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black rounded-xl flex items-center gap-2 shadow-lg shadow-blue-500/20 transition-all active:scale-95"
+              className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold rounded-xl flex items-center gap-2 shadow-xs transition-colors cursor-pointer"
             >
               <Plus className="w-4 h-4" /> Add New Resource / PDF Book
             </button>
           </div>
 
           {/* Filter & Search Bar */}
-          <div className="bg-slate-800/60 border border-slate-700/80 rounded-2xl p-4 space-y-3 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 space-y-3 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xs">
             
             {/* Search Input */}
             <div className="relative w-full md:w-96">
@@ -226,18 +242,18 @@ export default function AdminResourcesPage() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search PDF books, title, subject..."
-                className="w-full pl-10 pr-4 py-2 bg-slate-900/80 border border-slate-700 rounded-xl text-xs font-medium text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 transition-all"
+                className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
               />
             </div>
 
             {/* Course Selector Dropdown */}
             <div className="flex items-center gap-2 w-full md:w-auto">
               <Filter className="w-4 h-4 text-slate-400 shrink-0" />
-              <span className="text-xs font-bold text-slate-300 shrink-0">Filter by Course:</span>
+              <span className="text-xs font-extrabold text-slate-700 dark:text-slate-300 shrink-0">Filter by Course:</span>
               <select
                 value={selectedCourseId}
                 onChange={(e) => setSelectedCourseId(e.target.value)}
-                className="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-blue-500 transition-all w-full md:w-64"
+                className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all w-full md:w-64"
               >
                 <option value="All">All Registered Courses ({courses.length})</option>
                 {courses.map((c) => (
@@ -253,17 +269,17 @@ export default function AdminResourcesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {loading ? (
               Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="bg-slate-800/60 border border-slate-700/80 rounded-2xl p-5 h-56 animate-pulse space-y-4">
-                  <div className="h-5 w-1/3 bg-slate-700 rounded-md" />
-                  <div className="h-6 w-3/4 bg-slate-700 rounded-lg" />
-                  <div className="h-10 w-full bg-slate-700 rounded-xl" />
+                <div key={i} className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 h-56 animate-pulse space-y-4 shadow-xs">
+                  <div className="h-5 w-1/3 bg-slate-200 dark:bg-slate-800 rounded-md" />
+                  <div className="h-6 w-3/4 bg-slate-200 dark:bg-slate-800 rounded-lg" />
+                  <div className="h-10 w-full bg-slate-200 dark:bg-slate-800 rounded-xl" />
                 </div>
               ))
             ) : filtered.length === 0 ? (
-              <div className="col-span-full bg-slate-800/40 border border-slate-700/60 rounded-2xl p-12 text-center flex flex-col items-center justify-center space-y-3">
-                <FolderDown className="w-10 h-10 text-slate-500 stroke-[1.5]" />
-                <h3 className="text-sm font-extrabold text-white">No Resources Added Yet</h3>
-                <p className="text-xs text-slate-400 max-w-sm">
+              <div className="col-span-full bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-12 text-center flex flex-col items-center justify-center space-y-3 shadow-xs">
+                <FolderDown className="w-10 h-10 text-slate-400 stroke-[1.5]" />
+                <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">No Resources Added Yet</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm">
                   Click &apos;Add New Resource / PDF Book&apos; above to upload study materials for your courses.
                 </p>
               </div>
@@ -271,31 +287,31 @@ export default function AdminResourcesPage() {
               filtered.map((item) => (
                 <div
                   key={item._id}
-                  className="bg-slate-800/70 border border-slate-700/80 rounded-2xl p-5 flex flex-col justify-between hover:border-blue-500/50 transition-all space-y-4 group shadow-lg"
+                  className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:border-blue-500/50 transition-all space-y-4 group shadow-xs hover:shadow-md"
                 >
                   <div className="space-y-3">
                     {/* Top Badges */}
                     <div className="flex items-center justify-between gap-2">
-                      <span className="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-blue-950/80 text-blue-400 border border-blue-800/60">
+                      <span className="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-blue-50 text-blue-600 dark:bg-blue-950/80 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60">
                         {item.resource_type}
                       </span>
-                      <span className="px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-slate-700/80 text-slate-300">
+                      <span className="px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                         {item.subject || 'General'}
                       </span>
                     </div>
 
                     {/* Course Tag */}
-                    <p className="text-[11px] font-bold text-blue-400 truncate">
+                    <p className="text-[11px] font-bold text-blue-600 dark:text-blue-400 truncate">
                       📚 {getCourseName(item.course_id)}
                     </p>
 
                     {/* Title & Description */}
                     <div>
-                      <h3 className="text-sm font-extrabold text-white group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug">
+                      <h3 className="text-sm font-extrabold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug">
                         {item.title}
                       </h3>
                       {item.description && (
-                        <p className="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 leading-relaxed font-medium">
                           {item.description}
                         </p>
                       )}
@@ -303,8 +319,8 @@ export default function AdminResourcesPage() {
                   </div>
 
                   {/* Details & Actions */}
-                  <div className="pt-3 border-t border-slate-700/60 space-y-3">
-                    <div className="flex items-center justify-between text-[11px] text-slate-400 font-medium">
+                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-3">
+                    <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 font-semibold">
                       <span>📄 {item.page_count || 100} Pages</span>
                       <span>💾 {item.file_size || '3.5 MB'}</span>
                     </div>
@@ -314,20 +330,20 @@ export default function AdminResourcesPage() {
                         href={item.file_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 py-2 px-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                        className="flex-1 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
                       >
                         <ExternalLink className="w-3.5 h-3.5" /> View Link
                       </a>
                       <button
                         onClick={() => handleOpenEdit(item)}
-                        className="p-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-200 transition-colors"
+                        className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
                         title="Edit Resource"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(item._id)}
-                        className="p-2 rounded-xl bg-rose-950/60 hover:bg-rose-900 text-rose-300 border border-rose-800/60 transition-colors"
+                        className="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/60 dark:hover:bg-rose-900 text-rose-600 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60 transition-colors cursor-pointer"
                         title="Delete Resource"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -343,15 +359,15 @@ export default function AdminResourcesPage() {
 
       {/* ADD / EDIT RESOURCE MODAL */}
       {showModal && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xl p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-xl p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-150">
             
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-              <h3 className="text-base font-black text-white flex items-center gap-2">
-                <FolderDown className="w-5 h-5 text-blue-500" />
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+              <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+                <FolderDown className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 {editingResource ? 'Edit Course Resource' : 'Add New PDF Book / Resource'}
               </h3>
-              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -360,11 +376,11 @@ export default function AdminResourcesPage() {
               
               {/* Course Selector */}
               <div className="space-y-1">
-                <label className="text-slate-300 font-extrabold">Target Course *</label>
+                <label className="text-slate-700 dark:text-slate-300 font-extrabold">Target Course *</label>
                 <select
                   value={formCourseId}
                   onChange={(e) => setFormCourseId(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-white font-bold focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-slate-900 dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   required
                 >
                   {courses.map((c) => (
@@ -377,13 +393,13 @@ export default function AdminResourcesPage() {
 
               {/* Resource Title */}
               <div className="space-y-1">
-                <label className="text-slate-300 font-extrabold">Resource Title / Book Name *</label>
+                <label className="text-slate-700 dark:text-slate-300 font-extrabold">Resource Title / Book Name *</label>
                 <input
                   type="text"
                   value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
                   placeholder="e.g. Organic Chemistry Complete Concept Book & Mechanisms"
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   required
                 />
               </div>
@@ -391,23 +407,23 @@ export default function AdminResourcesPage() {
               <div className="grid grid-cols-2 gap-3">
                 {/* Subject Tag */}
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-extrabold">Subject</label>
+                  <label className="text-slate-700 dark:text-slate-300 font-extrabold">Subject</label>
                   <input
                     type="text"
                     value={formSubject}
                     onChange={(e) => setFormSubject(e.target.value)}
                     placeholder="Physics, Chemistry, Math, etc."
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
                 </div>
 
                 {/* Resource Type */}
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-extrabold">Resource Type</label>
+                  <label className="text-slate-700 dark:text-slate-300 font-extrabold">Resource Type</label>
                   <select
                     value={formResourceType}
                     onChange={(e: any) => setFormResourceType(e.target.value)}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-slate-900 dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   >
                     <option value="PDF Book">PDF Book</option>
                     <option value="Study Notes">Study Notes</option>
@@ -419,13 +435,13 @@ export default function AdminResourcesPage() {
 
               {/* File URL */}
               <div className="space-y-1">
-                <label className="text-slate-300 font-extrabold">PDF / File URL *</label>
+                <label className="text-slate-700 dark:text-slate-300 font-extrabold">PDF / File URL *</label>
                 <input
                   type="url"
                   value={formFileUrl}
                   onChange={(e) => setFormFileUrl(e.target.value)}
                   placeholder="https://example.com/books/sample.pdf or /pdf/file.pdf"
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 font-mono text-[11px]"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-mono text-[11px]"
                   required
                 />
               </div>
@@ -433,38 +449,38 @@ export default function AdminResourcesPage() {
               <div className="grid grid-cols-2 gap-3">
                 {/* File Size */}
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-extrabold">File Size</label>
+                  <label className="text-slate-700 dark:text-slate-300 font-extrabold">File Size</label>
                   <input
                     type="text"
                     value={formFileSize}
                     onChange={(e) => setFormFileSize(e.target.value)}
                     placeholder="e.g. 14.5 MB"
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
                 </div>
 
                 {/* Page Count */}
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-extrabold">Page Count</label>
+                  <label className="text-slate-700 dark:text-slate-300 font-extrabold">Page Count</label>
                   <input
                     type="number"
                     value={formPageCount}
                     onChange={(e) => setFormPageCount(parseInt(e.target.value, 10) || 0)}
                     placeholder="120"
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
                 </div>
               </div>
 
               {/* Description */}
               <div className="space-y-1">
-                <label className="text-slate-300 font-extrabold">Description / Notes</label>
+                <label className="text-slate-700 dark:text-slate-300 font-extrabold">Description / Notes</label>
                 <textarea
                   rows={3}
                   value={formDescription}
                   onChange={(e) => setFormDescription(e.target.value)}
                   placeholder="Brief overview of what this PDF book or formula sheet covers..."
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 />
               </div>
 
@@ -473,14 +489,14 @@ export default function AdminResourcesPage() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl"
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl shadow-lg shadow-blue-500/20 disabled:opacity-50"
+                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl shadow-xs disabled:opacity-50 cursor-pointer"
                 >
                   {saving ? 'Saving...' : editingResource ? 'Update Resource' : 'Publish Resource'}
                 </button>
