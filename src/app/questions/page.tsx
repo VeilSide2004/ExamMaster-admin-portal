@@ -213,32 +213,45 @@ export default function QuestionManagementPage() {
     derivedSubjectsMap[sName].push(q);
   });
 
-  // Level 2 topics for selectedSubject
+  // Level 2 topics for selectedSubject (Manually created user topic cards only)
   const subjectQuestions = derivedSubjectsMap[selectedSubject] || [];
   const topicsMap: Record<string, any[]> = {};
 
   const userAddedTopics = customTopics[`${selectedCourseId}_${selectedSubject}`] || [];
 
-  subjectQuestions.forEach((q) => {
-    const tag = (q.topic_tag || '').trim();
-    let tName = tag;
-    if (tag.includes('-')) {
-      const parts = tag.split('-').map((p: string) => p.trim());
-      if (parts[0].toLowerCase() === selectedSubject.toLowerCase()) {
-        tName = parts.slice(1).join(' - ').trim();
-      } else {
-        tName = tag;
-      }
-    }
-    if (!tName || tName.toLowerCase() === selectedSubject.toLowerCase()) {
-      tName = 'General Module';
-    }
-    if (!topicsMap[tName]) topicsMap[tName] = [];
-    topicsMap[tName].push(q);
-  });
-
+  // Initialize topicsMap strictly with manually created user topics
   userAddedTopics.forEach((t) => {
     if (!topicsMap[t]) topicsMap[t] = [];
+  });
+
+  subjectQuestions.forEach((q) => {
+    const tag = (q.topic_tag || '').trim();
+    let tName = '';
+
+    // Match q.topic_tag against manually created userAddedTopics ONLY
+    if (userAddedTopics.length > 0) {
+      const matched = userAddedTopics.find((t) => {
+        const tLower = t.toLowerCase().trim();
+        const tagLower = tag.toLowerCase().trim();
+        return (
+          tagLower === tLower ||
+          tagLower.endsWith(`- ${tLower}`) ||
+          tagLower.endsWith(`-${tLower}`) ||
+          tagLower.includes(tLower)
+        );
+      });
+      if (matched) {
+        tName = matched;
+      }
+    }
+
+    // If no manually created topic card matches, group under 'General Module' instead of auto-spawning new cards
+    if (!tName) {
+      tName = 'General Module';
+    }
+
+    if (!topicsMap[tName]) topicsMap[tName] = [];
+    topicsMap[tName].push(q);
   });
 
   // Level 3 questions for selectedTopic
@@ -642,6 +655,12 @@ Explanation: Power is the rate at which work is done or energy is transferred.
     try {
       let questionsToSubmit: any[] = [];
 
+      const targetTopicTag = selectedSubject
+        ? selectedTopic
+          ? `${selectedSubject} - ${selectedTopic}`
+          : `${selectedSubject} - General Module`
+        : 'General Module';
+
       if (bulkMode === 'document') {
         if (!parsedDocQuestions.length) {
           setBulkError('Please upload a valid PDF or Word document containing questions.');
@@ -651,8 +670,8 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         questionsToSubmit = parsedDocQuestions.map((q) => ({
           ...q,
           course_id: selectedCourseId,
-          subject: q.subject || selectedSubject || '',
-          topic_tag: q.topic_tag || (selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : selectedSubject ? `${selectedSubject} - General` : 'General'),
+          subject: selectedSubject || '',
+          topic_tag: targetTopicTag,
         }));
       } else if (bulkMode === 'text') {
         if (!bulkText.trim()) {
@@ -663,7 +682,7 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         questionsToSubmit = parsePlainText(bulkText, selectedCourseId).map((q) => ({
           ...q,
           subject: selectedSubject || '',
-          topic_tag: q.topic_tag || (selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : selectedSubject ? `${selectedSubject} - General` : 'General'),
+          topic_tag: targetTopicTag,
         }));
       } else if (bulkMode === 'excel') {
         if (!parsedExcelQuestions.length) {
@@ -674,15 +693,15 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         questionsToSubmit = parsedExcelQuestions.map((q) => ({
           ...q,
           course_id: selectedCourseId,
-          subject: q.subject || selectedSubject || '',
-          topic_tag: q.topic_tag || (selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : selectedSubject ? `${selectedSubject} - General` : 'General'),
+          subject: selectedSubject || '',
+          topic_tag: targetTopicTag,
         }));
       } else {
         questionsToSubmit = bulkFormQuestions.map((q) => ({
           ...q,
           course_id: selectedCourseId,
-          subject: q.subject || selectedSubject || '',
-          topic_tag: q.topic_tag || (selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : selectedSubject ? `${selectedSubject} - General` : 'General'),
+          subject: selectedSubject || '',
+          topic_tag: targetTopicTag,
         }));
       }
 
