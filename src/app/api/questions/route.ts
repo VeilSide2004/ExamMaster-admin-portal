@@ -68,6 +68,15 @@ export async function POST(req: Request) {
       const db = readSharedDb();
       if (!db.questions) db.questions = [];
 
+      let cleanOptions: string[] = [];
+      if (qType === 'MCQ') {
+        cleanOptions = Array.isArray(options) ? options.map((o: any) => String(o || '').trim()).filter(Boolean) : [];
+        while (cleanOptions.length < 4) {
+          cleanOptions.push(`Option ${String.fromCharCode(65 + cleanOptions.length)}`);
+        }
+        cleanOptions = cleanOptions.slice(0, 4);
+      }
+
       const newQ = {
         _id: generateId(),
         course_id,
@@ -75,7 +84,7 @@ export async function POST(req: Request) {
         topic_tag,
         question_type: qType,
         question_text,
-        options: qType === 'MCQ' ? (options || []) : [],
+        options: cleanOptions,
         correct_option: qType === 'MCQ' ? Number(correct_option || 0) : 0,
         sample_answer: sample_answer || '',
         marks: calculatedMarks,
