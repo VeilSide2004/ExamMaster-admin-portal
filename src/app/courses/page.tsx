@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { AdminSidebar } from '@/components/layout/AdminSidebar';
 import { AdminHeader } from '@/components/layout/AdminHeader';
-import { BookOpen, Plus, Trash2, AlertTriangle, X, Trophy, GraduationCap, Sparkles, ChevronDown } from 'lucide-react';
+import { BookOpen, Plus, Trash2, AlertTriangle, X, Trophy, GraduationCap, Sparkles, ChevronDown, Edit2 } from 'lucide-react';
 
 export default function CourseManagementPage() {
   const [courses, setCourses] = useState<any[]>([]);
@@ -98,6 +98,7 @@ export default function CourseManagementPage() {
 
   // Remove Course Confirmation Modal
   const [deletingCourse, setDeletingCourse] = useState<any | null>(null);
+  const [editingCourse, setEditingCourse] = useState<any | null>(null);
 
   const fetchCourses = async () => {
     setLoading(true);
@@ -116,7 +117,37 @@ export default function CourseManagementPage() {
     fetchCourses();
   }, []);
 
-  const handleCreateCourse = async (e: React.FormEvent) => {
+  const handleOpenAddCourse = () => {
+    setEditingCourse(null);
+    setName('');
+    setCategory('Competitive Exams');
+    setBoard('CBSE');
+    setCustomBoard('');
+    setCurriculum('');
+    setDescription('');
+    setSubjectsInput('Physics, Chemistry, Mathematics');
+    setMarksPerCorrect(4);
+    setPenaltyPerIncorrect(1);
+    setError('');
+    setShowAddModal(true);
+  };
+
+  const handleOpenEditCourse = (course: any) => {
+    setEditingCourse(course);
+    setName(course.name || '');
+    setCategory(course.category || 'Competitive Exams');
+    setBoard(course.board || 'CBSE');
+    setCustomBoard(course.board || '');
+    setCurriculum(course.curriculum || '');
+    setDescription(course.description || '');
+    setSubjectsInput(Array.isArray(course.subjects) ? course.subjects.join(', ') : (course.subjects || 'Physics, Chemistry, Mathematics'));
+    setMarksPerCorrect(course.marking_scheme?.marks_per_correct !== undefined ? course.marking_scheme.marks_per_correct : (isSchoolCategory(course) ? 1 : 4));
+    setPenaltyPerIncorrect(course.marking_scheme?.penalty_per_incorrect !== undefined ? course.marking_scheme.penalty_per_incorrect : (isSchoolCategory(course) ? 0 : 1));
+    setError('');
+    setShowAddModal(true);
+  };
+
+  const handleSaveCourse = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSubmitting(true);
@@ -129,8 +160,11 @@ export default function CourseManagementPage() {
         handleAddCustomBoardToList(customBoard.trim());
       }
 
-      const res = await fetch('/api/courses', {
-        method: 'POST',
+      const url = editingCourse ? `/api/courses/${editingCourse._id}` : '/api/courses';
+      const method = editingCourse ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name,
@@ -146,9 +180,10 @@ export default function CourseManagementPage() {
 
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || 'Failed to create course');
+        setError(data.error || `Failed to ${editingCourse ? 'update' : 'create'} course`);
       } else {
         setShowAddModal(false);
+        setEditingCourse(null);
         setName('');
         setCategory('Competitive Exams');
         setBoard('CBSE');
@@ -245,9 +280,9 @@ export default function CourseManagementPage() {
               </div>
 
               <button
-                onClick={() => setShowAddModal(true)}
+                onClick={handleOpenAddCourse}
                 type="button"
-                className="px-4 py-2 bg-[#0B192C] hover:bg-[#060E18] text-white text-xs font-bold rounded-lg flex items-center gap-2 transition-colors shadow-sm"
+                className="px-4 py-2 bg-[#0B192C] hover:bg-[#060E18] text-white text-xs font-bold rounded-lg flex items-center gap-2 transition-colors shadow-sm cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 Create New Course
@@ -324,13 +359,22 @@ export default function CourseManagementPage() {
                               </strong>
                             </div>
 
-                            <button
-                              onClick={() => setDeletingCourse(course)}
-                              className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-bold text-xs rounded-lg flex items-center gap-1.5 transition-colors"
-                              title="Remove Course"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" /> Remove
-                            </button>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => handleOpenEditCourse(course)}
+                                className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-bold text-xs rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer border border-blue-200 dark:border-blue-900/50"
+                                title="Edit Course"
+                              >
+                                <Edit2 className="w-3.5 h-3.5" /> Edit
+                              </button>
+                              <button
+                                onClick={() => setDeletingCourse(course)}
+                                className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-bold text-xs rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+                                title="Remove Course"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" /> Remove
+                              </button>
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -415,13 +459,22 @@ export default function CourseManagementPage() {
                               </strong>
                             </div>
 
-                            <button
-                              onClick={() => setDeletingCourse(course)}
-                              className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-bold text-xs rounded-lg flex items-center gap-1.5 transition-colors"
-                              title="Remove Course"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" /> Remove
-                            </button>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => handleOpenEditCourse(course)}
+                                className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-bold text-xs rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer border border-blue-200 dark:border-blue-900/50"
+                                title="Edit Course"
+                              >
+                                <Edit2 className="w-3.5 h-3.5" /> Edit
+                              </button>
+                              <button
+                                onClick={() => setDeletingCourse(course)}
+                                className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-bold text-xs rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+                                title="Remove Course"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" /> Remove
+                              </button>
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -439,15 +492,17 @@ export default function CourseManagementPage() {
         <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50 overflow-y-auto">
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 max-w-md w-full shadow-lg my-8">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">Create New Course (FR-33)</h3>
-              <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                {editingCourse ? 'Edit Course Details' : 'Create New Course (FR-33)'}
+              </h3>
+              <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600 cursor-pointer">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {error && <div className="mb-3 p-2 bg-rose-50 text-rose-600 text-xs rounded border border-rose-200">{error}</div>}
 
-            <form onSubmit={handleCreateCourse} className="space-y-4 text-xs">
+            <form onSubmit={handleSaveCourse} className="space-y-4 text-xs">
               {/* Category Selector */}
               <div>
                 <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Course Category / Exam Type</label>
@@ -707,7 +762,7 @@ export default function CourseManagementPage() {
                   disabled={submitting}
                   className="px-4 py-2 bg-brand-800 hover:bg-brand-900 text-white font-bold rounded-lg disabled:opacity-50"
                 >
-                  {submitting ? 'Creating...' : 'Save & Publish Course'}
+                  {submitting ? 'Saving...' : editingCourse ? 'Update Course Details' : 'Save & Publish Course'}
                 </button>
               </div>
             </form>
