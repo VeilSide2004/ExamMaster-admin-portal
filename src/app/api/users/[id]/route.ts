@@ -8,13 +8,47 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   try {
     const { isMemoryMode } = await dbConnect();
     const admin = getAuthenticatedAdmin();
-    const { action } = await req.json();
+    const body = await req.json();
+    const { action, locked_course_id } = body;
+
+    if (action === 'assign_course') {
+      if (isMemoryMode) {
+        const db = readSharedDb();
+        const u = (db.users || []).find((user) => String(user._id) === String(params.id));
+        if (u) {
+          u.locked_course_id = locked_course_id || null;
+        }
+        if (!db.auditLogs) db.auditLogs = [];
+        db.auditLogs.unshift({
+          _id: generateId(),
+          admin_id: admin?.adminId || 'admin_master_1',
+          admin_name: admin?.name || 'Admin',
+          action_type: 'ASSIGN_COURSE',
+          affected_entity_id: params.id,
+          details: `Assigned course ID ${locked_course_id || 'null'} to student ID ${params.id}`,
+          timestamp: new Date().toISOString(),
+        });
+        writeSharedDb(db);
+        return NextResponse.json({ success: true, user: u });
+      }
+
+      const updated = await User.findByIdAndUpdate(params.id, { locked_course_id: locked_course_id || null }, { new: true });
+      await AuditLog.create({
+        admin_id: admin?.adminId,
+        admin_name: admin?.name || 'Admin',
+        action_type: 'ASSIGN_COURSE',
+        affected_entity_id: params.id,
+        details: `Assigned course ID ${locked_course_id || 'null'} to student ID ${params.id}`,
+      });
+
+      return NextResponse.json({ success: true, user: updated });
+    }
 
     const newStatus = action === 'suspend' ? 'Suspended' : 'Active';
 
     if (isMemoryMode) {
       const db = readSharedDb();
-      const u = (db.users || []).find((user) => user._id === params.id);
+      const u = (db.users || []).find((user) => String(user._id) === String(params.id));
       if (u) {
         u.status = newStatus;
       }

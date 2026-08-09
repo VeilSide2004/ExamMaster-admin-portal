@@ -11,6 +11,7 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const query = searchParams.get('q') || '';
     const statusFilter = searchParams.get('status') || '';
+    const courseFilter = searchParams.get('course') || '';
 
     if (isMemoryMode) {
       const db = readSharedDb();
@@ -25,11 +26,19 @@ export async function GET(req: Request) {
         filtered = filtered.filter((u) => u.status === statusFilter);
       }
 
+      if (courseFilter) {
+        if (courseFilter === 'pending') {
+          filtered = filtered.filter((u) => !u.locked_course_id);
+        } else {
+          filtered = filtered.filter((u) => u.locked_course_id && String(u.locked_course_id) === String(courseFilter));
+        }
+      }
+
       const formatted = filtered.map((u) => {
-        const course = (db.courses || []).find((c) => c._id === u.locked_course_id);
+        const course = u.locked_course_id ? (db.courses || []).find((c) => String(c._id) === String(u.locked_course_id)) : null;
         return {
           ...u,
-          locked_course_id: course ? { _id: course._id, name: course.name } : null,
+          locked_course_id: course ? { _id: course._id, name: course.name, category: course.category } : null,
         };
       });
 
@@ -39,14 +48,28 @@ export async function GET(req: Request) {
     // Mongoose mode
     const filter: any = { status: { $ne: 'Deleted' } };
     if (statusFilter) filter.status = statusFilter;
+    if (courseFilter) {
+      if (courseFilter === 'pending') {
+        filter.$or = [{ locked_course_id: null }, { locked_course_id: { $exists: false } }];
+      } else {
+        filter.locked_course_id = courseFilter;
+      }
+    }
+
     if (query) {
-      filter.$or = [
+      const searchOr = [
         { name: { $regex: query, $options: 'i' } },
         { email: { $regex: query, $options: 'i' } },
       ];
+      if (filter.$or) {
+        filter.$and = [{ $or: filter.$or }, { $or: searchOr }];
+        delete filter.$or;
+      } else {
+        filter.$or = searchOr;
+      }
     }
 
-    const users = await User.find(filter).populate('locked_course_id', 'name').sort({ created_at: -1 });
+    const users = await User.find(filter).populate('locked_course_id', 'name category').sort({ created_at: -1 });
     return NextResponse.json({ users });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -57,7 +80,7 @@ export async function POST(req: Request) {
   try {
     const { isMemoryMode } = await dbConnect();
     const admin = getAuthenticatedAdmin();
-    const { name, email, password } = await req.json();
+    const { name, email, password, locked_course_id } = await req.json();
 
     if (!name || !email || !password) {
       return NextResponse.json({ error: 'Name, email, and password are required' }, { status: 400 });
@@ -80,7 +103,7 @@ export async function POST(req: Request) {
         password_hash,
         status: 'Active',
         xp_total: 0,
-        locked_course_id: null,
+        locked_course_id: locked_course_id || null,
         created_at: new Date().toISOString(),
       };
 
@@ -115,7 +138,7 @@ export async function POST(req: Request) {
       password_hash,
       status: 'Active',
       xp_total: 0,
-      locked_course_id: null,
+      locked_course_id: locked_course_id || null,
     });
 
     await AuditLog.create({
