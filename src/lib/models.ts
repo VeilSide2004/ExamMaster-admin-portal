@@ -6,6 +6,7 @@ export interface IUser extends Document {
   email: string;
   password_hash: string;
   locked_course_id?: any;
+  previous_course_id?: any;
   status: 'Active' | 'Suspended' | 'Deleted';
   xp_total: number;
   created_at: Date;
@@ -16,6 +17,7 @@ const UserSchema = new Schema<IUser>({
   email: { type: String, required: true, unique: true, lowercase: true },
   password_hash: { type: String, required: true },
   locked_course_id: { type: Schema.Types.Mixed, default: null },
+  previous_course_id: { type: Schema.Types.Mixed, default: null },
   status: { type: String, enum: ['Active', 'Suspended', 'Deleted'], default: 'Active' },
   xp_total: { type: Number, default: 0 },
   created_at: { type: Date, default: Date.now },
