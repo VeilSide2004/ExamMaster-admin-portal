@@ -73,8 +73,8 @@ export async function POST(request: Request) {
     });
 
     await AuditLog.create({
-      admin_email: admin?.email || 'admin@exammaster.com',
-      action: 'SEND_NOTIFICATION',
+      admin_name: admin?.name || 'Master Controller',
+      action_type: 'SEND_NOTIFICATION',
       details: `Sent notification "${title}" (Target: ${validTargetType})`,
     });
 

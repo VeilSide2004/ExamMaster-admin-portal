@@ -194,11 +194,11 @@ export interface IAuditLog extends Document {
 }
 
 const AuditLogSchema = new Schema<IAuditLog>({
-  admin_id: { type: Schema.Types.Mixed },
+  admin_id: { type: Schema.Types.Mixed, default: null },
   admin_name: { type: String, default: 'System Admin' },
-  action_type: { type: String, required: true },
+  action_type: { type: String, default: 'ADMIN_ACTION' },
   affected_entity_id: { type: String, default: '' },
-  details: { type: String, required: true },
+  details: { type: String, default: 'System event' },
   timestamp: { type: Date, default: Date.now },
 });
 
