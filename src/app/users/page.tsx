@@ -567,8 +567,8 @@ export default function UserManagementPage() {
                               </div>
                             ) : (
                               <div className="flex items-center gap-2">
-                                <span className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 font-medium rounded-lg text-[11px]">
-                                  Unassigned Course
+                                <span className="px-2.5 py-1 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 font-semibold rounded-lg text-[11px] border border-amber-200 dark:border-amber-800">
+                                  Course Selection In-Progress
                                 </span>
                                 <button
                                   type="button"

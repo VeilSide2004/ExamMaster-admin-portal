@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/db';
-import { User, AuditLog } from '@/lib/models';
+import { User, Course, AuditLog } from '@/lib/models';
 import { readSharedDb, writeSharedDb, generateId } from '@/lib/sharedDb';
 import { getAuthenticatedAdmin } from '@/lib/auth';
 import bcrypt from 'bcryptjs';
@@ -88,7 +88,34 @@ export async function GET(req: Request) {
       }
     }
 
-    const users = await User.find(filter).populate('locked_course_id', 'name category').sort({ created_at: -1 });
+    const rawUsers = await User.find(filter).lean().sort({ created_at: -1 });
+    const allCourses = await Course.find({}).lean();
+
+    const users = rawUsers.map((u: any) => {
+      let courseObj: any = null;
+      if (u.locked_course_id) {
+        if (typeof u.locked_course_id === 'object' && u.locked_course_id.name) {
+          courseObj = {
+            _id: String(u.locked_course_id._id || u.locked_course_id.id || ''),
+            name: u.locked_course_id.name,
+            category: u.locked_course_id.category || 'Course',
+          };
+        } else {
+          const targetId = String(u.locked_course_id);
+          const found = allCourses.find((c: any) => String(c._id) === targetId || String(c.id) === targetId);
+          if (found) {
+            courseObj = { _id: String(found._id), name: found.name, category: found.category };
+          } else {
+            courseObj = { _id: targetId, name: targetId, category: 'Course' };
+          }
+        }
+      }
+      return {
+        ...u,
+        locked_course_id: courseObj,
+      };
+    });
+
     return NextResponse.json({ users });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
