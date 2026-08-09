@@ -54,6 +54,7 @@ export const StudentStatsModal: React.FC<StudentStatsModalProps> = ({ studentId,
   if (!studentId) return null;
 
   const getSpeedCategory = (seconds: number) => {
+    if (!seconds || seconds <= 0) return { text: 'No Tests Taken', color: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400' };
     if (seconds <= 30) return { text: 'Rapid Solver', color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' };
     if (seconds <= 60) return { text: 'Optimal Pacing', color: 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' };
     return { text: 'Methodical Pace', color: 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300' };
@@ -151,7 +152,13 @@ export const StudentStatsModal: React.FC<StudentStatsModalProps> = ({ studentId,
                     <span className="text-[10px] font-extrabold uppercase tracking-wider">Avg Speed</span>
                   </div>
                   <div className="text-xl font-black text-slate-900 dark:text-white">
-                    {data.stats.avgTimePerQuestionSeconds}s <span className="text-xs font-bold text-amber-600">/ Q</span>
+                    {data.stats.avgTimePerQuestionSeconds > 0 ? (
+                      <>
+                        {data.stats.avgTimePerQuestionSeconds}s <span className="text-xs font-bold text-amber-600">/ Q</span>
+                      </>
+                    ) : (
+                      <span className="text-slate-400 font-extrabold">N/A</span>
+                    )}
                   </div>
                   <p className="text-[10px] text-slate-500 mt-1 font-medium">Time per question</p>
                 </div>
@@ -205,7 +212,9 @@ export const StudentStatsModal: React.FC<StudentStatsModalProps> = ({ studentId,
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
                   <div className="p-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-center">
                     <span className="text-[10px] text-slate-400 font-bold block">Average Answer Time</span>
-                    <span className="text-lg font-black text-slate-900 dark:text-white">{data.stats.avgTimePerQuestionSeconds} sec</span>
+                    <span className="text-lg font-black text-slate-900 dark:text-white">
+                      {data.stats.avgTimePerQuestionSeconds > 0 ? `${data.stats.avgTimePerQuestionSeconds} sec` : 'N/A'}
+                    </span>
                   </div>
                   <div className="p-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-center">
                     <span className="text-[10px] text-slate-400 font-bold block">Total Tests Attempted</span>

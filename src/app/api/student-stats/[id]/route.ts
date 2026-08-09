@@ -68,7 +68,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 
       const avgTimePerQuestionSeconds = totalQuestionsAttempted > 0
         ? Math.round(totalTimeSpentSeconds / totalQuestionsAttempted)
-        : 42;
+        : 0;
 
       return NextResponse.json({
         student: {
