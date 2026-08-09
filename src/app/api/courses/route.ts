@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     }
 
     const catStr = String(category || '').toLowerCase().trim();
-    const isSchool = catStr.includes('school') || catStr.includes('class') || catStr.includes('6-12') || catStr.includes('board');
+    const isSchool = catStr.includes('school') || catStr.includes('class') || catStr.includes('3-12') || catStr.includes('6-12') || catStr.includes('board');
     const courseCategory = isSchool ? 'School Exams' : 'Competitive Exams';
     const courseBoard = isSchool ? String(board || 'CBSE').trim() : (board ? String(board).trim() : 'N/A');
     const courseCurriculum = String(curriculum || '').trim();

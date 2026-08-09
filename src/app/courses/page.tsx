@@ -214,9 +214,8 @@ export default function CourseManagementPage() {
   };
 
   const isSchoolCategory = (c: any) => {
-    if (!c.category) return false;
-    const cat = String(c.category).toLowerCase().trim();
-    return cat.includes('school') || cat.includes('class') || cat.includes('6-12') || cat.includes('board');
+    const cat = String(c?.category || '').toLowerCase();
+    return cat.includes('school') || cat.includes('class') || cat.includes('3-12') || cat.includes('6-12') || cat.includes('board');
   };
 
   const schoolCourses = courses.filter((c) => isSchoolCategory(c));
@@ -391,7 +390,7 @@ export default function CourseManagementPage() {
                       <GraduationCap className="w-4 h-4" />
                     </div>
                     <h3 className="text-sm font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">
-                      School Exams (Class 6 to 12) ({schoolCourses.length})
+                      School Exams (Class 3 to 12) ({schoolCourses.length})
                     </h3>
                   </div>
 
@@ -408,7 +407,7 @@ export default function CourseManagementPage() {
                             <div className="flex justify-between items-start mb-3">
                               <div className="flex flex-wrap items-center gap-1.5">
                                 <span className="px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[10px] font-extrabold flex items-center gap-1">
-                                  <GraduationCap className="w-3 h-3" /> Class 6-12
+                                  <GraduationCap className="w-3 h-3" /> Class 3-12
                                 </span>
                                 {course.board && (
                                   <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-extrabold border border-slate-200 dark:border-slate-700">
@@ -545,7 +544,7 @@ export default function CourseManagementPage() {
                     <GraduationCap className="w-4 h-4 text-emerald-500" />
                     <div>
                       <div className="text-xs">School Exams</div>
-                      <div className="text-[10px] text-slate-400 font-normal">Class 6 to 12</div>
+                      <div className="text-[10px] text-slate-400 font-normal">Class 3 to 12</div>
                     </div>
                   </button>
                 </div>
@@ -719,7 +718,7 @@ export default function CourseManagementPage() {
                     onClick={() => setSubjectsInput('Science, Mathematics, Social Studies')}
                     className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded text-[10px] font-bold border border-slate-300 dark:border-slate-700"
                   >
-                    🎓 School Class 6-10 Preset
+                    🎓 School Class 3-12 Preset
                   </button>
                 </div>
               </div>
