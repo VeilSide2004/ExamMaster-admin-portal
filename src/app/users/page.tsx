@@ -440,18 +440,7 @@ export default function UserManagementPage() {
                       : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-slate-200'
                   }`}
                 >
-                  All Accounts ({users.length})
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCourseFilter('pending')}
-                  className={`px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                    courseFilter === 'pending'
-                      ? 'bg-amber-500 text-white shadow-xs'
-                      : 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-900 hover:bg-amber-100'
-                  }`}
-                >
-                  ⚠️ Pending Selection
+                  All Courses ({users.length})
                 </button>
                 {courses.map((c) => (
                   <button
@@ -489,7 +478,6 @@ export default function UserManagementPage() {
                     className="text-xs p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white font-medium cursor-pointer"
                   >
                     <option value="">All Course Batches</option>
-                    <option value="pending">⚠️ Pending Selection</option>
                     {courses.map((c) => (
                       <option key={c._id} value={c._id}>
                         📚 {c.name} {c.category ? `(${c.category})` : ''}
@@ -578,15 +566,18 @@ export default function UserManagementPage() {
                                 </button>
                               </div>
                             ) : (
-                              <button
-                                type="button"
-                                onClick={() => openAssignCourseModal(u)}
-                                className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/60 dark:hover:bg-amber-900/60 text-amber-700 dark:text-amber-300 font-extrabold rounded-lg border border-amber-300/60 dark:border-amber-800 text-[11px] flex items-center gap-1.5 cursor-pointer shadow-2xs transition-all"
-                                title="Click to Assign Course Batch"
-                              >
-                                <AlertTriangle className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
-                                <span>Pending Selection — Assign Course</span>
-                              </button>
+                              <div className="flex items-center gap-2">
+                                <span className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 font-medium rounded-lg text-[11px]">
+                                  Unassigned Course
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => openAssignCourseModal(u)}
+                                  className="p-1 text-blue-600 hover:text-blue-700 font-bold text-[10px] underline cursor-pointer"
+                                >
+                                  Assign
+                                </button>
+                              </div>
                             )}
                           </td>
                           <td className="p-4 font-bold text-emerald-600 dark:text-emerald-400">
