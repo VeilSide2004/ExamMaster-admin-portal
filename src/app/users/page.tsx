@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { AdminSidebar } from '@/components/layout/AdminSidebar';
 import { AdminHeader } from '@/components/layout/AdminHeader';
-import { Users, Search, UserPlus, ShieldCheck, Trash2, X, AlertTriangle, Shield, Edit3, BookOpen, Key, CheckSquare, Square, Eye, EyeOff, Bell, Send, Sparkles, CheckCircle2, Lock } from 'lucide-react';
+import { Users, Search, UserPlus, ShieldCheck, Trash2, X, AlertTriangle, Shield, Edit3, BookOpen, Key, CheckSquare, Square, Eye, EyeOff, Bell, Send, Sparkles, CheckCircle2, Lock, ChevronDown, ChevronUp, Layers } from 'lucide-react';
 
 const ALL_PERMISSIONS = [
   { id: 'manage_questions', label: 'Manage & Add Questions', desc: 'Create, edit, and curate topic question bank' },
@@ -64,6 +64,46 @@ export default function UserManagementPage() {
   const [notifType, setNotifType] = useState<'info' | 'alert' | 'announcement' | 'warning' | 'success'>('announcement');
   const [sendingNotif, setSendingNotif] = useState<boolean>(false);
   const [notifToast, setNotifToast] = useState<string | null>(null);
+
+  // Multi-Profile Grouping State
+  const [expandedEmails, setExpandedEmails] = useState<{ [rootEmail: string]: boolean }>({});
+
+  const toggleExpandEmail = (rootEmail: string) => {
+    setExpandedEmails((prev) => ({ ...prev, [rootEmail]: !prev[rootEmail] }));
+  };
+
+  const getRootEmail = (u: any): string => {
+    if (u.account_email) return u.account_email.toLowerCase().trim();
+    const email = (u.email || '').toLowerCase().trim();
+    if (email.includes('+')) {
+      const [local, domain] = email.split('@');
+      const baseLocal = local.split('+')[0];
+      if (domain.includes('exammaster.internal') || domain.includes('internal')) {
+        return `${baseLocal}@gmail.com`;
+      }
+      return `${baseLocal}@${domain}`;
+    }
+    return email;
+  };
+
+  const groupedUsers = useMemo(() => {
+    const groups: { [rootEmail: string]: any[] } = {};
+    const order: string[] = [];
+
+    for (const u of users) {
+      const root = getRootEmail(u);
+      if (!groups[root]) {
+        groups[root] = [];
+        order.push(root);
+      }
+      groups[root].push(u);
+    }
+
+    return order.map((rootEmail) => ({
+      rootEmail,
+      profiles: groups[rootEmail],
+    }));
+  }, [users]);
 
   const fetchCourses = async () => {
     try {
@@ -543,92 +583,216 @@ export default function UserManagementPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                      {users.map((u) => (
-                        <tr key={u._id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
-                          <td className="p-4 font-semibold text-slate-900 dark:text-white">
-                            <div>{u.name}</div>
-                            <div className="text-[11px] font-normal text-slate-500">{u.email}</div>
-                          </td>
-                          <td className="p-4 font-medium text-slate-700 dark:text-slate-300">
-                            {u.locked_course_id?.name ? (
-                              <div className="flex items-center gap-2">
-                                <span className="px-2.5 py-1 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold rounded-lg border border-blue-200 dark:border-blue-800 text-[11px] flex items-center gap-1.5 shadow-2xs">
-                                  <Lock className="w-3 h-3 text-blue-600 shrink-0" />
-                                  <span className="font-extrabold">{u.locked_course_id.name}</span>
-                                </span>
-                                <button
-                                  type="button"
-                                  onClick={() => openAssignCourseModal(u)}
-                                  className="p-1 text-slate-400 hover:text-blue-600 rounded transition-colors text-[10px] font-bold cursor-pointer"
-                                  title="Change Course Batch"
-                                >
-                                  <Edit3 className="w-3.5 h-3.5" />
-                                </button>
-                              </div>
-                            ) : (
-                              <div className="flex items-center gap-2">
-                                <span className="px-2.5 py-1 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 font-semibold rounded-lg text-[11px] border border-amber-200 dark:border-amber-800">
-                                  Course Selection In-Progress
-                                </span>
-                                <button
-                                  type="button"
-                                  onClick={() => openAssignCourseModal(u)}
-                                  className="px-2 py-0.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] rounded-md cursor-pointer transition-colors shadow-2xs"
-                                >
-                                  Assign Course
-                                </button>
-                              </div>
-                            )}
-                          </td>
-                          <td className="p-4 font-bold text-emerald-600 dark:text-emerald-400">
-                            {(u.xp_total || 0).toLocaleString()} XP
-                          </td>
-                          <td className="p-4">
-                            <span
-                              className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase ${
-                                u.status === 'Active'
-                                  ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
-                                  : 'bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300'
-                              }`}
-                            >
-                              {u.status}
-                            </span>
-                          </td>
-                          <td className="p-4 text-right space-x-2">
-                            <button
-                              onClick={() => openSendNotifForUser(u)}
-                              type="button"
-                              className="px-2.5 py-1 text-[11px] font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 rounded cursor-pointer"
-                              title="Send Notification to this student"
-                            >
-                              <Bell className="w-3.5 h-3.5 inline mr-1" /> Notify
-                            </button>
+                      {groupedUsers.map(({ rootEmail, profiles }) => {
+                        const isMulti = profiles.length > 1;
+                        const u = profiles[0]; // Main profile
+                        const isExpanded = !!expandedEmails[rootEmail];
 
-                            {u.status === 'Active' ? (
-                              <button
-                                onClick={() => setActiveActionModal({ entity: u, targetType: 'student', type: 'suspend' })}
-                                className="px-2.5 py-1 text-[11px] font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 rounded"
-                              >
-                                Suspend
-                              </button>
-                            ) : (
-                              <button
-                                onClick={() => setActiveActionModal({ entity: u, targetType: 'student', type: 'activate' })}
-                                className="px-2.5 py-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 rounded"
-                              >
-                                Reinstate
-                              </button>
+                        return (
+                          <React.Fragment key={rootEmail}>
+                            <tr className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
+                              <td className="p-4 font-semibold text-slate-900 dark:text-white">
+                                <div>{u.name}</div>
+                                <div className="text-[11px] font-normal text-slate-500">{u.email}</div>
+
+                                {/* Dropdown pill button shown ONLY if multiple profiles exist under this email */}
+                                {isMulti && (
+                                  <div className="mt-2">
+                                    <button
+                                      type="button"
+                                      onClick={() => toggleExpandEmail(rootEmail)}
+                                      className="px-2.5 py-1 bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/70 dark:hover:bg-purple-900/70 text-purple-700 dark:text-purple-300 font-extrabold rounded-lg border border-purple-200 dark:border-purple-800 text-[11px] flex items-center gap-1.5 cursor-pointer shadow-2xs transition-all"
+                                    >
+                                      <Layers className="w-3.5 h-3.5 text-purple-600 shrink-0" />
+                                      <span>👥 {profiles.length} Profiles under ({rootEmail})</span>
+                                      {isExpanded ? <ChevronUp className="w-3.5 h-3.5 shrink-0" /> : <ChevronDown className="w-3.5 h-3.5 shrink-0" />}
+                                    </button>
+                                  </div>
+                                )}
+                              </td>
+                              <td className="p-4 font-medium text-slate-700 dark:text-slate-300">
+                                {u.locked_course_id?.name ? (
+                                  <div className="flex items-center gap-2">
+                                    <span className="px-2.5 py-1 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold rounded-lg border border-blue-200 dark:border-blue-800 text-[11px] flex items-center gap-1.5 shadow-2xs">
+                                      <Lock className="w-3 h-3 text-blue-600 shrink-0" />
+                                      <span className="font-extrabold">{u.locked_course_id.name}</span>
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() => openAssignCourseModal(u)}
+                                      className="p-1 text-slate-400 hover:text-blue-600 rounded transition-colors text-[10px] font-bold cursor-pointer"
+                                      title="Change Course Batch"
+                                    >
+                                      <Edit3 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center gap-2">
+                                    <span className="px-2.5 py-1 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 font-semibold rounded-lg text-[11px] border border-amber-200 dark:border-amber-800">
+                                      Course Selection In-Progress
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() => openAssignCourseModal(u)}
+                                      className="px-2 py-0.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] rounded-md cursor-pointer transition-colors shadow-2xs"
+                                    >
+                                      Assign Course
+                                    </button>
+                                  </div>
+                                )}
+                              </td>
+                              <td className="p-4 font-bold text-emerald-600 dark:text-emerald-400">
+                                {(u.xp_total || 0).toLocaleString()} XP
+                              </td>
+                              <td className="p-4">
+                                <span
+                                  className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase ${
+                                    u.status === 'Active'
+                                      ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+                                      : 'bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300'
+                                  }`}
+                                >
+                                  {u.status}
+                                </span>
+                              </td>
+                              <td className="p-4 text-right space-x-2">
+                                <button
+                                  onClick={() => openSendNotifForUser(u)}
+                                  type="button"
+                                  className="px-2.5 py-1 text-[11px] font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 rounded cursor-pointer"
+                                  title="Send Notification to this student"
+                                >
+                                  <Bell className="w-3.5 h-3.5 inline mr-1" /> Notify
+                                </button>
+
+                                {u.status === 'Active' ? (
+                                  <button
+                                    onClick={() => setActiveActionModal({ entity: u, targetType: 'student', type: 'suspend' })}
+                                    className="px-2.5 py-1 text-[11px] font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 rounded"
+                                  >
+                                    Suspend
+                                  </button>
+                                ) : (
+                                  <button
+                                    onClick={() => setActiveActionModal({ entity: u, targetType: 'student', type: 'activate' })}
+                                    className="px-2.5 py-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 rounded"
+                                  >
+                                    Reinstate
+                                  </button>
+                                )}
+                                <button
+                                  onClick={() => setActiveActionModal({ entity: u, targetType: 'student', type: 'delete' })}
+                                  className="p-1 text-slate-400 hover:text-rose-600 rounded transition-colors"
+                                  title="Delete Student Account"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </td>
+                            </tr>
+
+                            {/* Dropdown Panel showing ALL profiles created under this mail ID */}
+                            {isMulti && isExpanded && (
+                              <tr className="bg-purple-50/50 dark:bg-purple-950/30 border-b border-purple-200 dark:border-purple-900/50">
+                                <td colSpan={5} className="p-3.5 pl-6 sm:pl-10">
+                                  <div className="bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-800/80 rounded-2xl p-4 shadow-sm space-y-3">
+                                    <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
+                                      <div className="flex items-center gap-2">
+                                        <div className="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/80 flex items-center justify-center">
+                                          <Layers className="w-3.5 h-3.5 text-purple-600 dark:text-purple-300" />
+                                        </div>
+                                        <span className="text-xs font-extrabold text-purple-900 dark:text-purple-300">
+                                          All Student Profiles Linked to Mail ID ({rootEmail}):
+                                        </span>
+                                      </div>
+                                      <span className="text-[10px] font-extrabold px-2 py-0.5 bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 rounded-full">
+                                        {profiles.length} Total Accounts Found
+                                      </span>
+                                    </div>
+
+                                    <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                                      {profiles.map((p, idx) => (
+                                        <div key={p._id} className="py-3 flex flex-wrap items-center justify-between gap-3 text-xs">
+                                          <div className="flex items-center gap-3">
+                                            <span className="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 font-extrabold text-[11px] flex items-center justify-center shrink-0">
+                                              {idx + 1}
+                                            </span>
+                                            <div>
+                                              <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                                {p.name}
+                                                {idx === 0 && (
+                                                  <span className="px-1.5 py-0.2 bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 text-[9px] font-extrabold rounded uppercase">
+                                                    Main Profile
+                                                  </span>
+                                                )}
+                                              </div>
+                                              <div className="text-[10px] font-mono text-slate-500">{p.email}</div>
+                                            </div>
+                                          </div>
+
+                                          <div className="flex items-center gap-3">
+                                            {/* Course Badge */}
+                                            <div>
+                                              {p.locked_course_id?.name ? (
+                                                <span className="px-2.5 py-1 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold rounded-lg border border-blue-200 dark:border-blue-800 text-[10px] flex items-center gap-1.5">
+                                                  <Lock className="w-3 h-3 text-blue-600 shrink-0" />
+                                                  <span>{p.locked_course_id.name}</span>
+                                                </span>
+                                              ) : (
+                                                <span className="px-2 py-0.5 bg-amber-50 text-amber-700 font-semibold rounded-md text-[10px]">
+                                                  Course Pending
+                                                </span>
+                                              )}
+                                            </div>
+
+                                            {/* XP */}
+                                            <span className="font-bold text-emerald-600 dark:text-emerald-400 text-[11px]">
+                                              {(p.xp_total || 0).toLocaleString()} XP
+                                            </span>
+
+                                            {/* Status */}
+                                            <span className={`px-2 py-0.5 rounded text-[9px] font-extrabold uppercase ${
+                                              p.status === 'Active' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'
+                                            }`}>
+                                              {p.status}
+                                            </span>
+
+                                            {/* Actions */}
+                                            <div className="flex items-center gap-1.5 ml-2">
+                                              <button
+                                                type="button"
+                                                onClick={() => openAssignCourseModal(p)}
+                                                className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 font-bold text-[10px] rounded flex items-center gap-1 cursor-pointer"
+                                              >
+                                                <Edit3 className="w-3 h-3" /> Assign/Edit
+                                              </button>
+                                              <button
+                                                type="button"
+                                                onClick={() => openSendNotifForUser(p)}
+                                                className="p-1.5 text-blue-600 hover:bg-blue-50 rounded cursor-pointer"
+                                                title="Send Notification"
+                                              >
+                                                <Bell className="w-3.5 h-3.5" />
+                                              </button>
+                                              <button
+                                                type="button"
+                                                onClick={() => setActiveActionModal({ entity: p, targetType: 'student', type: 'delete' })}
+                                                className="p-1.5 text-slate-400 hover:text-rose-600 rounded cursor-pointer"
+                                                title="Delete Profile"
+                                              >
+                                                <Trash2 className="w-3.5 h-3.5" />
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </td>
+                              </tr>
                             )}
-                            <button
-                              onClick={() => setActiveActionModal({ entity: u, targetType: 'student', type: 'delete' })}
-                              className="p-1 text-slate-400 hover:text-rose-600 rounded transition-colors"
-                              title="Delete Student Account"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
+                          </React.Fragment>
+                        );
+                      })}
                     </tbody>
                   </table>
                 )}
