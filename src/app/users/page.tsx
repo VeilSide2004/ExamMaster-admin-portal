@@ -57,9 +57,24 @@ export default function UserManagementPage() {
   const [sendingNotif, setSendingNotif] = useState<boolean>(false);
   const [notifToast, setNotifToast] = useState<string | null>(null);
 
+  const fetchCourses = async () => {
+    try {
+      const res = await fetch('/api/courses');
+      const data = await res.json();
+      if (data && Array.isArray(data.courses)) {
+        setCourses(data.courses);
+      }
+    } catch (err) {
+      console.error('Failed to fetch courses:', err);
+    }
+  };
+
   const openSendNotifForUser = (student: any) => {
+    fetchCourses();
+    fetchUsers();
     setNotifTargetType('user');
-    setNotifTargetUserId(student._id);
+    setNotifTargetUserId(student ? student._id : '');
+    setNotifTargetCourseId('');
     setNotifTitle('');
     setNotifMessage('');
     setShowNotificationModal(true);
@@ -142,6 +157,10 @@ export default function UserManagementPage() {
       setLoadingAdmins(false);
     }
   };
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
 
   useEffect(() => {
     if (activeTab === 'students') {
@@ -382,8 +401,11 @@ export default function UserManagementPage() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => {
+                      fetchCourses();
+                      fetchUsers();
                       setNotifTargetType('all');
                       setNotifTargetUserId('');
+                      setNotifTargetCourseId('');
                       setNotifTitle('');
                       setNotifMessage('');
                       setShowNotificationModal(true);
@@ -1016,11 +1038,15 @@ export default function UserManagementPage() {
                     className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-medium"
                   >
                     <option value="">-- Choose Course --</option>
-                    {courses.map((c) => (
-                      <option key={c._id} value={c._id}>
-                        {c.name} ({c.category || 'Course'})
-                      </option>
-                    ))}
+                    {courses.length === 0 ? (
+                      <option disabled value="">No courses available</option>
+                    ) : (
+                      courses.map((c) => (
+                        <option key={c._id} value={c._id}>
+                          {c.name} {c.category ? `(${c.category})` : ''}
+                        </option>
+                      ))
+                    )}
                   </select>
                 </div>
               )}
