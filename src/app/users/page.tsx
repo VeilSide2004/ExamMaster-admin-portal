@@ -3,7 +3,8 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { AdminSidebar } from '@/components/layout/AdminSidebar';
 import { AdminHeader } from '@/components/layout/AdminHeader';
-import { Users, Search, UserPlus, ShieldCheck, Trash2, X, AlertTriangle, Shield, Edit3, BookOpen, Key, CheckSquare, Square, Eye, EyeOff, Bell, Send, Sparkles, CheckCircle2, Lock, ChevronDown, ChevronUp, Layers } from 'lucide-react';
+import { StudentStatsModal } from '@/components/ui/StudentStatsModal';
+import { Users, Search, UserPlus, ShieldCheck, Trash2, X, AlertTriangle, Shield, Edit3, BookOpen, Key, CheckSquare, Square, Eye, EyeOff, Bell, Send, Sparkles, CheckCircle2, Lock, ChevronDown, ChevronUp, Layers, BarChart2 } from 'lucide-react';
 
 const ALL_PERMISSIONS = [
   { id: 'manage_questions', label: 'Manage & Add Questions', desc: 'Create, edit, and curate topic question bank' },
@@ -18,6 +19,7 @@ export default function UserManagementPage() {
 
   // Student State
   const [users, setUsers] = useState<any[]>([]);
+  const [selectedStatsStudentId, setSelectedStatsStudentId] = useState<string | null>(null);
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -601,7 +603,15 @@ export default function UserManagementPage() {
                           <React.Fragment key={rootEmail}>
                             <tr className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
                               <td className="p-4 font-semibold text-slate-900 dark:text-white">
-                                <div>{u.name}</div>
+                                <button
+                                  type="button"
+                                  onClick={() => setSelectedStatsStudentId(u._id)}
+                                  className="font-extrabold text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 text-left transition-colors cursor-pointer flex items-center gap-1.5"
+                                  title="Click to view student performance statistics"
+                                >
+                                  <span>{u.name}</span>
+                                  <BarChart2 className="w-3.5 h-3.5 text-blue-500 opacity-60 hover:opacity-100" />
+                                </button>
                                 <div className="text-[11px] font-normal text-slate-500">{u.email}</div>
 
                                 {/* Dropdown toggle button shown ONLY if sub-profiles were created under this account */}
@@ -1517,6 +1527,14 @@ export default function UserManagementPage() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Student Performance Statistics Modal */}
+      {selectedStatsStudentId && (
+        <StudentStatsModal
+          studentId={selectedStatsStudentId}
+          onClose={() => setSelectedStatsStudentId(null)}
+        />
       )}
     </div>
   );
