@@ -256,6 +256,7 @@ export interface INotification extends Document {
   message: string;
   type?: 'info' | 'alert' | 'announcement' | 'warning' | 'success';
   readBy?: string[];
+  clearedBy?: string[];
   created_at: Date;
 }
 
@@ -267,6 +268,7 @@ const NotificationSchema = new Schema<INotification>({
   message: { type: String, required: true },
   type: { type: String, enum: ['info', 'alert', 'announcement', 'warning', 'success'], default: 'announcement' },
   readBy: [{ type: String }],
+  clearedBy: [{ type: String }],
   created_at: { type: Date, default: Date.now },
 });
 
