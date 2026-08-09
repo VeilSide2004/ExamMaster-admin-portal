@@ -248,6 +248,28 @@ const ResourceSchema = new Schema<IResource>({
   created_at: { type: Date, default: Date.now },
 });
 
+export interface INotification extends Document {
+  targetType: 'all' | 'user' | 'course';
+  targetUserId?: any;
+  targetCourseId?: any;
+  title: string;
+  message: string;
+  type?: 'info' | 'alert' | 'announcement' | 'warning' | 'success';
+  readBy?: string[];
+  created_at: Date;
+}
+
+const NotificationSchema = new Schema<INotification>({
+  targetType: { type: String, enum: ['all', 'user', 'course'], default: 'all' },
+  targetUserId: { type: Schema.Types.Mixed, default: null },
+  targetCourseId: { type: Schema.Types.Mixed, default: null },
+  title: { type: String, required: true },
+  message: { type: String, required: true },
+  type: { type: String, enum: ['info', 'alert', 'announcement', 'warning', 'success'], default: 'announcement' },
+  readBy: [{ type: String }],
+  created_at: { type: Date, default: Date.now },
+});
+
 export const User: Model<IUser> = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
 export const Course: Model<ICourse> = mongoose.models.Course || mongoose.model<ICourse>('Course', CourseSchema);
 export const Question: Model<IQuestion> = mongoose.models.Question || mongoose.model<IQuestion>('Question', QuestionSchema);
@@ -258,3 +280,4 @@ export const Attempt: Model<IAttempt> = mongoose.models.Attempt || mongoose.mode
 export const XPTransaction: Model<IXPTransaction> = mongoose.models.XPTransaction || mongoose.model<IXPTransaction>('XPTransaction', XPTransactionSchema);
 export const Admin: Model<IAdmin> = mongoose.models.Admin || mongoose.model<IAdmin>('Admin', AdminSchema);
 export const AuditLog: Model<IAuditLog> = mongoose.models.AuditLog || mongoose.model<IAuditLog>('AuditLog', AuditLogSchema);
+export const Notification: Model<INotification> = mongoose.models.Notification || mongoose.model<INotification>('Notification', NotificationSchema);

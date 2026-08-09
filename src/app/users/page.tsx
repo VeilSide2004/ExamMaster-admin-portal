@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { AdminSidebar } from '@/components/layout/AdminSidebar';
 import { AdminHeader } from '@/components/layout/AdminHeader';
-import { Users, Search, UserPlus, ShieldCheck, Trash2, X, AlertTriangle, Shield, Edit3, BookOpen, Key, CheckSquare, Square, Eye, EyeOff } from 'lucide-react';
+import { Users, Search, UserPlus, ShieldCheck, Trash2, X, AlertTriangle, Shield, Edit3, BookOpen, Key, CheckSquare, Square, Eye, EyeOff, Bell, Send, Sparkles, CheckCircle2 } from 'lucide-react';
 
 const ALL_PERMISSIONS = [
   { id: 'manage_questions', label: 'Manage & Add Questions', desc: 'Create, edit, and curate topic question bank' },
@@ -45,6 +45,61 @@ export default function UserManagementPage() {
   const [adminError, setAdminError] = useState('');
 
   const [submitting, setSubmitting] = useState(false);
+
+  // Send Notification Modal State
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
+  const [notifTargetType, setNotifTargetType] = useState<'all' | 'user' | 'course'>('all');
+  const [notifTargetUserId, setNotifTargetUserId] = useState<string>('');
+  const [notifTargetCourseId, setNotifTargetCourseId] = useState<string>('');
+  const [notifTitle, setNotifTitle] = useState<string>('');
+  const [notifMessage, setNotifMessage] = useState<string>('');
+  const [notifType, setNotifType] = useState<'info' | 'alert' | 'announcement' | 'warning' | 'success'>('announcement');
+  const [sendingNotif, setSendingNotif] = useState<boolean>(false);
+  const [notifToast, setNotifToast] = useState<string | null>(null);
+
+  const openSendNotifForUser = (student: any) => {
+    setNotifTargetType('user');
+    setNotifTargetUserId(student._id);
+    setNotifTitle('');
+    setNotifMessage('');
+    setShowNotificationModal(true);
+  };
+
+  const handleSendNotification = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!notifTitle.trim() || !notifMessage.trim()) return;
+
+    setSendingNotif(true);
+    try {
+      const res = await fetch('/api/admin/notifications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetType: notifTargetType,
+          targetUserId: notifTargetUserId,
+          targetCourseId: notifTargetCourseId,
+          title: notifTitle,
+          message: notifMessage,
+          type: notifType,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setNotifToast(data.message || 'Notification sent successfully!');
+        setTimeout(() => setNotifToast(null), 3500);
+        setShowNotificationModal(false);
+        setNotifTitle('');
+        setNotifMessage('');
+      } else {
+        alert(data.error || 'Failed to send notification');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Error sending notification');
+    } finally {
+      setSendingNotif(false);
+    }
+  };
 
   // Destructive action modal state
   const [activeActionModal, setActiveActionModal] = useState<{
@@ -324,14 +379,31 @@ export default function UserManagementPage() {
                   </select>
                 </div>
 
-                <button
-                  onClick={() => setShowAddStudentModal(true)}
-                  type="button"
-                  className="px-4 py-2 bg-[#0B192C] hover:bg-[#060E18] text-white text-xs font-bold rounded-lg flex items-center gap-2 transition-colors shrink-0 shadow-sm"
-                >
-                  <UserPlus className="w-4 h-4" />
-                  Onboard New Student
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setNotifTargetType('all');
+                      setNotifTargetUserId('');
+                      setNotifTitle('');
+                      setNotifMessage('');
+                      setShowNotificationModal(true);
+                    }}
+                    type="button"
+                    className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg flex items-center gap-2 transition-colors shrink-0 shadow-sm cursor-pointer"
+                  >
+                    <Bell className="w-4 h-4" />
+                    Send Notification
+                  </button>
+
+                  <button
+                    onClick={() => setShowAddStudentModal(true)}
+                    type="button"
+                    className="px-4 py-2 bg-[#0B192C] hover:bg-[#060E18] text-white text-xs font-bold rounded-lg flex items-center gap-2 transition-colors shrink-0 shadow-sm cursor-pointer"
+                  >
+                    <UserPlus className="w-4 h-4" />
+                    Onboard New Student
+                  </button>
+                </div>
               </div>
 
               <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden shadow-xs">
@@ -377,6 +449,15 @@ export default function UserManagementPage() {
                             </span>
                           </td>
                           <td className="p-4 text-right space-x-2">
+                            <button
+                              onClick={() => openSendNotifForUser(u)}
+                              type="button"
+                              className="px-2.5 py-1 text-[11px] font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 rounded cursor-pointer"
+                              title="Send Notification to this student"
+                            >
+                              <Bell className="w-3.5 h-3.5 inline mr-1" /> Notify
+                            </button>
+
                             {u.status === 'Active' ? (
                               <button
                                 onClick={() => setActiveActionModal({ entity: u, targetType: 'student', type: 'suspend' })}
@@ -822,6 +903,195 @@ export default function UserManagementPage() {
                 Confirm Removal
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Notification Success Toast */}
+      {notifToast && (
+        <div className="fixed bottom-6 right-6 z-50 px-5 py-3 bg-slate-900 text-white font-bold text-xs rounded-2xl shadow-2xl flex items-center gap-2 border border-slate-700 animate-bounce">
+          <Sparkles className="w-4 h-4 text-emerald-400 fill-emerald-400" />
+          <span>{notifToast}</span>
+        </div>
+      )}
+
+      {/* Send Notification Modal */}
+      {showNotificationModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-5">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900">
+                  <Bell className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Send Notification</h3>
+                  <p className="text-[11px] text-slate-500">Deliver announcements, alerts, or personal student messages</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowNotificationModal(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSendNotification} className="space-y-4 text-xs">
+              {/* Recipient Target Selector */}
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Recipient Audience
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setNotifTargetType('all')}
+                    className={`p-2.5 rounded-xl border text-center font-bold transition-all cursor-pointer ${
+                      notifTargetType === 'all'
+                        ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 shadow-xs'
+                        : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50'
+                    }`}
+                  >
+                    📢 All Students
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNotifTargetType('user')}
+                    className={`p-2.5 rounded-xl border text-center font-bold transition-all cursor-pointer ${
+                      notifTargetType === 'user'
+                        ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 shadow-xs'
+                        : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50'
+                    }`}
+                  >
+                    👤 Single Student
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNotifTargetType('course')}
+                    className={`p-2.5 rounded-xl border text-center font-bold transition-all cursor-pointer ${
+                      notifTargetType === 'course'
+                        ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 shadow-xs'
+                        : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50'
+                    }`}
+                  >
+                    🏫 Course Batch
+                  </button>
+                </div>
+              </div>
+
+              {/* Single Student Selector */}
+              {notifTargetType === 'user' && (
+                <div>
+                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Select Target Student
+                  </label>
+                  <select
+                    value={notifTargetUserId}
+                    onChange={(e) => setNotifTargetUserId(e.target.value)}
+                    required
+                    className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-medium"
+                  >
+                    <option value="">-- Choose Student --</option>
+                    {users.map((u) => (
+                      <option key={u._id} value={u._id}>
+                        {u.name} ({u.email})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Course Batch Selector */}
+              {notifTargetType === 'course' && (
+                <div>
+                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Select Course Batch
+                  </label>
+                  <select
+                    value={notifTargetCourseId}
+                    onChange={(e) => setNotifTargetCourseId(e.target.value)}
+                    required
+                    className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-medium"
+                  >
+                    <option value="">-- Choose Course --</option>
+                    {courses.map((c) => (
+                      <option key={c._id} value={c._id}>
+                        {c.name} ({c.category || 'Course'})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Notification Category */}
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Notification Category
+                </label>
+                <select
+                  value={notifType}
+                  onChange={(e) => setNotifType(e.target.value as any)}
+                  className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-medium"
+                >
+                  <option value="announcement">📢 Announcement (Standard Update)</option>
+                  <option value="alert">🚨 Urgent Alert (High Priority)</option>
+                  <option value="info">ℹ️ General Info</option>
+                  <option value="success">🎉 Success / Celebration</option>
+                  <option value="warning">⚠️ System Warning</option>
+                </select>
+              </div>
+
+              {/* Title */}
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Notification Title
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. New Mock Test Published / Important Update"
+                  value={notifTitle}
+                  onChange={(e) => setNotifTitle(e.target.value)}
+                  className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-bold"
+                />
+              </div>
+
+              {/* Message Content */}
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Message Content
+                </label>
+                <textarea
+                  required
+                  rows={3}
+                  placeholder="Enter the notification message details for students..."
+                  value={notifMessage}
+                  onChange={(e) => setNotifMessage(e.target.value)}
+                  className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white leading-relaxed"
+                />
+              </div>
+
+              {/* Form Buttons */}
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setShowNotificationModal(false)}
+                  className="px-4 py-2 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-xs"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={sendingNotif}
+                  className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl text-xs flex items-center gap-1.5 shadow-md shadow-blue-500/20 disabled:opacity-50 cursor-pointer"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  {sendingNotif ? 'Sending...' : 'Deliver Notification'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

@@ -21,6 +21,7 @@ export interface SharedDbData {
   xpTransactions: any[];
   admins: any[];
   auditLogs: any[];
+  notifications?: any[];
 }
 
 const initialDb: SharedDbData = {
@@ -33,6 +34,7 @@ const initialDb: SharedDbData = {
   xpTransactions: [],
   admins: [],
   auditLogs: [],
+  notifications: [],
 };
 
 let cachedMemoryDb: SharedDbData | null = null;
