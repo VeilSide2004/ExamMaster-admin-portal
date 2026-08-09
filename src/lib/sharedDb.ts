@@ -3,10 +3,12 @@ import path from 'path';
 import bcrypt from 'bcryptjs';
 
 function getDbPath(): string {
-  const p2 = path.join(process.cwd(), 'shared-db.json');
-  if (fs.existsSync(p2)) return p2;
-  const p1 = path.join(process.cwd(), '..', 'shared-db.json');
-  if (fs.existsSync(p1)) return p1;
+  const rootParent = path.join(process.cwd(), '..', 'shared-db.json');
+  if (fs.existsSync(rootParent)) return rootParent;
+
+  const currentLocal = path.join(process.cwd(), 'shared-db.json');
+  if (fs.existsSync(currentLocal)) return currentLocal;
+
   return path.join('/tmp', 'shared-db.json');
 }
 
@@ -62,6 +64,8 @@ export function readSharedDb(): SharedDbData {
           email: 'admin@exammaster.com',
           password_hash: hashedAdminPassword,
           role: 'Super Admin',
+          permissions: ['manage_questions', 'manage_courses', 'manage_mock_tests', 'manage_users', 'view_audit_logs'],
+          allowed_courses: ['all'],
           created_at: new Date().toISOString(),
         },
       ];
@@ -87,16 +91,28 @@ export function writeSharedDb(data: SharedDbData): void {
       fs.mkdirSync(dir, { recursive: true });
     }
     const jsonStr = JSON.stringify(data, null, 2);
+
+    // Write to active dbPath
     fs.writeFileSync(dbPath, jsonStr, 'utf-8');
 
-    // Sync to root parent shared-db.json if present
-    const parentPath = path.join(process.cwd(), '..', 'shared-db.json');
-    if (fs.existsSync(parentPath) && parentPath !== dbPath) {
-      try { fs.writeFileSync(parentPath, jsonStr, 'utf-8'); } catch (e) {}
-    }
-    const localPath = path.join(process.cwd(), 'shared-db.json');
-    if (fs.existsSync(localPath) && localPath !== dbPath) {
-      try { fs.writeFileSync(localPath, jsonStr, 'utf-8'); } catch (e) {}
+    // Also sync to all sibling/parent paths to guarantee student-portal and admin-portal are 100% synced
+    const targetPaths = [
+      path.join(process.cwd(), '..', 'shared-db.json'),
+      path.join(process.cwd(), 'shared-db.json'),
+      path.join(process.cwd(), '..', 'student-portal', 'shared-db.json'),
+      path.join(process.cwd(), '..', 'admin-portal', 'shared-db.json'),
+      path.join('/tmp', 'shared-db.json'),
+    ];
+
+    for (const p of targetPaths) {
+      if (p !== dbPath) {
+        try {
+          const parentDir = path.dirname(p);
+          if (fs.existsSync(parentDir)) {
+            fs.writeFileSync(p, jsonStr, 'utf-8');
+          }
+        } catch (e) {}
+      }
     }
   } catch (error) {
     console.error('Error writing to shared database:', error);
