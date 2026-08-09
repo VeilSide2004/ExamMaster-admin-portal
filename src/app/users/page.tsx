@@ -99,10 +99,20 @@ export default function UserManagementPage() {
       groups[root].push(u);
     }
 
-    return order.map((rootEmail) => ({
-      rootEmail,
-      profiles: groups[rootEmail],
-    }));
+    return order.map((rootEmail) => {
+      const groupList = groups[rootEmail];
+      const primary =
+        groupList.find((p) => p.email.toLowerCase() === rootEmail.toLowerCase()) ||
+        groupList.find((p) => !p.email.includes('+')) ||
+        groupList[0];
+      const subProfiles = groupList.filter((p) => String(p._id) !== String(primary._id));
+
+      return {
+        rootEmail,
+        primary,
+        subProfiles,
+      };
+    });
   }, [users]);
 
   const fetchCourses = async () => {
@@ -583,9 +593,8 @@ export default function UserManagementPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                      {groupedUsers.map(({ rootEmail, profiles }) => {
-                        const isMulti = profiles.length > 1;
-                        const u = profiles[0]; // Main profile
+                      {groupedUsers.map(({ rootEmail, primary: u, subProfiles }) => {
+                        const hasSubProfiles = subProfiles.length > 0;
                         const isExpanded = !!expandedEmails[rootEmail];
 
                         return (
@@ -595,8 +604,8 @@ export default function UserManagementPage() {
                                 <div>{u.name}</div>
                                 <div className="text-[11px] font-normal text-slate-500">{u.email}</div>
 
-                                {/* Dropdown pill button shown ONLY if multiple profiles exist under this email */}
-                                {isMulti && (
+                                {/* Dropdown toggle button shown ONLY if sub-profiles were created under this account */}
+                                {hasSubProfiles && (
                                   <div className="mt-2">
                                     <button
                                       type="button"
@@ -604,7 +613,7 @@ export default function UserManagementPage() {
                                       className="px-2.5 py-1 bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/70 dark:hover:bg-purple-900/70 text-purple-700 dark:text-purple-300 font-extrabold rounded-lg border border-purple-200 dark:border-purple-800 text-[11px] flex items-center gap-1.5 cursor-pointer shadow-2xs transition-all"
                                     >
                                       <Layers className="w-3.5 h-3.5 text-purple-600 shrink-0" />
-                                      <span>👥 {profiles.length} Profiles under ({rootEmail})</span>
+                                      <span>👥 +{subProfiles.length} Sub-Profile{subProfiles.length > 1 ? 's' : ''} Created</span>
                                       {isExpanded ? <ChevronUp className="w-3.5 h-3.5 shrink-0" /> : <ChevronDown className="w-3.5 h-3.5 shrink-0" />}
                                     </button>
                                   </div>
@@ -668,21 +677,21 @@ export default function UserManagementPage() {
                                 {u.status === 'Active' ? (
                                   <button
                                     onClick={() => setActiveActionModal({ entity: u, targetType: 'student', type: 'suspend' })}
-                                    className="px-2.5 py-1 text-[11px] font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 rounded"
+                                    className="px-2.5 py-1 text-[11px] font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 rounded cursor-pointer"
                                   >
                                     Suspend
                                   </button>
                                 ) : (
                                   <button
                                     onClick={() => setActiveActionModal({ entity: u, targetType: 'student', type: 'activate' })}
-                                    className="px-2.5 py-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 rounded"
+                                    className="px-2.5 py-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 rounded cursor-pointer"
                                   >
                                     Reinstate
                                   </button>
                                 )}
                                 <button
                                   onClick={() => setActiveActionModal({ entity: u, targetType: 'student', type: 'delete' })}
-                                  className="p-1 text-slate-400 hover:text-rose-600 rounded transition-colors"
+                                  className="p-1 text-slate-400 hover:text-rose-600 rounded transition-colors cursor-pointer"
                                   title="Delete Student Account"
                                 >
                                   <Trash2 className="w-4 h-4" />
@@ -690,8 +699,8 @@ export default function UserManagementPage() {
                               </td>
                             </tr>
 
-                            {/* Dropdown Panel showing ALL profiles created under this mail ID */}
-                            {isMulti && isExpanded && (
+                            {/* Dropdown Panel showing ONLY the sub-profiles created under this account */}
+                            {hasSubProfiles && isExpanded && (
                               <tr className="bg-purple-50/50 dark:bg-purple-950/30 border-b border-purple-200 dark:border-purple-900/50">
                                 <td colSpan={5} className="p-3.5 pl-6 sm:pl-10">
                                   <div className="bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-800/80 rounded-2xl p-4 shadow-sm space-y-3">
@@ -701,16 +710,16 @@ export default function UserManagementPage() {
                                           <Layers className="w-3.5 h-3.5 text-purple-600 dark:text-purple-300" />
                                         </div>
                                         <span className="text-xs font-extrabold text-purple-900 dark:text-purple-300">
-                                          All Student Profiles Linked to Mail ID ({rootEmail}):
+                                          Sub-Profiles Created Under {u.name} ({rootEmail}):
                                         </span>
                                       </div>
                                       <span className="text-[10px] font-extrabold px-2 py-0.5 bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 rounded-full">
-                                        {profiles.length} Total Accounts Found
+                                        {subProfiles.length} Sub-Profile{subProfiles.length > 1 ? 's' : ''} Linked
                                       </span>
                                     </div>
 
                                     <div className="divide-y divide-slate-100 dark:divide-slate-800">
-                                      {profiles.map((p, idx) => (
+                                      {subProfiles.map((p, idx) => (
                                         <div key={p._id} className="py-3 flex flex-wrap items-center justify-between gap-3 text-xs">
                                           <div className="flex items-center gap-3">
                                             <span className="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 font-extrabold text-[11px] flex items-center justify-center shrink-0">
@@ -719,11 +728,9 @@ export default function UserManagementPage() {
                                             <div>
                                               <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
                                                 {p.name}
-                                                {idx === 0 && (
-                                                  <span className="px-1.5 py-0.2 bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 text-[9px] font-extrabold rounded uppercase">
-                                                    Main Profile
-                                                  </span>
-                                                )}
+                                                <span className="px-1.5 py-0.2 bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 text-[9px] font-extrabold rounded uppercase">
+                                                  Sub-Profile
+                                                </span>
                                               </div>
                                               <div className="text-[10px] font-mono text-slate-500">{p.email}</div>
                                             </div>
@@ -751,7 +758,7 @@ export default function UserManagementPage() {
 
                                             {/* Status */}
                                             <span className={`px-2 py-0.5 rounded text-[9px] font-extrabold uppercase ${
-                                              p.status === 'Active' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'
+                                              p.status === 'Active' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300'
                                             }`}>
                                               {p.status}
                                             </span>
@@ -768,11 +775,28 @@ export default function UserManagementPage() {
                                               <button
                                                 type="button"
                                                 onClick={() => openSendNotifForUser(p)}
-                                                className="p-1.5 text-blue-600 hover:bg-blue-50 rounded cursor-pointer"
+                                                className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/60 rounded cursor-pointer"
                                                 title="Send Notification"
                                               >
                                                 <Bell className="w-3.5 h-3.5" />
                                               </button>
+                                              {p.status === 'Active' ? (
+                                                <button
+                                                  type="button"
+                                                  onClick={() => setActiveActionModal({ entity: p, targetType: 'student', type: 'suspend' })}
+                                                  className="px-2 py-1 text-[10px] font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 rounded cursor-pointer"
+                                                >
+                                                  Suspend
+                                                </button>
+                                              ) : (
+                                                <button
+                                                  type="button"
+                                                  onClick={() => setActiveActionModal({ entity: p, targetType: 'student', type: 'activate' })}
+                                                  className="px-2 py-1 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 rounded cursor-pointer"
+                                                >
+                                                  Reinstate
+                                                </button>
+                                              )}
                                               <button
                                                 type="button"
                                                 onClick={() => setActiveActionModal({ entity: p, targetType: 'student', type: 'delete' })}
