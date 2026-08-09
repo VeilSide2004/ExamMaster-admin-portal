@@ -35,10 +35,29 @@ export async function GET(req: Request) {
       }
 
       const formatted = filtered.map((u) => {
-        const course = u.locked_course_id ? (db.courses || []).find((c) => String(c._id) === String(u.locked_course_id)) : null;
+        let courseObj: any = null;
+        if (u.locked_course_id) {
+          if (typeof u.locked_course_id === 'object' && u.locked_course_id.name) {
+            courseObj = {
+              _id: u.locked_course_id._id || u.locked_course_id.id,
+              name: u.locked_course_id.name,
+              category: u.locked_course_id.category || 'Course',
+            };
+          } else {
+            const targetId = String(u.locked_course_id);
+            const found = (db.courses || []).find((c) => String(c._id) === targetId || String(c.id) === targetId);
+            if (found) {
+              courseObj = { _id: found._id, name: found.name, category: found.category };
+            } else {
+              // Fallback if course ID string was assigned directly
+              courseObj = { _id: targetId, name: targetId, category: 'Course' };
+            }
+          }
+        }
+
         return {
           ...u,
-          locked_course_id: course ? { _id: course._id, name: course.name, category: course.category } : null,
+          locked_course_id: courseObj,
         };
       });
 

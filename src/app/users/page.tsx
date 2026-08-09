@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { AdminSidebar } from '@/components/layout/AdminSidebar';
 import { AdminHeader } from '@/components/layout/AdminHeader';
-import { Users, Search, UserPlus, ShieldCheck, Trash2, X, AlertTriangle, Shield, Edit3, BookOpen, Key, CheckSquare, Square, Eye, EyeOff, Bell, Send, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Users, Search, UserPlus, ShieldCheck, Trash2, X, AlertTriangle, Shield, Edit3, BookOpen, Key, CheckSquare, Square, Eye, EyeOff, Bell, Send, Sparkles, CheckCircle2, Lock } from 'lucide-react';
 
 const ALL_PERMISSIONS = [
   { id: 'manage_questions', label: 'Manage & Add Questions', desc: 'Create, edit, and curate topic question bank' },
@@ -552,9 +552,9 @@ export default function UserManagementPage() {
                           <td className="p-4 font-medium text-slate-700 dark:text-slate-300">
                             {u.locked_course_id?.name ? (
                               <div className="flex items-center gap-2">
-                                <span className="px-2.5 py-1 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold rounded-lg border border-blue-200 dark:border-blue-800 text-[11px] flex items-center gap-1">
-                                  <BookOpen className="w-3 h-3 text-blue-500" />
-                                  {u.locked_course_id.name}
+                                <span className="px-2.5 py-1 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold rounded-lg border border-blue-200 dark:border-blue-800 text-[11px] flex items-center gap-1.5 shadow-2xs">
+                                  <Lock className="w-3 h-3 text-blue-600 shrink-0" />
+                                  <span className="font-extrabold">{u.locked_course_id.name}</span>
                                 </span>
                                 <button
                                   type="button"
@@ -573,9 +573,9 @@ export default function UserManagementPage() {
                                 <button
                                   type="button"
                                   onClick={() => openAssignCourseModal(u)}
-                                  className="p-1 text-blue-600 hover:text-blue-700 font-bold text-[10px] underline cursor-pointer"
+                                  className="px-2 py-0.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] rounded-md cursor-pointer transition-colors shadow-2xs"
                                 >
-                                  Assign
+                                  Assign Course
                                 </button>
                               </div>
                             )}
