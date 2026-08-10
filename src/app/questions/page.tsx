@@ -547,6 +547,12 @@ Explanation: Power is the rate at which work is done or energy is transferred.
 
       console.log('[ExcelParser] Key mapping:', { subjKey, topicKey, qKey, optAKey, optBKey, optCKey, optDKey, ansKey, expKey, detExpKey });
       console.log('[ExcelParser] First row sample:', objRows[0]);
+      // Log first 5 question texts to debug identical-question issue
+      if (qKey) {
+        console.log('[ExcelParser] First 5 question values from qKey "' + qKey + '":',
+          objRows.slice(0, 5).map((r, i) => `Row${i}: "${String(r[qKey!] || '').trim().substring(0, 60)}"`));
+      }
+      console.log('[ExcelParser] All column keys with first value:', allKeys.map(k => `"${k}": "${String(objRows[0][k] || '').substring(0, 40)}"`));
 
       // Strip option prefixes like "A) Water" → "Water"
       const stripOptPrefix = (text: string): string => {
