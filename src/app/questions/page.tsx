@@ -170,7 +170,29 @@ export default function QuestionManagementPage() {
     : ['Physics', 'Chemistry', 'Biology'];
 
   const userAddedSubs = customSubjects[selectedCourseId] || [];
-  const allSubNames = Array.from(new Set([...configuredCourseSubjects, ...userAddedSubs]));
+
+  // Extract subjects present in course questions (from q.subject or topic_tag hyphen prefix)
+  const questionExtractedSubjects = Array.from(
+    new Set(
+      courseQuestions
+        .map((q) => {
+          if (q.subject && String(q.subject).trim()) {
+            return String(q.subject).trim();
+          }
+          const tag = (q.topic_tag || '').trim();
+          if (tag.includes('-')) {
+            const candidate = tag.split('-')[0].trim();
+            if (candidate) return candidate;
+          }
+          return null;
+        })
+        .filter(Boolean) as string[]
+    )
+  );
+
+  const allSubNames = Array.from(
+    new Set([...configuredCourseSubjects, ...userAddedSubs, ...questionExtractedSubjects])
+  );
 
   allSubNames.forEach((sName) => {
     derivedSubjectsMap[sName] = [];
@@ -199,14 +221,9 @@ export default function QuestionManagementPage() {
       if (matched) sName = matched;
     }
 
-    // 4. If selectedSubject is active and valid, use selectedSubject
-    if (!sName && selectedSubject && allSubNames.some((s) => s.toLowerCase() === selectedSubject.toLowerCase())) {
-      sName = allSubNames.find((s) => s.toLowerCase() === selectedSubject.toLowerCase()) || selectedSubject;
-    }
-
-    // 5. Fallback to primary subject only if absolutely no match found
+    // 4. Fallback to primary subject only if no match found (statically, never dependent on selectedSubject UI tab)
     if (!sName) {
-      sName = allSubNames[0] || 'Physics';
+      sName = allSubNames[0] || 'General';
     }
 
     if (!derivedSubjectsMap[sName]) derivedSubjectsMap[sName] = [];
