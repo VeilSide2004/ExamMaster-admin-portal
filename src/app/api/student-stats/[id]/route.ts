@@ -67,11 +67,13 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 
       attempts.forEach((a) => {
         const qCount = a.questions_count || (Array.isArray(a.responses) ? a.responses.length : 0);
-        const timeSpent = a.time_spent_seconds || 0;
+        const timeSpent = a.time_spent_seconds || a.duration_seconds || 0;
         const correctCount = a.correct_answers_count || (Array.isArray(a.responses) ? a.responses.filter((r: any) => r.is_correct).length : 0);
 
-        totalQuestionsAttempted += qCount;
-        totalTimeSpentSeconds += timeSpent;
+        if (timeSpent > 0 && qCount > 0) {
+          totalQuestionsAttempted += qCount;
+          totalTimeSpentSeconds += timeSpent;
+        }
         totalCorrectAnswers += correctCount;
       });
 
@@ -183,11 +185,13 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 
     attempts.forEach((a: any) => {
       const qCount = a.questions_count || (Array.isArray(a.responses) ? a.responses.length : 0);
-      const timeSpent = a.time_spent_seconds || 0;
+      const timeSpent = a.time_spent_seconds || a.duration_seconds || 0;
       const correctCount = a.correct_answers_count || (Array.isArray(a.responses) ? a.responses.filter((r: any) => r.is_correct).length : 0);
 
-      totalQuestionsAttempted += qCount;
-      totalTimeSpentSeconds += timeSpent;
+      if (timeSpent > 0 && qCount > 0) {
+        totalQuestionsAttempted += qCount;
+        totalTimeSpentSeconds += timeSpent;
+      }
       totalCorrectAnswers += correctCount;
     });
 
