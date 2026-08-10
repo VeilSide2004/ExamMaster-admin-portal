@@ -171,20 +171,32 @@ export default function QuestionManagementPage() {
 
   const userAddedSubs = customSubjects[selectedCourseId] || [];
 
+  const hasScience = configuredCourseSubjects.some((s: any) => String(s).toLowerCase() === 'science');
+  const hasPhysicsOrChemConfigured = configuredCourseSubjects.some(
+    (s: any) => String(s).toLowerCase() === 'physics' || String(s).toLowerCase() === 'chemistry'
+  );
+  const isScienceCourse = hasScience && !hasPhysicsOrChemConfigured;
+
   // Extract subjects present in course questions (from q.subject or topic_tag hyphen prefix)
   const questionExtractedSubjects = Array.from(
     new Set(
       courseQuestions
         .map((q) => {
+          let sName = '';
           if (q.subject && String(q.subject).trim()) {
-            return String(q.subject).trim();
+            sName = String(q.subject).trim();
+          } else {
+            const tag = (q.topic_tag || '').trim();
+            if (tag.includes('-')) {
+              sName = tag.split('-')[0].trim();
+            }
           }
-          const tag = (q.topic_tag || '').trim();
-          if (tag.includes('-')) {
-            const candidate = tag.split('-')[0].trim();
-            if (candidate) return candidate;
+          if (!sName) return null;
+          // If this course groups sub-sciences under "Science", do not spawn top-level Physics/Chemistry tabs
+          if (isScienceCourse && ['physics', 'chemistry', 'biology', 'botany', 'zoology'].includes(sName.toLowerCase())) {
+            return 'Science';
           }
-          return null;
+          return sName;
         })
         .filter(Boolean) as string[]
     )
@@ -204,24 +216,37 @@ export default function QuestionManagementPage() {
 
     // 1. Explicit q.subject property (highest priority)
     if (q.subject) {
-      const matched = allSubNames.find((s) => s.toLowerCase() === String(q.subject).trim().toLowerCase());
-      if (matched) sName = matched;
+      const qSub = String(q.subject).trim();
+      if (isScienceCourse && ['physics', 'chemistry', 'biology', 'botany', 'zoology'].includes(qSub.toLowerCase())) {
+        sName = 'Science';
+      } else {
+        const matched = allSubNames.find((s) => s.toLowerCase() === qSub.toLowerCase());
+        if (matched) sName = matched;
+      }
     }
 
     // 2. Check candidate before hyphen (e.g. "Chemistry" from "Chemistry - Organic")
     if (!sName && tag.includes('-')) {
       const candidate = tag.split('-')[0].trim();
-      const matched = allSubNames.find((s) => s.toLowerCase() === candidate.toLowerCase());
-      if (matched) sName = matched;
+      if (isScienceCourse && ['physics', 'chemistry', 'biology', 'botany', 'zoology'].includes(candidate.toLowerCase())) {
+        sName = 'Science';
+      } else {
+        const matched = allSubNames.find((s) => s.toLowerCase() === candidate.toLowerCase());
+        if (matched) sName = matched;
+      }
     }
 
-    // 3. Substring match ANYWHERE inside topic_tag (e.g. "Chemistry" inside "100 - Environmental Chemistry")
+    // 3. Substring match ANYWHERE inside topic_tag
     if (!sName && tag) {
-      const matched = allSubNames.find((s) => tag.toLowerCase().includes(s.toLowerCase()));
-      if (matched) sName = matched;
+      if (isScienceCourse && /(?:physics|chemistry|biology|botany|zoology|chem|phys|bio)/i.test(tag)) {
+        sName = 'Science';
+      } else {
+        const matched = allSubNames.find((s) => tag.toLowerCase().includes(s.toLowerCase()));
+        if (matched) sName = matched;
+      }
     }
 
-    // 4. Fallback to primary subject only if no match found (statically, never dependent on selectedSubject UI tab)
+    // 4. Fallback to primary subject only if no match found
     if (!sName) {
       sName = allSubNames[0] || 'General';
     }
