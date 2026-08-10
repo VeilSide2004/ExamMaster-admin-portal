@@ -488,6 +488,8 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         }
       }
 
+      let subjCol = -1;
+      let topicCol = -1;
       let qCol = -1;
       let optACol = -1;
       let optBCol = -1;
@@ -495,24 +497,55 @@ Explanation: Power is the rate at which work is done or energy is transferred.
       let optDCol = -1;
       let ansCol = -1;
       let expCol = -1;
+      let detExpCol = -1;
+      let marksCol = -1;
 
       if (headerRowIdx !== -1) {
         const headerCells = validRows[headerRowIdx].map((c) => String(c || '').trim().toLowerCase().replace(/[^a-z0-9]/g, ''));
         headerCells.forEach((cell, idx) => {
-          if (qCol === -1 && (cell.includes('question') || cell.includes('prompt') || cell.includes('problem') || cell.includes('statement') || cell.includes('mcq') || cell === 'q')) {
+          // Subject column
+          if (subjCol === -1 && (cell === 'subject' || cell === 'subj' || cell === 'sub')) {
+            subjCol = idx;
+          }
+          // Topic column
+          else if (topicCol === -1 && (cell === 'topic' || cell === 'chapter' || cell === 'module' || cell === 'unit')) {
+            topicCol = idx;
+          }
+          // Question column
+          else if (qCol === -1 && (cell.includes('question') || cell.includes('prompt') || cell.includes('problem') || cell.includes('statement') || cell.includes('mcq') || cell === 'q')) {
             qCol = idx;
-          } else if (optACol === -1 && (cell.includes('optiona') || cell.includes('opta') || cell.includes('choicea') || cell === 'option1' || cell === 'opt1' || cell === 'ans1')) {
+          }
+          // Option A (supports: "Option A", "Opt A", "Choice A", "Option 1", "A", etc.)
+          else if (optACol === -1 && (cell.includes('optiona') || cell.includes('opta') || cell.includes('choicea') || cell === 'option1' || cell === 'opt1' || cell === 'a' || cell === 'choice1')) {
             optACol = idx;
-          } else if (optBCol === -1 && (cell.includes('optionb') || cell.includes('optb') || cell.includes('choiceb') || cell === 'option2' || cell === 'opt2' || cell === 'ans2')) {
+          }
+          // Option B
+          else if (optBCol === -1 && (cell.includes('optionb') || cell.includes('optb') || cell.includes('choiceb') || cell === 'option2' || cell === 'opt2' || cell === 'b' || cell === 'choice2')) {
             optBCol = idx;
-          } else if (optCCol === -1 && (cell.includes('optionc') || cell.includes('optc') || cell.includes('choicec') || cell === 'option3' || cell === 'opt3' || cell === 'ans3')) {
+          }
+          // Option C
+          else if (optCCol === -1 && (cell.includes('optionc') || cell.includes('optc') || cell.includes('choicec') || cell === 'option3' || cell === 'opt3' || cell === 'c' || cell === 'choice3')) {
             optCCol = idx;
-          } else if (optDCol === -1 && (cell.includes('optiond') || cell.includes('optd') || cell.includes('choiced') || cell === 'option4' || cell === 'opt4' || cell === 'ans4')) {
+          }
+          // Option D
+          else if (optDCol === -1 && (cell.includes('optiond') || cell.includes('optd') || cell.includes('choiced') || cell === 'option4' || cell === 'opt4' || cell === 'd' || cell === 'choice4')) {
             optDCol = idx;
-          } else if (ansCol === -1 && (cell.includes('answer') || cell.includes('correct') || cell === 'ans' || cell === 'key')) {
+          }
+          // Answer column
+          else if (ansCol === -1 && (cell.includes('answer') || cell.includes('correct') || cell === 'ans' || cell === 'key')) {
             ansCol = idx;
-          } else if (expCol === -1 && (cell.includes('explanation') || cell.includes('exp') || cell.includes('solution'))) {
+          }
+          // Detailed Explanation (check before general explanation to avoid conflict)
+          else if (detExpCol === -1 && (cell.includes('detailed') || cell.includes('stepbystep') || cell.includes('workedout'))) {
+            detExpCol = idx;
+          }
+          // Explanation
+          else if (expCol === -1 && (cell.includes('explanation') || cell.includes('solution') || cell === 'exp' || cell === 'reason' || cell === 'rationale')) {
             expCol = idx;
+          }
+          // Marks / Points
+          else if (marksCol === -1 && (cell === 'marks' || cell === 'points' || cell === 'score' || cell === 'weight')) {
+            marksCol = idx;
           }
         });
       }
@@ -534,7 +567,11 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         let optD = '';
         let rawAns = '';
         let exp = '';
+        let detExp = '';
+        let rowSubject = '';
+        let rowTopic = '';
 
+        // Header-based extraction (reliable when headers are detected)
         if (qCol !== -1 && rowCells[qCol]) qText = rowCells[qCol];
         if (optACol !== -1 && rowCells[optACol]) optA = rowCells[optACol];
         if (optBCol !== -1 && rowCells[optBCol]) optB = rowCells[optBCol];
@@ -542,9 +579,13 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         if (optDCol !== -1 && rowCells[optDCol]) optD = rowCells[optDCol];
         if (ansCol !== -1 && rowCells[ansCol]) rawAns = rowCells[ansCol];
         if (expCol !== -1 && rowCells[expCol]) exp = rowCells[expCol];
+        if (detExpCol !== -1 && rowCells[detExpCol]) detExp = rowCells[detExpCol];
+        if (subjCol !== -1 && rowCells[subjCol]) rowSubject = rowCells[subjCol];
+        if (topicCol !== -1 && rowCells[topicCol]) rowTopic = rowCells[topicCol];
 
-        // Fallback positional extraction if header columns were not found
-        if (!qText || !optA || !optB || !optC || !optD) {
+        // Positional fallback ONLY when NO header row was detected at all
+        // This prevents misalignment caused by empty cells when using nonEmp
+        if (headerRowIdx === -1) {
           let qIdx = nonEmp.findIndex(
             (v) =>
               (v.length > 15 && !v.toLowerCase().startsWith('explanation')) ||
@@ -564,12 +605,26 @@ Explanation: Power is the rate at which work is done or energy is transferred.
           if (!optD && nonEmp[qIdx + 4]) optD = nonEmp[qIdx + 4];
           if (!rawAns && nonEmp[qIdx + 5]) rawAns = nonEmp[qIdx + 5];
           if (!exp && nonEmp[qIdx + 6]) exp = nonEmp[qIdx + 6];
+        } else if (!qText && qCol === -1) {
+          // Headers detected but question column not found — try first long cell
+          const firstLong = rowCells.find((v) => v.length > 10 || v.includes('?'));
+          if (firstLong) qText = firstLong;
         }
 
         // Clean numeric prefixes like "Q1. ", "1. " from question text
         qText = qText.replace(/^(?:q(?:uestion)?\s*\d+[\s\.\:\-]+|\d+[\s\.\:\-]+)/i, '').trim();
 
         if (!qText || qText.length < 3) continue;
+
+        // Strip common option prefixes (e.g. "A) Water" → "Water", "(A) Water" → "Water", "1. Water" → "Water")
+        const stripOptPrefix = (text: string): string => {
+          const stripped = text.replace(/^(?:\(?\s*[A-Da-d]\s*\)?[\.\.\)\:\-]\s*|\(?\s*\d\s*\)?[\.\.\)\:\-]\s*)/i, '').trim();
+          return stripped || text;
+        };
+        optA = stripOptPrefix(optA);
+        optB = stripOptPrefix(optB);
+        optC = stripOptPrefix(optC);
+        optD = stripOptPrefix(optD);
 
         // Ensure 4 valid non-empty options
         const rawOpts = [optA, optB, optC, optD].map((o) => o.trim()).filter(Boolean);
@@ -579,34 +634,46 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         }
         const cleanOpts = finalOpts.slice(0, 4);
 
+        // Answer detection with expanded format support
         let correctIndex = 0;
         if (rawAns) {
-          const upperAns = rawAns.toUpperCase().trim();
-          if (upperAns === 'A' || upperAns === '1' || upperAns === 'OPTION A' || upperAns === 'OPTION 1') correctIndex = 0;
-          else if (upperAns === 'B' || upperAns === '2' || upperAns === 'OPTION B' || upperAns === 'OPTION 2') correctIndex = 1;
-          else if (upperAns === 'C' || upperAns === '3' || upperAns === 'OPTION C' || upperAns === 'OPTION 3') correctIndex = 2;
-          else if (upperAns === 'D' || upperAns === '4' || upperAns === 'OPTION D' || upperAns === 'OPTION 4') correctIndex = 3;
-          else if (!isNaN(Number(rawAns)) && Number(rawAns) >= 0 && Number(rawAns) <= 3) {
-            correctIndex = Number(rawAns);
-          } else {
-            const foundIdx = cleanOpts.findIndex((o) => o.toLowerCase() === rawAns.toLowerCase());
-            if (foundIdx !== -1) correctIndex = foundIdx;
+          // Normalize answer: strip parentheses, punctuation, whitespace
+          const cleanAns = rawAns.toUpperCase().trim().replace(/^[\(\s]+/, '').replace(/[\)\.\,\s]+$/, '').trim();
+
+          if (cleanAns === 'A' || cleanAns === '1' || cleanAns === 'OPTION A' || cleanAns === 'OPTION 1') correctIndex = 0;
+          else if (cleanAns === 'B' || cleanAns === '2' || cleanAns === 'OPTION B' || cleanAns === 'OPTION 2') correctIndex = 1;
+          else if (cleanAns === 'C' || cleanAns === '3' || cleanAns === 'OPTION C' || cleanAns === 'OPTION 3') correctIndex = 2;
+          else if (cleanAns === 'D' || cleanAns === '4' || cleanAns === 'OPTION D' || cleanAns === 'OPTION 4') correctIndex = 3;
+          else {
+            // Try exact match against option values
+            const foundIdx = cleanOpts.findIndex((o) => o.toLowerCase().trim() === rawAns.toLowerCase().trim());
+            if (foundIdx !== -1) {
+              correctIndex = foundIdx;
+            } else {
+              // Try partial/substring match
+              const partialIdx = cleanOpts.findIndex((o) =>
+                o.toLowerCase().includes(rawAns.toLowerCase().trim()) ||
+                rawAns.toLowerCase().trim().includes(o.toLowerCase())
+              );
+              if (partialIdx !== -1) correctIndex = partialIdx;
+            }
           }
         }
 
-        const activeSub = selectedSubject || 'Chemistry';
-        const activeTop = selectedTopic || 'General';
-        const finalTopicTag = `${activeSub} - ${activeTop}`;
+        // Determine subject and topic: prefer file data, fall back to UI selection
+        const rowSub = rowSubject || selectedSubject || 'General';
+        const rowTop = rowTopic || selectedTopic || 'General';
+        const finalTopicTag = `${rowSub} - ${rowTop}`;
 
         parsedList.push({
           course_id: selectedCourseId,
-          subject: activeSub,
+          subject: rowSub,
           topic_tag: finalTopicTag,
           question_text: qText,
           options: cleanOpts,
           correct_option: correctIndex,
           explanation: exp || `Correct Answer: Option ${String.fromCharCode(65 + correctIndex)} (${cleanOpts[correctIndex] || ''})`,
-          detailed_explanation: '',
+          detailed_explanation: detExp || '',
         });
       }
 
