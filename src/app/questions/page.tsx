@@ -502,21 +502,32 @@ Explanation: Power is the rate at which work is done or energy is transferred.
 
       if (headerRowIdx !== -1) {
         const headerCells = validRows[headerRowIdx].map((c) => String(c || '').trim().toLowerCase().replace(/[^a-z0-9]/g, ''));
+        const candidateQCols: number[] = [];
+
         headerCells.forEach((cell, idx) => {
           // Subject column
-          if (subjCol === -1 && (cell === 'subject' || cell === 'subj' || cell === 'sub')) {
+          if (subjCol === -1 && ['subject', 'subj', 'sub', 'category', 'coursesubject'].includes(cell)) {
             subjCol = idx;
           }
           // Topic column
-          else if (topicCol === -1 && (cell === 'topic' || cell === 'chapter' || cell === 'module' || cell === 'unit')) {
+          else if (topicCol === -1 && ['topic', 'chapter', 'module', 'unit', 'subtopic', 'section'].includes(cell)) {
             topicCol = idx;
           }
-          // Question column
-          else if (qCol === -1 && (cell.includes('question') || cell.includes('prompt') || cell.includes('problem') || cell.includes('statement') || cell.includes('mcq') || cell === 'q')) {
-            qCol = idx;
+          // Question candidates (exclude question no, id, type, marks, paper, title)
+          else {
+            const isExcluded = cell.includes('no') || cell.includes('num') || cell.includes('id') ||
+                               cell.includes('type') || cell.includes('mark') || cell.includes('score') ||
+                               cell.includes('paper') || cell.includes('title') || cell.includes('header') || cell.includes('banner');
+            if (!isExcluded) {
+              if (['questiontext', 'questionprompt', 'questionstatement', 'prompt', 'problem', 'statement', 'question', 'mcq', 'questions', 'item'].includes(cell) ||
+                  cell.startsWith('question') || cell.endsWith('question')) {
+                candidateQCols.push(idx);
+              }
+            }
           }
+
           // Option A (supports: "Option A", "Opt A", "Choice A", "Option 1", "A", etc.)
-          else if (optACol === -1 && (cell.includes('optiona') || cell.includes('opta') || cell.includes('choicea') || cell === 'option1' || cell === 'opt1' || cell === 'a' || cell === 'choice1')) {
+          if (optACol === -1 && (cell.includes('optiona') || cell.includes('opta') || cell.includes('choicea') || cell === 'option1' || cell === 'opt1' || cell === 'a' || cell === 'choice1')) {
             optACol = idx;
           }
           // Option B
@@ -535,7 +546,7 @@ Explanation: Power is the rate at which work is done or energy is transferred.
           else if (ansCol === -1 && (cell.includes('answer') || cell.includes('correct') || cell === 'ans' || cell === 'key')) {
             ansCol = idx;
           }
-          // Detailed Explanation (check before general explanation to avoid conflict)
+          // Detailed Explanation
           else if (detExpCol === -1 && (cell.includes('detailed') || cell.includes('stepbystep') || cell.includes('workedout'))) {
             detExpCol = idx;
           }
@@ -548,6 +559,22 @@ Explanation: Power is the rate at which work is done or energy is transferred.
             marksCol = idx;
           }
         });
+
+        // Pick best candidate Q column by checking value diversity across data rows
+        const dataStartIdxTemp = headerRowIdx + 1;
+        for (const colIdx of candidateQCols) {
+          const sample = validRows.slice(dataStartIdxTemp, dataStartIdxTemp + 15)
+            .map((r) => String(r[colIdx] || '').trim())
+            .filter(Boolean);
+          const uniqueCount = new Set(sample).size;
+          if (uniqueCount > 1 || sample.length <= 1) {
+            qCol = colIdx;
+            break;
+          }
+        }
+        if (qCol === -1 && candidateQCols.length > 0) {
+          qCol = candidateQCols[0];
+        }
       }
 
       const dataStartIdx = headerRowIdx !== -1 ? headerRowIdx + 1 : 0;
@@ -584,7 +611,6 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         if (topicCol !== -1 && rowCells[topicCol]) rowTopic = rowCells[topicCol];
 
         // Positional fallback ONLY when NO header row was detected at all
-        // This prevents misalignment caused by empty cells when using nonEmp
         if (headerRowIdx === -1) {
           let qIdx = nonEmp.findIndex(
             (v) =>
@@ -605,10 +631,10 @@ Explanation: Power is the rate at which work is done or energy is transferred.
           if (!optD && nonEmp[qIdx + 4]) optD = nonEmp[qIdx + 4];
           if (!rawAns && nonEmp[qIdx + 5]) rawAns = nonEmp[qIdx + 5];
           if (!exp && nonEmp[qIdx + 6]) exp = nonEmp[qIdx + 6];
-        } else if (!qText && qCol === -1) {
-          // Headers detected but question column not found — try first long cell
-          const firstLong = rowCells.find((v) => v.length > 10 || v.includes('?'));
-          if (firstLong) qText = firstLong;
+        } else if (!qText) {
+          // If qCol didn't yield text for this specific row, search nonEmp for this row
+          const candidate = rowCells.find((v, idx) => idx !== subjCol && idx !== topicCol && idx !== ansCol && (v.length > 10 || v.includes('?')));
+          if (candidate) qText = candidate;
         }
 
         // Clean numeric prefixes like "Q1. ", "1. " from question text
