@@ -58,6 +58,10 @@ export default function UserManagementPage() {
 
   // Send Notification Modal State
   const [showNotificationModal, setShowNotificationModal] = useState(false);
+  const [notifTab, setNotifTab] = useState<'create' | 'manage'>('create');
+  const [sentNotifications, setSentNotifications] = useState<any[]>([]);
+  const [loadingSentNotifs, setLoadingSentNotifs] = useState(false);
+  const [deletingNotifId, setDeletingNotifId] = useState<string | null>(null);
   const [notifTargetType, setNotifTargetType] = useState<'all' | 'user' | 'course'>('all');
   const [notifTargetUserId, setNotifTargetUserId] = useState<string>('');
   const [notifTargetCourseId, setNotifTargetCourseId] = useState<string>('');
@@ -66,6 +70,43 @@ export default function UserManagementPage() {
   const [notifType, setNotifType] = useState<'info' | 'alert' | 'announcement' | 'warning' | 'success'>('announcement');
   const [sendingNotif, setSendingNotif] = useState<boolean>(false);
   const [notifToast, setNotifToast] = useState<string | null>(null);
+
+  const fetchSentNotifications = async () => {
+    setLoadingSentNotifs(true);
+    try {
+      const res = await fetch('/api/admin/notifications');
+      const data = await res.json();
+      if (res.ok && Array.isArray(data.notifications)) {
+        setSentNotifications(data.notifications);
+      }
+    } catch (e) {
+      console.error('Error fetching sent notifications:', e);
+    } finally {
+      setLoadingSentNotifs(false);
+    }
+  };
+
+  const handleDeleteNotification = async (notifId: string) => {
+    if (!confirm('Are you sure you want to remove this notification? It will be deleted permanently for all students.')) return;
+    setDeletingNotifId(notifId);
+    try {
+      const res = await fetch(`/api/admin/notifications?id=${notifId}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setNotifToast(data.message || 'Notification removed successfully!');
+        setTimeout(() => setNotifToast(null), 3500);
+        setSentNotifications((prev) => prev.filter((n) => String(n._id) !== String(notifId)));
+      } else {
+        alert(data.error || 'Failed to remove notification');
+      }
+    } catch (e) {
+      alert('Error deleting notification');
+    } finally {
+      setDeletingNotifId(null);
+    }
+  };
 
   // Multi-Profile Grouping State
   const [expandedEmails, setExpandedEmails] = useState<{ [rootEmail: string]: boolean }>({});
@@ -129,15 +170,17 @@ export default function UserManagementPage() {
     }
   };
 
-  const openSendNotifForUser = (student: any) => {
+  const openSendNotifForUser = (student?: any) => {
     fetchCourses();
     fetchUsers();
-    setNotifTargetType('user');
+    setNotifTargetType(student ? 'user' : 'all');
     setNotifTargetUserId(student ? student._id : '');
     setNotifTargetCourseId('');
     setNotifTitle('');
     setNotifMessage('');
+    setNotifTab('create');
     setShowNotificationModal(true);
+    fetchSentNotifications();
   };
 
   const handleSendNotification = async (e: React.FormEvent) => {
@@ -165,6 +208,7 @@ export default function UserManagementPage() {
         setShowNotificationModal(false);
         setNotifTitle('');
         setNotifMessage('');
+        fetchSentNotifications();
       } else {
         alert(data.error || 'Failed to send notification');
       }
@@ -1300,164 +1344,245 @@ export default function UserManagementPage() {
               </button>
             </div>
 
-            <form onSubmit={handleSendNotification} className="space-y-4 text-xs">
-              {/* Recipient Target Selector */}
-              <div>
-                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Recipient Audience
-                </label>
-                <div className="grid grid-cols-3 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setNotifTargetType('all')}
-                    className={`p-2.5 rounded-xl border text-center font-bold transition-all cursor-pointer ${
-                      notifTargetType === 'all'
-                        ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 shadow-xs'
-                        : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50'
-                    }`}
-                  >
-                    📢 All Students
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setNotifTargetType('user')}
-                    className={`p-2.5 rounded-xl border text-center font-bold transition-all cursor-pointer ${
-                      notifTargetType === 'user'
-                        ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 shadow-xs'
-                        : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50'
-                    }`}
-                  >
-                    👤 Single Student
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setNotifTargetType('course')}
-                    className={`p-2.5 rounded-xl border text-center font-bold transition-all cursor-pointer ${
-                      notifTargetType === 'course'
-                        ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 shadow-xs'
-                        : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50'
-                    }`}
-                  >
-                    🏫 Course Batch
-                  </button>
-                </div>
-              </div>
+            {/* Navigation Sub-Tabs */}
+            <div className="flex border-b border-slate-100 dark:border-slate-800 gap-4 mb-2 pb-1">
+              <button
+                type="button"
+                onClick={() => setNotifTab('create')}
+                className={`pb-2 text-xs font-black transition-all border-b-2 cursor-pointer ${
+                  notifTab === 'create'
+                    ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                }`}
+              >
+                📢 Send New Notification
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setNotifTab('manage');
+                  fetchSentNotifications();
+                }}
+                className={`pb-2 text-xs font-black transition-all border-b-2 flex items-center gap-1.5 cursor-pointer ${
+                  notifTab === 'manage'
+                    ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                }`}
+              >
+                <span>📋 Manage & Remove Sent ({sentNotifications.length})</span>
+              </button>
+            </div>
 
-              {/* Single Student Selector */}
-              {notifTargetType === 'user' && (
+            {notifTab === 'create' ? (
+              <form onSubmit={handleSendNotification} className="space-y-4 text-xs">
+                {/* Recipient Target Selector */}
                 <div>
                   <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Select Target Student
+                    Recipient Audience
                   </label>
-                  <select
-                    value={notifTargetUserId}
-                    onChange={(e) => setNotifTargetUserId(e.target.value)}
-                    required
-                    className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-medium"
-                  >
-                    <option value="">-- Choose Student --</option>
-                    {users.map((u) => (
-                      <option key={u._id} value={u._id}>
-                        {u.name} ({u.email})
-                      </option>
-                    ))}
-                  </select>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setNotifTargetType('all')}
+                      className={`p-2.5 rounded-xl border text-center font-bold transition-all cursor-pointer ${
+                        notifTargetType === 'all'
+                          ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 shadow-xs'
+                          : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50'
+                      }`}
+                    >
+                      📢 All Students
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setNotifTargetType('user')}
+                      className={`p-2.5 rounded-xl border text-center font-bold transition-all cursor-pointer ${
+                        notifTargetType === 'user'
+                          ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 shadow-xs'
+                          : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50'
+                      }`}
+                    >
+                      👤 Single Student
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setNotifTargetType('course')}
+                      className={`p-2.5 rounded-xl border text-center font-bold transition-all cursor-pointer ${
+                        notifTargetType === 'course'
+                          ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 shadow-xs'
+                          : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50'
+                      }`}
+                    >
+                      🏫 Course Batch
+                    </button>
+                  </div>
                 </div>
-              )}
 
-              {/* Course Batch Selector */}
-              {notifTargetType === 'course' && (
-                <div>
-                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Select Course Batch
-                  </label>
-                  <select
-                    value={notifTargetCourseId}
-                    onChange={(e) => setNotifTargetCourseId(e.target.value)}
-                    required
-                    className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-medium"
-                  >
-                    <option value="">-- Choose Course --</option>
-                    {courses.length === 0 ? (
-                      <option disabled value="">No courses available</option>
-                    ) : (
-                      courses.map((c) => (
-                        <option key={c._id} value={c._id}>
-                          {c.name} {c.category ? `(${c.category})` : ''}
+                {/* Single Student Selector */}
+                {notifTargetType === 'user' && (
+                  <div>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      Select Target Student
+                    </label>
+                    <select
+                      value={notifTargetUserId}
+                      onChange={(e) => setNotifTargetUserId(e.target.value)}
+                      required
+                      className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-medium"
+                    >
+                      <option value="">-- Choose Student --</option>
+                      {users.map((u) => (
+                        <option key={u._id} value={u._id}>
+                          {u.name} ({u.email})
                         </option>
-                      ))
-                    )}
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Course Batch Selector */}
+                {notifTargetType === 'course' && (
+                  <div>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      Select Course Batch
+                    </label>
+                    <select
+                      value={notifTargetCourseId}
+                      onChange={(e) => setNotifTargetCourseId(e.target.value)}
+                      required
+                      className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-medium"
+                    >
+                      <option value="">-- Choose Course --</option>
+                      {courses.length === 0 ? (
+                        <option disabled value="">No courses available</option>
+                      ) : (
+                        courses.map((c) => (
+                          <option key={c._id} value={c._id}>
+                            {c.name} {c.category ? `(${c.category})` : ''}
+                          </option>
+                        ))
+                      )}
+                    </select>
+                  </div>
+                )}
+
+                {/* Notification Category */}
+                <div>
+                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Notification Category
+                  </label>
+                  <select
+                    value={notifType}
+                    onChange={(e) => setNotifType(e.target.value as any)}
+                    className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-medium"
+                  >
+                    <option value="announcement">📢 Announcement (Standard Update)</option>
+                    <option value="alert">🚨 Urgent Alert (High Priority)</option>
+                    <option value="info">ℹ️ General Info</option>
+                    <option value="success">🎉 Success / Celebration</option>
+                    <option value="warning">⚠️ System Warning</option>
                   </select>
                 </div>
-              )}
 
-              {/* Notification Category */}
-              <div>
-                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Notification Category
-                </label>
-                <select
-                  value={notifType}
-                  onChange={(e) => setNotifType(e.target.value as any)}
-                  className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-medium"
-                >
-                  <option value="announcement">📢 Announcement (Standard Update)</option>
-                  <option value="alert">🚨 Urgent Alert (High Priority)</option>
-                  <option value="info">ℹ️ General Info</option>
-                  <option value="success">🎉 Success / Celebration</option>
-                  <option value="warning">⚠️ System Warning</option>
-                </select>
-              </div>
+                {/* Title */}
+                <div>
+                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Notification Title
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. New Mock Test Published / Important Update"
+                    value={notifTitle}
+                    onChange={(e) => setNotifTitle(e.target.value)}
+                    className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-bold"
+                  />
+                </div>
 
-              {/* Title */}
-              <div>
-                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Notification Title
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. New Mock Test Published / Important Update"
-                  value={notifTitle}
-                  onChange={(e) => setNotifTitle(e.target.value)}
-                  className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-bold"
-                />
-              </div>
+                {/* Message Content */}
+                <div>
+                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Message Content
+                  </label>
+                  <textarea
+                    required
+                    rows={3}
+                    placeholder="Enter the notification message details for students..."
+                    value={notifMessage}
+                    onChange={(e) => setNotifMessage(e.target.value)}
+                    className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white leading-relaxed"
+                  />
+                </div>
 
-              {/* Message Content */}
-              <div>
-                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Message Content
-                </label>
-                <textarea
-                  required
-                  rows={3}
-                  placeholder="Enter the notification message details for students..."
-                  value={notifMessage}
-                  onChange={(e) => setNotifMessage(e.target.value)}
-                  className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white leading-relaxed"
-                />
+                {/* Form Buttons */}
+                <div className="flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+                  <button
+                    type="button"
+                    onClick={() => setShowNotificationModal(false)}
+                    className="px-4 py-2 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-xs cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={sendingNotif}
+                    className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl text-xs flex items-center gap-1.5 shadow-md shadow-blue-500/20 disabled:opacity-50 cursor-pointer"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    {sendingNotif ? 'Sending...' : 'Deliver Notification'}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1 text-xs">
+                {loadingSentNotifs ? (
+                  <div className="py-8 text-center text-slate-400 font-bold">Loading sent notifications...</div>
+                ) : sentNotifications.length === 0 ? (
+                  <div className="py-8 text-center text-slate-400 font-bold">No active notifications found.</div>
+                ) : (
+                  sentNotifications.map((notif) => (
+                    <div
+                      key={notif._id}
+                      className="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 rounded-xl flex items-start justify-between gap-3"
+                    >
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-extrabold text-slate-900 dark:text-white text-sm">{notif.title}</span>
+                          <span className="px-2 py-0.5 rounded-md bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-[10px] font-bold uppercase">
+                            {notif.type || 'Announcement'}
+                          </span>
+                          <span className="px-2 py-0.5 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-bold">
+                            Target: {notif.targetType === 'all' ? 'All Students' : notif.targetType === 'course' ? 'Course Batch' : 'Single User'}
+                          </span>
+                        </div>
+                        <p className="text-slate-600 dark:text-slate-400 text-xs leading-relaxed">{notif.message}</p>
+                        <p className="text-[10px] text-slate-400 font-medium">
+                          Sent on: {new Date(notif.created_at || Date.now()).toLocaleString()}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        disabled={deletingNotifId === String(notif._id)}
+                        onClick={() => handleDeleteNotification(String(notif._id))}
+                        className="p-2 bg-rose-50 dark:bg-rose-950/60 hover:bg-rose-100 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900 rounded-xl transition-all flex items-center gap-1 font-bold text-[11px] shrink-0 cursor-pointer disabled:opacity-50"
+                        title="Remove notification"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        {deletingNotifId === String(notif._id) ? 'Removing...' : 'Remove'}
+                      </button>
+                    </div>
+                  ))
+                )}
+                <div className="flex justify-end pt-3 border-t border-slate-100 dark:border-slate-800">
+                  <button
+                    type="button"
+                    onClick={() => setShowNotificationModal(false)}
+                    className="px-4 py-2 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-xs cursor-pointer"
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
-
-              {/* Form Buttons */}
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
-                <button
-                  type="button"
-                  onClick={() => setShowNotificationModal(false)}
-                  className="px-4 py-2 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-xs"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={sendingNotif}
-                  className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl text-xs flex items-center gap-1.5 shadow-md shadow-blue-500/20 disabled:opacity-50 cursor-pointer"
-                >
-                  <Send className="w-3.5 h-3.5" />
-                  {sendingNotif ? 'Sending...' : 'Deliver Notification'}
-                </button>
-              </div>
-            </form>
+            )}
           </div>
         </div>
       )}
