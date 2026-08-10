@@ -463,269 +463,133 @@ Explanation: Power is the rate at which work is done or energy is transferred.
       }
 
       const worksheet = workbook.Sheets[bestSheetName];
-      const matrix: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: false, defval: '' });
 
-      if (!matrix || matrix.length === 0) {
+      // ═══════════════════════════════════════════════════════════
+      // PRIMARY PARSER: Use XLSX's object mode (header names as keys)
+      // ═══════════════════════════════════════════════════════════
+      const objRows: Record<string, any>[] = XLSX.utils.sheet_to_json(worksheet, { raw: false, defval: '' });
+
+      if (!objRows || objRows.length === 0) {
         setExcelError('The selected spreadsheet is empty or has no readable rows.');
         setParsedExcelQuestions([]);
         return;
       }
 
-      // Filter out completely empty row arrays
-      const validRows = matrix.filter((r) => Array.isArray(r) && r.some((c) => String(c || '').trim() !== ''));
+      // Get all column keys from first row
+      const allKeys = Object.keys(objRows[0] || {});
+      console.log('[ExcelParser] Keys found:', allKeys);
 
-      if (validRows.length === 0) {
-        setExcelError('No readable data rows found in the spreadsheet.');
+      if (allKeys.length < 2) {
+        setExcelError('Too few columns detected. Please ensure the file has proper headers.');
         setParsedExcelQuestions([]);
         return;
       }
 
-      // Detect header row index
-      let headerRowIdx = -1;
-      for (let i = 0; i < Math.min(validRows.length, 10); i++) {
-        const rowStr = validRows[i].map((c) => String(c || '').trim().toLowerCase()).join(' ');
-        if (
-          rowStr.includes('question') ||
-          rowStr.includes('prompt') ||
-          rowStr.includes('option') ||
-          rowStr.includes('choice') ||
-          rowStr.includes('answer')
-        ) {
-          headerRowIdx = i;
-          break;
+      // Helper: find a key by matching patterns against normalized key names
+      const findKey = (patterns: string[], exclude?: RegExp): string | null => {
+        for (const key of allKeys) {
+          const norm = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+          if (exclude && exclude.test(norm)) continue;
+          for (const p of patterns) {
+            if (norm === p || norm.includes(p)) return key;
+          }
         }
-      }
-
-      // ═══════════════════════════════════════════════════════════
-      // COLUMN ROLE ASSIGNMENT — assign each header to a role
-      // ═══════════════════════════════════════════════════════════
-      const headerNames: string[] = [];
-      const roles: Record<number, string> = {};
-
-      if (headerRowIdx !== -1) {
-        validRows[headerRowIdx].forEach((cell: any, idx: number) => {
-          headerNames[idx] = String(cell || '').trim();
-        });
-
-        const normalizedHeaders = headerNames.map((h) => (h || '').toLowerCase().replace(/[^a-z0-9]/g, ''));
-
-        normalizedHeaders.forEach((norm, idx) => {
-          if (!norm) return;
-          // Exact match (highest priority — each cell gets ONE role)
-          if (['subject', 'subj', 'sub', 'category'].includes(norm)) roles[idx] = 'subject';
-          else if (['topic', 'chapter', 'module', 'unit', 'section', 'subtopic'].includes(norm)) roles[idx] = 'topic';
-          else if (['question', 'questiontext', 'q', 'questions'].includes(norm)) roles[idx] = 'question';
-          else if (['optiona', 'opta', 'choicea', 'option1', 'opt1', 'choice1'].includes(norm)) roles[idx] = 'optA';
-          else if (['optionb', 'optb', 'choiceb', 'option2', 'opt2', 'choice2'].includes(norm)) roles[idx] = 'optB';
-          else if (['optionc', 'optc', 'choicec', 'option3', 'opt3', 'choice3'].includes(norm)) roles[idx] = 'optC';
-          else if (['optiond', 'optd', 'choiced', 'option4', 'opt4', 'choice4'].includes(norm)) roles[idx] = 'optD';
-          else if (norm === 'a') roles[idx] = 'optA';
-          else if (norm === 'b') roles[idx] = 'optB';
-          else if (norm === 'c') roles[idx] = 'optC';
-          else if (norm === 'd') roles[idx] = 'optD';
-          else if (['answer', 'ans', 'key', 'correctanswer', 'correct', 'correctoption'].includes(norm)) roles[idx] = 'answer';
-          else if (['detailedexplanation', 'detailed', 'stepbystep', 'workedout'].includes(norm)) roles[idx] = 'detExp';
-          else if (['explanation', 'solution', 'exp', 'reason', 'rationale'].includes(norm)) roles[idx] = 'explanation';
-          else if (['marks', 'points', 'score', 'weight'].includes(norm)) roles[idx] = 'marks';
-          // Fuzzy includes (lower priority, only if no exact match above)
-          else if (norm.includes('question') && !/(?:no|num|number|type|id|serial|sr|sl|count|index|paper|title|header|banner)/.test(norm)) roles[idx] = 'question';
-          else if (norm.includes('optiona') || norm.includes('opta') || norm.includes('choicea')) roles[idx] = 'optA';
-          else if (norm.includes('optionb') || norm.includes('optb') || norm.includes('choiceb')) roles[idx] = 'optB';
-          else if (norm.includes('optionc') || norm.includes('optc') || norm.includes('choicec')) roles[idx] = 'optC';
-          else if (norm.includes('optiond') || norm.includes('optd') || norm.includes('choiced')) roles[idx] = 'optD';
-          else if (norm.includes('answer') || norm.includes('correct')) roles[idx] = 'answer';
-          else if (norm.includes('detailed')) roles[idx] = 'detExp';
-          else if (norm.includes('explanation') || norm.includes('solution')) roles[idx] = 'explanation';
-          else if (norm.includes('mcq') || norm.includes('prompt') || norm.includes('problem') || norm.includes('statement')) roles[idx] = 'question';
-          else if (norm.includes('subject') || norm.includes('category')) roles[idx] = 'subject';
-          else if (norm.includes('topic') || norm.includes('chapter')) roles[idx] = 'topic';
-        });
-      }
-
-      // Helper to find column index for a role
-      const getCol = (role: string): number => {
-        const entry = Object.entries(roles).find(([, r]) => r === role);
-        return entry ? Number(entry[0]) : -1;
+        return null;
       };
 
-      let qCol = getCol('question');
-      let subjCol = getCol('subject');
-      let topicCol = getCol('topic');
-      let optACol = getCol('optA');
-      let optBCol = getCol('optB');
-      let optCCol = getCol('optC');
-      let optDCol = getCol('optD');
-      let ansCol = getCol('answer');
-      let expCol = getCol('explanation');
-      let detExpCol = getCol('detExp');
-      const marksCol = getCol('marks');
+      // Map column roles to actual key names
+      const subjKey = findKey(['subject', 'subj', 'category']);
+      const topicKey = findKey(['topic', 'chapter', 'module', 'unit', 'section']);
 
-      // ═══════════════════════════════════════════════════════════
-      // DIVERSITY VERIFICATION — ensure qCol has unique values
-      // ═══════════════════════════════════════════════════════════
-      const dataStartIdx = headerRowIdx !== -1 ? headerRowIdx + 1 : 0;
-
-      if (qCol !== -1 && headerRowIdx !== -1) {
-        const samples = validRows.slice(dataStartIdx, dataStartIdx + 25)
-          .map((r) => String(r[qCol] || '').trim())
-          .filter(Boolean);
-        if (samples.length > 3 && new Set(samples).size <= 1) {
-          // WRONG COLUMN — all rows have the same value!
-          // Find the unassigned column with the most diverse, longest text
-          const assignedCols = new Set(Object.keys(roles).map(Number));
-          let bestCol = -1;
-          let bestScore = 0;
-          const totalCols = validRows[headerRowIdx]?.length || 0;
-          for (let ci = 0; ci < totalCols; ci++) {
-            if (assignedCols.has(ci)) continue;
-            const altSamples = validRows.slice(dataStartIdx, dataStartIdx + 25)
-              .map((r) => String(r[ci] || '').trim())
-              .filter(Boolean);
-            const diversity = new Set(altSamples).size;
-            const avgLen = altSamples.reduce((s, v) => s + v.length, 0) / (altSamples.length || 1);
-            const score = diversity * avgLen;
-            if (score > bestScore) {
-              bestScore = score;
-              bestCol = ci;
-            }
-          }
-          if (bestCol !== -1) {
-            console.log(`[ExcelParser] qCol ${qCol} has identical values — switching to col ${bestCol} (header: "${headerNames[bestCol]}")`);
-            qCol = bestCol;
-          }
+      // Question key: match exact first, then fuzzy, always exclude number/type/id columns
+      let qKey = findKey(['questiontext', 'question', 'prompt', 'problem', 'statement', 'mcq'],
+        /^(questionno|questionnumber|questiontype|questionid|qno|qid|sno|srno|slno|serialno|serial)$/);
+      // If qKey matched a "questionno" or similar via includes, verify it has diverse values
+      if (qKey) {
+        const norm = qKey.toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (norm.includes('no') || norm.includes('num') || norm.includes('id') || norm.includes('type') || norm.includes('serial') || norm.includes('sr')) {
+          // Likely a question number column, not question text — reject
+          qKey = null;
         }
       }
 
-      // If no question column was found at all, auto-detect by finding the column with longest, most diverse text
-      if (qCol === -1 && headerRowIdx !== -1) {
-        const assignedCols = new Set(Object.keys(roles).map(Number));
-        let bestCol = -1;
+      const optAKey = findKey(['optiona', 'opta', 'choicea', 'option1', 'opt1', 'choice1']) ||
+                       allKeys.find((k) => k.trim().toLowerCase().replace(/[^a-z0-9]/g, '') === 'a') || null;
+      const optBKey = findKey(['optionb', 'optb', 'choiceb', 'option2', 'opt2', 'choice2']) ||
+                       allKeys.find((k) => k.trim().toLowerCase().replace(/[^a-z0-9]/g, '') === 'b') || null;
+      const optCKey = findKey(['optionc', 'optc', 'choicec', 'option3', 'opt3', 'choice3']) ||
+                       allKeys.find((k) => k.trim().toLowerCase().replace(/[^a-z0-9]/g, '') === 'c') || null;
+      const optDKey = findKey(['optiond', 'optd', 'choiced', 'option4', 'opt4', 'choice4']) ||
+                       allKeys.find((k) => k.trim().toLowerCase().replace(/[^a-z0-9]/g, '') === 'd') || null;
+      const ansKey = findKey(['answer', 'correct', 'ans', 'key', 'correctoption', 'correctanswer']);
+      const expKey = findKey(['explanation', 'solution', 'reason', 'rationale']);
+      const detExpKey = findKey(['detailedexplanation', 'detailed', 'stepbystep', 'workedout']);
+      const marksKey = findKey(['marks', 'points', 'score', 'weight']);
+
+      // If no question key found by name, auto-detect: find the key with longest, most diverse values
+      if (!qKey) {
+        const usedKeys = new Set([subjKey, topicKey, optAKey, optBKey, optCKey, optDKey, ansKey, expKey, detExpKey, marksKey].filter(Boolean));
+        let bestKey: string | null = null;
         let bestScore = 0;
-        const totalCols = validRows[headerRowIdx]?.length || 0;
-        for (let ci = 0; ci < totalCols; ci++) {
-          if (assignedCols.has(ci)) continue;
-          const altSamples = validRows.slice(dataStartIdx, dataStartIdx + 25)
-            .map((r) => String(r[ci] || '').trim())
-            .filter(Boolean);
-          const diversity = new Set(altSamples).size;
-          const avgLen = altSamples.reduce((s, v) => s + v.length, 0) / (altSamples.length || 1);
+        for (const key of allKeys) {
+          if (usedKeys.has(key)) continue;
+          const samples = objRows.slice(0, 25).map((r) => String(r[key] || '').trim()).filter(Boolean);
+          const diversity = new Set(samples).size;
+          const avgLen = samples.reduce((s, v) => s + v.length, 0) / (samples.length || 1);
           const score = diversity * avgLen;
           if (score > bestScore && avgLen > 10) {
             bestScore = score;
-            bestCol = ci;
+            bestKey = key;
           }
         }
-        if (bestCol !== -1) qCol = bestCol;
+        if (bestKey) qKey = bestKey;
       }
 
-      // Auto-detect option columns if not found by name (use 4 columns after qCol)
-      if (qCol !== -1 && optACol === -1 && optBCol === -1) {
-        const assignedCols = new Set([subjCol, topicCol, qCol, ansCol, expCol, detExpCol, marksCol].filter((c) => c !== -1));
-        const afterQ = [];
-        const totalCols = validRows[headerRowIdx]?.length || validRows[0]?.length || 0;
-        for (let ci = qCol + 1; ci < totalCols; ci++) {
-          if (!assignedCols.has(ci)) afterQ.push(ci);
-        }
-        if (afterQ.length >= 4) {
-          optACol = afterQ[0];
-          optBCol = afterQ[1];
-          optCCol = afterQ[2];
-          optDCol = afterQ[3];
-        }
-      }
+      console.log('[ExcelParser] Key mapping:', { subjKey, topicKey, qKey, optAKey, optBKey, optCKey, optDKey, ansKey, expKey, detExpKey });
+      console.log('[ExcelParser] First row sample:', objRows[0]);
 
-      console.log('[ExcelParser] Column mapping:', { subjCol, topicCol, qCol, optACol, optBCol, optCCol, optDCol, ansCol, expCol, detExpCol });
-      console.log('[ExcelParser] Header names:', headerNames);
-      if (dataStartIdx < validRows.length) {
-        console.log('[ExcelParser] First data row:', validRows[dataStartIdx]?.map((c: any) => String(c || '').trim().substring(0, 40)));
-      }
-
-      // ═══════════════════════════════════════════════════════════
-      // DATA EXTRACTION — iterate rows and build question objects
-      // ═══════════════════════════════════════════════════════════
+      // Strip option prefixes like "A) Water" → "Water"
       const stripOptPrefix = (text: string): string => {
         const stripped = text.replace(/^(?:\(?\s*[A-Da-d]\s*\)?[\.\)\:\-]\s*|\(?\s*\d\s*\)?[\.\)\:\-]\s*)/i, '').trim();
         return stripped || text;
       };
 
+      // Parse each row into a question object
       const parsedList: any[] = [];
 
-      for (let i = dataStartIdx; i < validRows.length; i++) {
-        const row = validRows[i];
-        const rowCells = row.map((c: any) => String(c || '').trim());
-        const nonEmp = rowCells.filter(Boolean);
+      for (const row of objRows) {
+        // Get question text
+        let qText = qKey ? String(row[qKey] || '').trim() : '';
 
-        if (nonEmp.length < 2) continue;
-
-        let qText = '';
-        let optA = '';
-        let optB = '';
-        let optC = '';
-        let optD = '';
-        let rawAns = '';
-        let exp = '';
-        let detExp = '';
-        let rowSubject = '';
-        let rowTopic = '';
-
-        // Header-based extraction
-        if (qCol !== -1 && rowCells[qCol]) qText = rowCells[qCol];
-        if (optACol !== -1 && rowCells[optACol]) optA = rowCells[optACol];
-        if (optBCol !== -1 && rowCells[optBCol]) optB = rowCells[optBCol];
-        if (optCCol !== -1 && rowCells[optCCol]) optC = rowCells[optCCol];
-        if (optDCol !== -1 && rowCells[optDCol]) optD = rowCells[optDCol];
-        if (ansCol !== -1 && rowCells[ansCol]) rawAns = rowCells[ansCol];
-        if (expCol !== -1 && rowCells[expCol]) exp = rowCells[expCol];
-        if (detExpCol !== -1 && rowCells[detExpCol]) detExp = rowCells[detExpCol];
-        if (subjCol !== -1 && rowCells[subjCol]) rowSubject = rowCells[subjCol];
-        if (topicCol !== -1 && rowCells[topicCol]) rowTopic = rowCells[topicCol];
-
-        // Positional fallback ONLY when NO header row was detected
-        if (headerRowIdx === -1) {
-          let qIdx = nonEmp.findIndex(
-            (v) =>
-              (v.length > 15 && !v.toLowerCase().startsWith('explanation')) ||
-              v.includes('?') ||
-              /^(?:q(?:uestion)?[\s\.\:]*)?\d+[\s\.\:]+/i.test(v)
-          );
-          if (qIdx === -1) {
-            qIdx = nonEmp.findIndex((v) => v.length > 4 && !/^\d+$/.test(v));
-            if (qIdx === -1) qIdx = 0;
+        // If qKey didn't provide text, try finding the longest diverse cell in this row
+        if (!qText) {
+          const usedKeys = new Set([subjKey, topicKey, optAKey, optBKey, optCKey, optDKey, ansKey, expKey, detExpKey, marksKey].filter(Boolean));
+          let bestVal = '';
+          for (const key of allKeys) {
+            if (usedKeys.has(key)) continue;
+            const val = String(row[key] || '').trim();
+            if (val.length > bestVal.length) bestVal = val;
           }
-          if (!qText && nonEmp[qIdx]) qText = nonEmp[qIdx];
-          if (!optA && nonEmp[qIdx + 1]) optA = nonEmp[qIdx + 1];
-          if (!optB && nonEmp[qIdx + 2]) optB = nonEmp[qIdx + 2];
-          if (!optC && nonEmp[qIdx + 3]) optC = nonEmp[qIdx + 3];
-          if (!optD && nonEmp[qIdx + 4]) optD = nonEmp[qIdx + 4];
-          if (!rawAns && nonEmp[qIdx + 5]) rawAns = nonEmp[qIdx + 5];
-          if (!exp && nonEmp[qIdx + 6]) exp = nonEmp[qIdx + 6];
-        } else if (!qText) {
-          // Per-row fallback: find the longest non-assigned cell
-          const skipCols = new Set([subjCol, topicCol, ansCol, expCol, detExpCol, marksCol, optACol, optBCol, optCCol, optDCol].filter((c) => c !== -1));
-          const candidate = rowCells.find((v, idx) => !skipCols.has(idx) && (v.length > 10 || v.includes('?')));
-          if (candidate) qText = candidate;
+          if (bestVal.length > 5) qText = bestVal;
         }
 
-        // Clean numeric prefixes like "Q1. ", "1. " from question text
+        // Clean numeric prefixes like "Q1. ", "1. "
         qText = qText.replace(/^(?:q(?:uestion)?\s*\d+[\s\.\:\-]+|\d+[\s\.\:\-]+)/i, '').trim();
-
         if (!qText || qText.length < 3) continue;
 
-        // Strip common option prefixes (e.g. "A) Water" → "Water")
-        optA = stripOptPrefix(optA);
-        optB = stripOptPrefix(optB);
-        optC = stripOptPrefix(optC);
-        optD = stripOptPrefix(optD);
+        // Extract options
+        let optA = optAKey ? stripOptPrefix(String(row[optAKey] || '').trim()) : '';
+        let optB = optBKey ? stripOptPrefix(String(row[optBKey] || '').trim()) : '';
+        let optC = optCKey ? stripOptPrefix(String(row[optCKey] || '').trim()) : '';
+        let optD = optDKey ? stripOptPrefix(String(row[optDKey] || '').trim()) : '';
 
-        // Ensure 4 valid non-empty options
-        const rawOpts = [optA, optB, optC, optD].map((o) => o.trim()).filter(Boolean);
-        const finalOpts: string[] = [...rawOpts];
-        while (finalOpts.length < 4) {
-          finalOpts.push(`Option ${String.fromCharCode(65 + finalOpts.length)}`);
-        }
-        const cleanOpts = finalOpts.slice(0, 4);
+        // Ensure 4 valid options
+        const rawOpts = [optA, optB, optC, optD].filter(Boolean);
+        while (rawOpts.length < 4) rawOpts.push(`Option ${String.fromCharCode(65 + rawOpts.length)}`);
+        const cleanOpts = rawOpts.slice(0, 4);
 
         // Answer detection
+        const rawAns = ansKey ? String(row[ansKey] || '').trim() : '';
         let correctIndex = 0;
         if (rawAns) {
           const cleanAns = rawAns.toUpperCase().trim().replace(/^[\(\s]+/, '').replace(/[\)\.\,\s]+$/, '').trim();
@@ -735,9 +599,8 @@ Explanation: Power is the rate at which work is done or energy is transferred.
           else if (cleanAns === 'D' || cleanAns === '4' || cleanAns === 'OPTION D' || cleanAns === 'OPTION 4') correctIndex = 3;
           else {
             const foundIdx = cleanOpts.findIndex((o) => o.toLowerCase().trim() === rawAns.toLowerCase().trim());
-            if (foundIdx !== -1) {
-              correctIndex = foundIdx;
-            } else {
+            if (foundIdx !== -1) correctIndex = foundIdx;
+            else {
               const partialIdx = cleanOpts.findIndex((o) =>
                 o.toLowerCase().includes(rawAns.toLowerCase().trim()) ||
                 rawAns.toLowerCase().trim().includes(o.toLowerCase())
@@ -747,15 +610,19 @@ Explanation: Power is the rate at which work is done or energy is transferred.
           }
         }
 
-        // Determine subject and topic
+        // Extract metadata
+        const exp = expKey ? String(row[expKey] || '').trim() : '';
+        const detExp = detExpKey ? String(row[detExpKey] || '').trim() : '';
+        const rowSubject = subjKey ? String(row[subjKey] || '').trim() : '';
+        const rowTopic = topicKey ? String(row[topicKey] || '').trim() : '';
+
         const rowSub = rowSubject || selectedSubject || 'General';
         const rowTop = rowTopic || selectedTopic || 'General';
-        const finalTopicTag = `${rowSub} - ${rowTop}`;
 
         parsedList.push({
           course_id: selectedCourseId,
           subject: rowSub,
-          topic_tag: finalTopicTag,
+          topic_tag: `${rowSub} - ${rowTop}`,
           question_text: qText,
           options: cleanOpts,
           correct_option: correctIndex,
@@ -764,91 +631,10 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         });
       }
 
-      // ═══════════════════════════════════════════════════════════
-      // POST-PARSE DUPLICATE DETECTION — if all questions are identical, something went wrong
-      // ═══════════════════════════════════════════════════════════
-      if (parsedList.length > 5) {
-        const uniqueTexts = new Set(parsedList.map((q) => q.question_text)).size;
-        if (uniqueTexts <= 1) {
-          console.warn('[ExcelParser] All parsed questions are identical! Attempting column re-detection...');
-          // Re-scan: find the column with the most diverse long text that ISN'T already assigned
-          const assignedCols = new Set(Object.keys(roles).map(Number));
-          assignedCols.add(qCol);
-          let bestCol = -1;
-          let bestScore = 0;
-          const totalCols = validRows[headerRowIdx]?.length || validRows[0]?.length || 0;
-          for (let ci = 0; ci < totalCols; ci++) {
-            if (assignedCols.has(ci)) continue;
-            const altSamples = validRows.slice(dataStartIdx, dataStartIdx + 30)
-              .map((r) => String(r[ci] || '').trim())
-              .filter(Boolean);
-            const diversity = new Set(altSamples).size;
-            const avgLen = altSamples.reduce((s, v) => s + v.length, 0) / (altSamples.length || 1);
-            if (diversity > 1 && avgLen > 10 && diversity * avgLen > bestScore) {
-              bestScore = diversity * avgLen;
-              bestCol = ci;
-            }
-          }
-          if (bestCol !== -1) {
-            console.log(`[ExcelParser] Re-parsing with qCol=${bestCol} (header: "${headerNames[bestCol] || 'N/A'}")`);
-            // Re-parse with corrected qCol
-            parsedList.length = 0;
-            for (let i = dataStartIdx; i < validRows.length; i++) {
-              const row = validRows[i];
-              const rowCells = row.map((c: any) => String(c || '').trim());
-              if (rowCells.filter(Boolean).length < 2) continue;
-
-              let qText = rowCells[bestCol] || '';
-              qText = qText.replace(/^(?:q(?:uestion)?\s*\d+[\s\.\:\-]+|\d+[\s\.\:\-]+)/i, '').trim();
-              if (!qText || qText.length < 3) continue;
-
-              const rOptA = stripOptPrefix(optACol !== -1 && rowCells[optACol] ? rowCells[optACol] : '');
-              const rOptB = stripOptPrefix(optBCol !== -1 && rowCells[optBCol] ? rowCells[optBCol] : '');
-              const rOptC = stripOptPrefix(optCCol !== -1 && rowCells[optCCol] ? rowCells[optCCol] : '');
-              const rOptD = stripOptPrefix(optDCol !== -1 && rowCells[optDCol] ? rowCells[optDCol] : '');
-              const rRawAns = ansCol !== -1 ? rowCells[ansCol] || '' : '';
-              const rExp = expCol !== -1 ? rowCells[expCol] || '' : '';
-              const rDetExp = detExpCol !== -1 ? rowCells[detExpCol] || '' : '';
-              const rSubject = subjCol !== -1 ? rowCells[subjCol] || '' : '';
-              const rTopic = topicCol !== -1 ? rowCells[topicCol] || '' : '';
-
-              const rOpts = [rOptA, rOptB, rOptC, rOptD].map((o) => o.trim()).filter(Boolean);
-              while (rOpts.length < 4) rOpts.push(`Option ${String.fromCharCode(65 + rOpts.length)}`);
-              const rCleanOpts = rOpts.slice(0, 4);
-
-              let rCorrect = 0;
-              if (rRawAns) {
-                const ca = rRawAns.toUpperCase().trim().replace(/^[\(\s]+/, '').replace(/[\)\.\,\s]+$/, '').trim();
-                if (ca === 'A' || ca === '1') rCorrect = 0;
-                else if (ca === 'B' || ca === '2') rCorrect = 1;
-                else if (ca === 'C' || ca === '3') rCorrect = 2;
-                else if (ca === 'D' || ca === '4') rCorrect = 3;
-                else {
-                  const fi = rCleanOpts.findIndex((o) => o.toLowerCase().trim() === rRawAns.toLowerCase().trim());
-                  if (fi !== -1) rCorrect = fi;
-                }
-              }
-
-              const rSub = rSubject || selectedSubject || 'General';
-              const rTop = rTopic || selectedTopic || 'General';
-              parsedList.push({
-                course_id: selectedCourseId,
-                subject: rSub,
-                topic_tag: `${rSub} - ${rTop}`,
-                question_text: qText,
-                options: rCleanOpts,
-                correct_option: rCorrect,
-                explanation: rExp || `Correct Answer: Option ${String.fromCharCode(65 + rCorrect)} (${rCleanOpts[rCorrect] || ''})`,
-                detailed_explanation: rDetExp || '',
-              });
-            }
-          }
-        }
-      }
-
+      console.log(`[ExcelParser] Final result: ${parsedList.length} questions. Unique: ${new Set(parsedList.map((q) => q.question_text)).size}`);
 
       if (parsedList.length === 0) {
-        setExcelError('No valid questions could be extracted from the file. Please check column headers.');
+        setExcelError('No valid questions could be extracted from the file. Please check column headers (Question, Option A, Option B, Option C, Option D, Answer).');
         setParsedExcelQuestions([]);
       } else {
         setParsedExcelQuestions(parsedList);
