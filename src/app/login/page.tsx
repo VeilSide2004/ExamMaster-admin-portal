@@ -83,7 +83,7 @@ export default function AdminLoginPage() {
               </div>
             )}
 
-            <form onSubmit={handleLogin} className="space-y-5 text-xs">
+            <form onSubmit={handleLogin} autoComplete="off" className="space-y-5 text-xs">
               {/* COMMAND ID Field */}
               <div>
                 <label className="block text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
@@ -94,6 +94,7 @@ export default function AdminLoginPage() {
                   <input
                     type="text"
                     required
+                    autoComplete="off"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full pl-10 pr-4 py-2.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:border-slate-900 dark:focus:border-white text-slate-900 dark:text-white font-medium shadow-sm transition-colors"
@@ -112,6 +113,7 @@ export default function AdminLoginPage() {
                   <input
                     type={showPassword ? 'text' : 'password'}
                     required
+                    autoComplete="new-password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full pl-10 pr-10 py-2.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:border-slate-900 dark:focus:border-white text-slate-900 dark:text-white font-medium shadow-sm transition-colors"
