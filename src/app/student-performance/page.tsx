@@ -103,35 +103,55 @@ export default function StudentPerformancePage() {
       <div className="flex-1 flex flex-col min-w-0">
         <AdminHeader
           title="Student Performance & Course Leaderboards"
-          subtitle="Automated course cards, top 20 batch standings, mock tests attempted, and question pacing statistics."
+          subtitle="Select any course from the dropdown to inspect Top 20 batch standings, total XP, and student analytics."
         />
 
-        <main className="p-4 sm:p-8 space-y-8 max-w-7xl mx-auto w-full flex-1 overflow-y-auto">
-          {/* Header Bar with Back to Dashboard Link */}
+        <main className="p-4 sm:p-8 space-y-6 max-w-7xl mx-auto w-full flex-1 overflow-y-auto">
+          {/* Header Bar with Back to Dashboard Link & Course Catalogue Dropdown */}
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
             <div>
               <div className="flex items-center gap-3">
                 <Link
                   href="/dashboard"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-extrabold text-xs rounded-xl border border-slate-200 dark:border-slate-700 transition-colors shadow-xs"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-extrabold text-xs rounded-xl border border-slate-200 dark:border-slate-700 transition-all shadow-xs cursor-pointer"
                 >
                   <ArrowLeft className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                   Back to Dashboard
                 </Link>
                 <span className="text-slate-300 dark:text-slate-700">|</span>
                 <span className="px-3 py-1 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-extrabold text-xs rounded-xl border border-blue-200 dark:border-blue-800">
-                  📊 {courses.length} Active Courses Monitored
+                  📊 {courses.length} Courses in Catalogue
                 </span>
               </div>
 
               <h1 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2.5 mt-3">
                 <Trophy className="w-7 h-7 text-amber-500" />
-                Student Performance & Course Leaderboards
+                Course Leaderboards & Student Analytics
               </h1>
               <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
-                Select a course from the cards or dropdown to inspect top 20 batch standings and student analytics.
+                Select a course from the dropdown menu to display the Top 20 ranked students and individual student performance.
               </p>
             </div>
+
+            {/* Course Selector Dropdown in Main Header */}
+            {!loading && courseCards.length > 0 && (
+              <div className="flex items-center gap-2 bg-white dark:bg-slate-900 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                <label className="text-xs font-black text-slate-700 dark:text-slate-300 pl-1 shrink-0 flex items-center gap-1.5">
+                  <BookOpen className="w-4 h-4 text-blue-600" /> Select Course:
+                </label>
+                <select
+                  value={selectedCourseId || (activeCourseObj?._id || '')}
+                  onChange={(e) => setSelectedCourseId(e.target.value)}
+                  className="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer min-w-[200px]"
+                >
+                  {courseCards.map((c) => (
+                    <option key={c._id} value={c._id}>
+                      🏆 {c.name} ({c.enrolledCount} Students)
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           {loading ? (
@@ -141,77 +161,43 @@ export default function StudentPerformancePage() {
             </div>
           ) : (
             <>
-              {/* Automated Course Cards Grid */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-                    <BookOpen className="w-4 h-4 text-blue-600" />
-                    Automated Course Cards
-                  </h2>
-                  <span className="text-xs text-slate-400 font-medium">Click a card to view Top 20 leaderboard</span>
+              {/* Selected Course Summary Stat Cards */}
+              {activeCourseObj && (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="p-5 rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white border border-blue-600 shadow-lg shadow-blue-500/20 space-y-2 relative overflow-hidden">
+                    <div className="flex items-center justify-between">
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-white/20 text-white">
+                        {activeCourseObj.category || 'Course Catalogue'}
+                      </span>
+                      <BookOpen className="w-5 h-5 opacity-80" />
+                    </div>
+                    <h2 className="text-xl font-black">{activeCourseObj.name}</h2>
+                    <p className="text-xs text-blue-100 font-bold">Selected Leaderboard Course</p>
+                  </div>
+
+                  <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-400">Enrolled Batch</span>
+                      <Users className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div className="text-2xl font-black text-slate-900 dark:text-white">
+                      {activeCourseObj.enrolledCount} <span className="text-xs font-bold text-slate-500">Students</span>
+                    </div>
+                    <p className="text-[11px] font-bold text-slate-400">Active students in this course</p>
+                  </div>
+
+                  <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-400">Batch Leader Rank #1</span>
+                      <Crown className="w-5 h-5 text-amber-500" />
+                    </div>
+                    <div className="text-base font-black text-amber-600 dark:text-amber-400 truncate">
+                      {activeCourseObj.topStudent ? `🥇 ${activeCourseObj.topStudent.name}` : 'No Students Yet'}
+                    </div>
+                    <p className="text-[11px] font-bold text-slate-400">Top scoring student in course</p>
+                  </div>
                 </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {courseCards.map((card) => {
-                    const isSelected = activeCourseObj && String(activeCourseObj._id) === String(card._id);
-                    return (
-                      <div
-                        key={card._id}
-                        onClick={() => setSelectedCourseId(card._id)}
-                        className={`p-5 rounded-3xl border transition-all cursor-pointer space-y-4 relative overflow-hidden group ${
-                          isSelected
-                            ? 'bg-gradient-to-br from-blue-600 to-indigo-700 text-white border-blue-600 shadow-xl shadow-blue-500/20 scale-[1.01]'
-                            : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-blue-300 dark:hover:border-blue-800 shadow-sm'
-                        }`}
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase ${
-                              isSelected
-                                ? 'bg-white/20 text-white'
-                                : 'bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300'
-                            }`}>
-                              {card.category || 'Batch Course'}
-                            </span>
-                            <h3 className={`text-base font-black mt-2 ${isSelected ? 'text-white' : 'text-slate-900 dark:text-white'}`}>
-                              {card.name}
-                            </h3>
-                          </div>
-
-                          <div className={`p-3 rounded-2xl ${isSelected ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'}`}>
-                            <Trophy className="w-5 h-5" />
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100/10 dark:border-slate-800">
-                          <div>
-                            <span className={`text-[10px] font-bold block ${isSelected ? 'text-blue-100' : 'text-slate-400'}`}>
-                              Enrolled Batch
-                            </span>
-                            <span className={`text-sm font-black ${isSelected ? 'text-white' : 'text-slate-900 dark:text-white'}`}>
-                              {card.enrolledCount} Students
-                            </span>
-                          </div>
-                          <div>
-                            <span className={`text-[10px] font-bold block ${isSelected ? 'text-blue-100' : 'text-slate-400'}`}>
-                              Batch Rank #1
-                            </span>
-                            <span className={`text-xs font-black truncate block ${isSelected ? 'text-white' : 'text-amber-600 dark:text-amber-400'}`}>
-                              {card.topStudent ? `🥇 ${card.topStudent.name}` : 'No Students Yet'}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-between pt-1">
-                          <span className={`text-[11px] font-extrabold flex items-center gap-1 ${isSelected ? 'text-blue-100' : 'text-blue-600 dark:text-blue-400'}`}>
-                            Monitor Top 20 Standings <ChevronRight className="w-4 h-4" />
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+              )}
 
               {/* Active Course Top 20 Leaderboard Section */}
               {activeCourseObj && (
@@ -232,24 +218,6 @@ export default function StudentPerformancePage() {
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-                      {/* Course Dropdown Selector */}
-                      <div className="flex items-center gap-2">
-                        <label className="text-xs font-extrabold text-slate-600 dark:text-slate-400 shrink-0">
-                          Course:
-                        </label>
-                        <select
-                          value={selectedCourseId || (activeCourseObj?._id || '')}
-                          onChange={(e) => setSelectedCourseId(e.target.value)}
-                          className="px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600 shadow-xs cursor-pointer"
-                        >
-                          {courseCards.map((c) => (
-                            <option key={c._id} value={c._id}>
-                              🏆 {c.name} ({c.enrolledCount} Students)
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-
                       {/* Search Bar */}
                       <div className="relative w-full sm:w-64">
                         <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
