@@ -79,6 +79,39 @@
       "xp_total": 0,
       "locked_course_id": null,
       "created_at": "2026-08-04T11:04:02.806Z"
+    },
+    {
+      "_id": "shs0v0etrmsn5ncpy",
+      "name": "Rot",
+      "email": "roy@gmail.com",
+      "password_hash": "$2a$10$RICI.fYeWG0TW.O22xiDBuDR6vzZ0o4K709pmpmsDkf.cF2ijmtce",
+      "status": "Active",
+      "xp_total": 0,
+      "locked_course_id": "kjx0k9x51msd3o1gr",
+      "created_at": "2026-08-10T11:35:25.222Z",
+      "account_email": "roy@gmail.com"
+    },
+    {
+      "_id": "bdq2qy6esmsn5pyf2",
+      "name": "Aditya Kumar",
+      "email": "roy+profile_6654@exammaster.internal",
+      "password_hash": "$2a$10$RICI.fYeWG0TW.O22xiDBuDR6vzZ0o4K709pmpmsDkf.cF2ijmtce",
+      "account_email": "roy@gmail.com",
+      "locked_course_id": "ynzp9kszdms7g1ytt",
+      "status": "Active",
+      "xp_total": 54,
+      "created_at": "2026-08-10T11:37:26.654Z"
+    },
+    {
+      "_id": "wijw5853mmsn61d9f",
+      "name": "Remiel",
+      "email": "roy+profile_9107@exammaster.internal",
+      "password_hash": "$2a$10$RICI.fYeWG0TW.O22xiDBuDR6vzZ0o4K709pmpmsDkf.cF2ijmtce",
+      "account_email": "roy@gmail.com",
+      "locked_course_id": "kjx0k9x51msd3o1gr",
+      "status": "Active",
+      "xp_total": 81,
+      "created_at": "2026-08-10T11:46:19.107Z"
     }
   ],
   "courses": [
@@ -192,6 +225,186 @@
     }
   ],
   "questions": [
+    {
+      "_id": "u9vmexfdcmsn5z53n",
+      "course_id": "kjx0k9x51msd3o1gr",
+      "subject": "Chemistry",
+      "topic_tag": "Chemistry - Electrochemistry",
+      "question_text": "According to Faraday's first law of electrolysis, the mass deposited at an electrode is proportional to the:",
+      "options": [
+        "Resistance of the electrolyte",
+        "Quantity of electricity passed",
+        "Volume of the electrode",
+        "Temperature only"
+      ],
+      "correct_option": 1,
+      "explanation": "Faraday's first law states that the mass of a substance deposited or liberated during electrolysis is directly proportional to the quantity of electricity passed.",
+      "detailed_explanation": "Step 1: The charge passed is Q = It.\nStep 2: More charge means more electrons are transferred.\nStep 3: Therefore, the amount of substance deposited is proportional to the quantity of electricity passed.",
+      "is_active": true,
+      "created_at": "2026-08-10T11:44:35.219Z"
+    },
+    {
+      "_id": "6311e57svmsn5z53n",
+      "course_id": "kjx0k9x51msd3o1gr",
+      "subject": "Chemistry",
+      "topic_tag": "Chemistry - Electrochemistry",
+      "question_text": "Which quantity measures the electrical potential difference between two electrodes under specified conditions?",
+      "options": [
+        "Electrode potential",
+        "Molarity",
+        "Activation energy",
+        "Entropy"
+      ],
+      "correct_option": 0,
+      "explanation": "Electrode potential describes the tendency of an electrode system to gain or lose electrons and is expressed as an electrical potential.",
+      "detailed_explanation": "Step 1: Redox reactions involve transfer of electrons.\nStep 2: The tendency of an electrode to undergo reduction is represented by its electrode potential.\nStep 3: The potential difference between suitable electrodes gives the cell potential.",
+      "is_active": true,
+      "created_at": "2026-08-10T11:44:35.219Z"
+    },
+    {
+      "_id": "gpr7dcercmsn5z53n",
+      "course_id": "kjx0k9x51msd3o1gr",
+      "subject": "Chemistry",
+      "topic_tag": "Chemistry - Electrochemistry",
+      "question_text": "What is the main function of a salt bridge in a galvanic cell?",
+      "options": [
+        "Supply electrons to the cathode",
+        "Maintain electrical neutrality",
+        "Stop ion movement",
+        "Increase electrode mass"
+      ],
+      "correct_option": 1,
+      "explanation": "The salt bridge allows ion migration that maintains electrical neutrality in the two half-cells.",
+      "detailed_explanation": "Step 1: Oxidation and reduction cause charge imbalances in the half-cells.\nStep 2: Ions from the salt bridge migrate to compensate for these charge changes.\nStep 3: This maintains electrical neutrality and allows the cell reaction to continue.",
+      "is_active": true,
+      "created_at": "2026-08-10T11:44:35.219Z"
+    },
+    {
+      "_id": "gef98q0kqmsn5z53n",
+      "course_id": "kjx0k9x51msd3o1gr",
+      "subject": "Chemistry",
+      "topic_tag": "Chemistry - Electrochemistry",
+      "question_text": "In a galvanic cell, oxidation occurs at the:",
+      "options": [
+        "Anode",
+        "Cathode",
+        "Salt bridge",
+        "Electrolyte only"
+      ],
+      "correct_option": 0,
+      "explanation": "Oxidation always occurs at the anode.",
+      "detailed_explanation": "Step 1: Oxidation means loss of electrons.\nStep 2: In a galvanic cell, the anode is the electrode where oxidation takes place.\nStep 3: The electrons released at the anode flow through the external circuit toward the cathode.",
+      "is_active": true,
+      "created_at": "2026-08-10T11:44:35.219Z"
+    },
+    {
+      "_id": "tuxkdv1h8msn5z53n",
+      "course_id": "kjx0k9x51msd3o1gr",
+      "subject": "Chemistry",
+      "topic_tag": "Chemistry - Chemical Equilibrium",
+      "question_text": "What happens to the equilibrium constant K for a reaction when a catalyst is added?",
+      "options": [
+        "K increases",
+        "K decreases",
+        "K becomes zero",
+        "K remains unchanged"
+      ],
+      "correct_option": 3,
+      "explanation": "A catalyst changes the rates of both forward and reverse reactions but does not change the equilibrium constant.",
+      "detailed_explanation": "Step 1: A catalyst lowers the activation energy for both directions.\nStep 2: It helps the system reach equilibrium faster.\nStep 3: The equilibrium composition and K remain unchanged at a fixed temperature.",
+      "is_active": true,
+      "created_at": "2026-08-10T11:44:35.219Z"
+    },
+    {
+      "_id": "mxp4qyxh6msn5z53n",
+      "course_id": "kjx0k9x51msd3o1gr",
+      "subject": "Chemistry",
+      "topic_tag": "Chemistry - Chemical Equilibrium",
+      "question_text": "At equilibrium, which statement is correct?",
+      "options": [
+        "Forward reaction stops",
+        "Reverse reaction stops",
+        "Forward and reverse reaction rates are equal",
+        "Reactant concentration becomes zero"
+      ],
+      "correct_option": 2,
+      "explanation": "At dynamic equilibrium, the forward and reverse reactions continue but occur at equal rates.",
+      "detailed_explanation": "Step 1: Equilibrium is dynamic, not static.\nStep 2: Both forward and reverse reactions continue at the same time.\nStep 3: Their rates become equal, so macroscopic concentrations remain constant.",
+      "is_active": true,
+      "created_at": "2026-08-10T11:44:35.219Z"
+    },
+    {
+      "_id": "u51hb8b9nmsn5z53n",
+      "course_id": "kjx0k9x51msd3o1gr",
+      "subject": "Chemistry",
+      "topic_tag": "Chemistry - Chemical Equilibrium",
+      "question_text": "For the reaction N₂(g) + 3H₂(g) ⇌ 2NH₃(g), increasing the pressure favors:",
+      "options": [
+        "Reactants",
+        "Products",
+        "Neither side",
+        "Only H₂ formation"
+      ],
+      "correct_option": 1,
+      "explanation": "According to Le Chatelier's principle, increasing pressure favors the side with fewer moles of gaseous species.",
+      "detailed_explanation": "Step 1: The reactant side contains 4 moles of gas (1 N₂ + 3 H₂).\nStep 2: The product side contains 2 moles of gas.\nStep 3: Higher pressure shifts equilibrium toward the side with fewer gas moles, producing more NH₃.",
+      "is_active": true,
+      "created_at": "2026-08-10T11:44:35.219Z"
+    },
+    {
+      "_id": "gppvt62dpmsn5z53n",
+      "course_id": "kjx0k9x51msd3o1gr",
+      "subject": "Chemistry",
+      "topic_tag": "Chemistry - Chemical Kinetics",
+      "question_text": "What is the primary role of a catalyst in a chemical reaction?",
+      "options": [
+        "Increase the enthalpy change",
+        "Lower the activation energy",
+        "Change the equilibrium constant",
+        "Increase the molecular mass of reactants"
+      ],
+      "correct_option": 1,
+      "explanation": "A catalyst provides an alternative reaction pathway with lower activation energy.",
+      "detailed_explanation": "Step 1: A catalyst offers a different reaction mechanism.\nStep 2: This pathway has a lower activation energy than the uncatalyzed pathway.\nStep 3: Therefore, the reaction can proceed faster without changing the overall enthalpy change.",
+      "is_active": true,
+      "created_at": "2026-08-10T11:44:35.219Z"
+    },
+    {
+      "_id": "r7hb5tznlmsn5z53n",
+      "course_id": "kjx0k9x51msd3o1gr",
+      "subject": "Chemistry",
+      "topic_tag": "Chemistry - Chemical Kinetics",
+      "question_text": "What is the unit of the rate constant for a first-order reaction?",
+      "options": [
+        "s⁻¹",
+        "mol L⁻¹ s⁻¹",
+        "L mol⁻¹ s⁻¹",
+        "mol² L⁻² s⁻¹"
+      ],
+      "correct_option": 0,
+      "explanation": "For a first-order reaction, the rate constant has the unit of inverse time.",
+      "detailed_explanation": "Step 1: A first-order rate law is rate = k[A].\nStep 2: Rate has units of concentration per time.\nStep 3: Dividing rate by concentration leaves k with units of time⁻¹, or s⁻¹.",
+      "is_active": true,
+      "created_at": "2026-08-10T11:44:35.219Z"
+    },
+    {
+      "_id": "z9qp81waqmsn5z53n",
+      "course_id": "kjx0k9x51msd3o1gr",
+      "subject": "Chemistry",
+      "topic_tag": "Chemistry - Chemical Kinetics",
+      "question_text": "Which factor generally increases the rate of a chemical reaction?",
+      "options": [
+        "Decrease in temperature",
+        "Decrease in reactant concentration",
+        "Increase in temperature",
+        "Removal of catalyst"
+      ],
+      "correct_option": 2,
+      "explanation": "An increase in temperature generally increases reaction rate because a larger fraction of molecules can overcome the activation energy.",
+      "detailed_explanation": "Step 1: Increasing temperature increases the average kinetic energy of molecules.\nStep 2: More molecules then have energy equal to or greater than the activation energy.\nStep 3: The number of successful collisions increases, so the reaction rate increases.",
+      "is_active": true,
+      "created_at": "2026-08-10T11:44:35.219Z"
+    },
     {
       "_id": "q_class10_sa_01",
       "course_id": "course_class_10_2027",
@@ -3222,6 +3435,104 @@
       "accuracy": 30,
       "submission_type": "manual",
       "created_at": "2026-08-02T02:20:24.353Z"
+    },
+    {
+      "_id": "usxzqyvc9msn5qydj",
+      "student_id": "bdq2qy6esmsn5pyf2",
+      "course_id": "ynzp9kszdms7g1ytt",
+      "test_id": "wf8nr3qjxms7ddfk2",
+      "type": "mock",
+      "responses": [
+        {
+          "question_id": "te12iknx4ms7d8a4p",
+          "selected_option": 0,
+          "is_correct": false
+        },
+        {
+          "question_id": "0tg3tcynwms7d8a4p",
+          "selected_option": 1,
+          "is_correct": true
+        },
+        {
+          "question_id": "0n4ioyhvyms7d8a4p",
+          "selected_option": 3,
+          "is_correct": false
+        },
+        {
+          "question_id": "uotmvuo83ms7d8a4p",
+          "selected_option": 2,
+          "is_correct": true
+        }
+      ],
+      "score": 6,
+      "accuracy": 50,
+      "submission_type": "manual",
+      "created_at": "2026-08-10T11:38:13.255Z"
+    },
+    {
+      "_id": "gfibbivzvmsn61y51",
+      "student_id": "wijw5853mmsn61d9f",
+      "course_id": "kjx0k9x51msd3o1gr",
+      "type": "practice",
+      "topic_tag": "Science - Electrochemistry",
+      "responses": [
+        {
+          "question_id": "gef98q0kqmsn5z53n",
+          "selected_option": 1,
+          "is_correct": false
+        },
+        {
+          "question_id": "gpr7dcercmsn5z53n",
+          "selected_option": 1,
+          "is_correct": true
+        },
+        {
+          "question_id": "6311e57svmsn5z53n",
+          "selected_option": 0,
+          "is_correct": true
+        },
+        {
+          "question_id": "u9vmexfdcmsn5z53n",
+          "selected_option": 3,
+          "is_correct": false
+        }
+      ],
+      "score": 2,
+      "accuracy": 50,
+      "questions_count": 4,
+      "time_spent_seconds": 294,
+      "submission_type": "manual",
+      "created_at": "2026-08-10T11:46:46.165Z"
+    },
+    {
+      "_id": "eg4ik89hamsn62k7w",
+      "student_id": "wijw5853mmsn61d9f",
+      "course_id": "kjx0k9x51msd3o1gr",
+      "type": "practice",
+      "topic_tag": "Science - Chemical Equilibrium",
+      "responses": [
+        {
+          "question_id": "u51hb8b9nmsn5z53n",
+          "selected_option": 1,
+          "is_correct": true
+        },
+        {
+          "question_id": "mxp4qyxh6msn5z53n",
+          "selected_option": 3,
+          "is_correct": false
+        },
+        {
+          "question_id": "tuxkdv1h8msn5z53n",
+          "selected_option": 0,
+          "is_correct": false
+        }
+      ],
+      "score": 1,
+      "accuracy": 33,
+      "questions_count": 3,
+      "time_spent_seconds": 16,
+      "submission_type": "manual",
+      "created_at": "2026-08-10T11:47:14.780Z"
     }
   ],
   "xpTransactions": [
@@ -3272,6 +3583,30 @@
       "xp_amount": 81,
       "reason": "+81 XP for practice set (3 correct answers)",
       "created_at": "2026-08-02T02:20:24.353Z"
+    },
+    {
+      "_id": "3ma32z2hxmsn5qydj",
+      "student_id": "bdq2qy6esmsn5pyf2",
+      "attempt_id": "usxzqyvc9msn5qydj",
+      "xp_amount": 54,
+      "reason": "+54 XP for Mock Test",
+      "created_at": "2026-08-10T11:38:13.255Z"
+    },
+    {
+      "_id": "gcj4gyxurmsn61y51",
+      "student_id": "wijw5853mmsn61d9f",
+      "attempt_id": "gfibbivzvmsn61y51",
+      "xp_amount": 54,
+      "reason": "+54 XP for practice set (2 correct answers)",
+      "created_at": "2026-08-10T11:46:46.165Z"
+    },
+    {
+      "_id": "fppsf6bpqmsn62k7w",
+      "student_id": "wijw5853mmsn61d9f",
+      "attempt_id": "eg4ik89hamsn62k7w",
+      "xp_amount": 27,
+      "reason": "+27 XP for practice set (1 correct answers)",
+      "created_at": "2026-08-10T11:47:14.780Z"
     }
   ],
   "admins": [
@@ -3321,6 +3656,15 @@
     }
   ],
   "auditLogs": [
+    {
+      "_id": "3xlaqznzdmsn5z53p",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "BULK_ADD_QUESTIONS",
+      "affected_entity_id": "batch_10",
+      "details": "Bulk uploaded 10 questions into question bank",
+      "timestamp": "2026-08-10T11:44:35.221Z"
+    },
     {
       "_id": "np499njlfmsd3o1gr",
       "admin_id": "admin_master_1",
