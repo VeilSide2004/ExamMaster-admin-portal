@@ -213,39 +213,47 @@ export default function QuestionManagementPage() {
     derivedSubjectsMap[sName].push(q);
   });
 
-  // Level 2 topics for selectedSubject (Manually created user topic cards only)
+  // Level 2 topics for selectedSubject (Extracted from question topic_tags + manually added user topics)
   const subjectQuestions = derivedSubjectsMap[selectedSubject] || [];
   const topicsMap: Record<string, any[]> = {};
 
   const userAddedTopics = customTopics[`${selectedCourseId}_${selectedSubject}`] || [];
 
-  // Initialize topicsMap strictly with manually created user topics
-  userAddedTopics.forEach((t) => {
-    if (!topicsMap[t]) topicsMap[t] = [];
+  // Extract all topic names present in subjectQuestions
+  const extractedTopicsFromQuestions = Array.from(
+    new Set(
+      subjectQuestions.map((q) => {
+        const tag = (q.topic_tag || '').trim();
+        if (!tag) return 'General Module';
+        if (tag.includes('-')) {
+          const parts = tag.split('-');
+          return parts.slice(1).join('-').trim() || 'General Module';
+        }
+        return tag;
+      })
+    )
+  );
+
+  const allTopicNames = Array.from(
+    new Set([...extractedTopicsFromQuestions, ...userAddedTopics])
+  ).filter(Boolean);
+
+  // Initialize topicsMap with all topic names
+  allTopicNames.forEach((t) => {
+    topicsMap[t] = [];
   });
 
   subjectQuestions.forEach((q) => {
     const tag = (q.topic_tag || '').trim();
     let tName = '';
 
-    // Match q.topic_tag against manually created userAddedTopics ONLY
-    if (userAddedTopics.length > 0) {
-      const matched = userAddedTopics.find((t) => {
-        const tLower = t.toLowerCase().trim();
-        const tagLower = tag.toLowerCase().trim();
-        return (
-          tagLower === tLower ||
-          tagLower.endsWith(`- ${tLower}`) ||
-          tagLower.endsWith(`-${tLower}`) ||
-          tagLower.includes(tLower)
-        );
-      });
-      if (matched) {
-        tName = matched;
-      }
+    if (tag.includes('-')) {
+      const parts = tag.split('-');
+      tName = parts.slice(1).join('-').trim();
+    } else if (tag) {
+      tName = tag;
     }
 
-    // If no manually created topic card matches, group under 'General Module' instead of auto-spawning new cards
     if (!tName) {
       tName = 'General Module';
     }
@@ -720,8 +728,32 @@ Explanation: Power is the rate at which work is done or energy is transferred.
   const downloadSampleExcelTemplate = () => {
     const sampleData = [
       {
-        Subject: selectedSubject || 'Physics',
-        Topic: selectedTopic || 'Electrostatics',
+        Subject: 'Chemistry',
+        Topic: 'Periodic Table',
+        Question: 'Which element belongs to the alkali metal group?',
+        'Option A': 'Sodium (Na)',
+        'Option B': 'Magnesium (Mg)',
+        'Option C': 'Aluminium (Al)',
+        'Option D': 'Chlorine (Cl)',
+        Answer: 'A',
+        Explanation: 'Sodium is a Group 1 element, also known as an alkali metal.',
+        'Detailed Explanation': 'Step 1: Group 1 elements are known as alkali metals.\nStep 2: Sodium (Na) has electronic configuration 2, 8, 1 with 1 valence electron.\nStep 3: Therefore, Sodium belongs to the alkali metal group.'
+      },
+      {
+        Subject: 'Chemistry',
+        Topic: 'Chemical Bonding',
+        Question: 'Which type of chemical bond is formed by mutual sharing of electrons?',
+        'Option A': 'Ionic Bond',
+        'Option B': 'Covalent Bond',
+        'Option C': 'Metallic Bond',
+        'Option D': 'Hydrogen Bond',
+        Answer: 'B',
+        Explanation: 'Covalent bonds are formed when atoms share electron pairs.',
+        'Detailed Explanation': 'Step 1: Ionic bonding involves complete electron transfer.\nStep 2: Covalent bonding involves sharing pairs of electrons between atoms to achieve noble gas configuration.'
+      },
+      {
+        Subject: 'Physics',
+        Topic: 'Electrostatics',
         Question: 'What is the SI unit of electric charge?',
         'Option A': 'Coulomb',
         'Option B': 'Ampere',
@@ -729,11 +761,11 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         'Option D': 'Ohm',
         Answer: 'A',
         Explanation: 'Electric charge is measured in Coulombs (C).',
-        'Detailed Explanation': 'Step 1: Electric charge is a fundamental property of matter.\nStep 2: SI unit of electric charge is Coulomb (C), named after Charles-Augustin de Coulomb.\nStep 3: 1 Coulomb is defined as charge transported by 1 Ampere current in 1 second (Q = I * t).'
+        'Detailed Explanation': 'Step 1: Electric charge is a fundamental property of matter.\nStep 2: SI unit of electric charge is Coulomb (C), named after Charles-Augustin de Coulomb.\nStep 3: 1 C = 1 A * 1 s.'
       },
       {
-        Subject: selectedSubject || 'Physics',
-        Topic: selectedTopic || 'Electrostatics',
+        Subject: 'Physics',
+        Topic: 'Electrostatics',
         Question: 'The electric field inside a hollow conducting sphere is:',
         'Option A': 'Infinite',
         'Option B': 'Zero',
@@ -741,7 +773,19 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         'Option D': 'Variable',
         Answer: 'B',
         Explanation: 'According to Gauss\'s Law, net charge inside a conductor is zero, hence electric field is zero.',
-        'Detailed Explanation': 'Step 1: Apply Gauss\'s Law to a spherical surface inside the hollow sphere.\nStep 2: Flux = Enclosed Charge / Permittivity. Since all excess charge resides on outer surface of conductor, Enclosed Charge = 0.\nStep 3: Therefore, Electric Field E = 0 at all points inside.'
+        'Detailed Explanation': 'Step 1: Apply Gauss\'s Law to a gaussian sphere inside hollow conductor.\nStep 2: Enclosed charge = 0.\nStep 3: Electric Field E = 0 inside.'
+      },
+      {
+        Subject: 'Mathematics',
+        Topic: 'Calculus',
+        Question: 'What is the derivative of sin(x) with respect to x?',
+        'Option A': 'cos(x)',
+        'Option B': '-cos(x)',
+        'Option C': 'tan(x)',
+        'Option D': '-sin(x)',
+        Answer: 'A',
+        Explanation: 'The derivative of sin(x) is cos(x).',
+        'Detailed Explanation': 'Step 1: Using fundamental limit definition of derivative: d/dx(sin x) = lim(h->0) [sin(x+h) - sin(x)]/h.\nStep 2: Expanding sin(x+h) yields cos(x).'
       }
     ];
 
@@ -817,6 +861,22 @@ Explanation: Power is the rate at which work is done or energy is transferred.
           : `${selectedSubject} - General Module`
         : 'General Module';
 
+      const resolveQSubject = (q: any) => {
+        if (q.subject && q.subject.trim()) return q.subject.trim();
+        if (q.topic_tag && q.topic_tag.includes('-')) return q.topic_tag.split('-')[0].trim();
+        return selectedSubject || 'General';
+      };
+
+      const resolveQTopicTag = (q: any) => {
+        if (q.topic_tag && q.topic_tag.trim() && !['general', 'general module'].includes(q.topic_tag.trim().toLowerCase())) {
+          return q.topic_tag.trim();
+        }
+        if (selectedSubject) {
+          return selectedTopic ? `${selectedSubject} - ${selectedTopic}` : `${selectedSubject} - General Module`;
+        }
+        return 'General Module';
+      };
+
       if (bulkMode === 'document') {
         if (!parsedDocQuestions.length) {
           setBulkError('Please upload a valid PDF or Word document containing questions.');
@@ -826,8 +886,8 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         questionsToSubmit = parsedDocQuestions.map((q) => ({
           ...q,
           course_id: selectedCourseId,
-          subject: selectedSubject || q.subject || '',
-          topic_tag: selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : q.topic_tag || targetTopicTag,
+          subject: resolveQSubject(q),
+          topic_tag: resolveQTopicTag(q),
         }));
       } else if (bulkMode === 'text') {
         if (!bulkText.trim()) {
@@ -838,8 +898,8 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         questionsToSubmit = parsePlainText(bulkText, selectedCourseId).map((q) => ({
           ...q,
           course_id: selectedCourseId,
-          subject: selectedSubject || q.subject || '',
-          topic_tag: selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : q.topic_tag || targetTopicTag,
+          subject: resolveQSubject(q),
+          topic_tag: resolveQTopicTag(q),
         }));
       } else if (bulkMode === 'excel') {
         if (!parsedExcelQuestions.length) {
@@ -850,15 +910,15 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         questionsToSubmit = parsedExcelQuestions.map((q) => ({
           ...q,
           course_id: selectedCourseId,
-          subject: selectedSubject || q.subject || '',
-          topic_tag: selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : q.topic_tag || targetTopicTag,
+          subject: resolveQSubject(q),
+          topic_tag: resolveQTopicTag(q),
         }));
       } else {
         questionsToSubmit = bulkFormQuestions.map((q) => ({
           ...q,
           course_id: selectedCourseId,
-          subject: selectedSubject || q.subject || '',
-          topic_tag: selectedSubject && selectedTopic ? `${selectedSubject} - ${selectedTopic}` : q.topic_tag || targetTopicTag,
+          subject: resolveQSubject(q),
+          topic_tag: resolveQTopicTag(q),
         }));
       }
 
