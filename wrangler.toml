@@ -1,0 +1,8 @@
+name = "exammaster-admin-portal"
+compatibility_date = "2026-01-01"
+pages_build_output_dir = ".next"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "examofficer"
+database_id = "c6e2248d-7d20-4177-879b-1205b69c818f"
