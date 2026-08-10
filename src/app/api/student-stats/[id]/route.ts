@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/db';
-import { User, Attempt, Course, MockTest } from '@/lib/models';
+import { User, Attempt, Course, MockTest, Question } from '@/lib/models';
 import { readSharedDb } from '@/lib/sharedDb';
 
 export async function GET(req: Request, { params }: { params: { id: string } }) {
@@ -36,38 +36,51 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 
       const mockTestHistory = mockAttempts.map((a) => {
         const test = (db.mockTests || []).find((m) => String(m._id) === String(a.mock_test_id));
+        const totalMarks = a.total_marks || test?.total_marks || 300;
         return {
           id: a._id,
           title: test?.title || a.test_title || 'Full Mock Examination',
           score: a.score || 0,
-          totalMarks: a.total_marks || test?.total_marks || 300,
-          percentage: Math.round(((a.score || 0) / (a.total_marks || test?.total_marks || 300)) * 100),
-          timeSpentMinutes: Math.round((a.time_spent_seconds || a.duration_seconds || 1200) / 60),
+          totalMarks,
+          percentage: totalMarks > 0 ? Math.round(((a.score || 0) / totalMarks) * 100) : 0,
+          timeSpentMinutes: Math.round((a.time_spent_seconds || 0) / 60),
           date: a.completed_at || a.created_at || new Date().toISOString(),
         };
       });
 
       const modulesCompletedCount = practiceAttempts.filter((a) => {
-        const pct = ((a.score || 0) / (a.total_marks || 100)) * 100;
+        const pct = a.total_marks ? ((a.score || 0) / a.total_marks) * 100 : 0;
         return pct >= 50;
       }).length;
 
-      const totalCourseQuestions = (db.questions || []).filter((q) => !userCourseId || String(q.course_id) === userCourseId).length;
-      const totalModulesInCourse = Math.max(10, Math.ceil(totalCourseQuestions / 5));
-      const moduleCompletionPercentage = Math.min(100, Math.round((modulesCompletedCount / totalModulesInCourse) * 100));
+      const courseQuestions = (db.questions || []).filter((q) => !userCourseId || String(q.course_id) === userCourseId);
+      const uniqueTopics = new Set(courseQuestions.map((q) => q.topic_tag).filter(Boolean));
+      const totalModulesInCourse = uniqueTopics.size;
+
+      const moduleCompletionPercentage = totalModulesInCourse > 0
+        ? Math.min(100, Math.round((modulesCompletedCount / totalModulesInCourse) * 100))
+        : 0;
 
       let totalQuestionsAttempted = 0;
       let totalTimeSpentSeconds = 0;
+      let totalCorrectAnswers = 0;
 
       attempts.forEach((a) => {
-        const qCount = a.questions_count || a.responses?.length || 10;
-        const timeSpent = a.time_spent_seconds || (a.duration_minutes ? a.duration_minutes * 60 : 300);
+        const qCount = a.questions_count || (Array.isArray(a.responses) ? a.responses.length : 0);
+        const timeSpent = a.time_spent_seconds || 0;
+        const correctCount = a.correct_answers_count || (Array.isArray(a.responses) ? a.responses.filter((r: any) => r.is_correct).length : 0);
+
         totalQuestionsAttempted += qCount;
         totalTimeSpentSeconds += timeSpent;
+        totalCorrectAnswers += correctCount;
       });
 
       const avgTimePerQuestionSeconds = totalQuestionsAttempted > 0
         ? Math.round(totalTimeSpentSeconds / totalQuestionsAttempted)
+        : 0;
+
+      const overallAccuracyPercentage = totalQuestionsAttempted > 0
+        ? Math.round((totalCorrectAnswers / totalQuestionsAttempted) * 100)
         : 0;
 
       return NextResponse.json({
@@ -77,7 +90,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
           email: user.email,
           xpTotal: user.xp_total || 0,
           status: user.status || 'Active',
-          lockedCourseName: course?.name || 'JEE MAINS 2027',
+          lockedCourseName: course?.name || 'Unassigned',
           rank,
           totalStudentsInBatch: courseStudents.length,
         },
@@ -89,7 +102,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
           moduleCompletionPercentage,
           avgTimePerQuestionSeconds,
           totalAttempts: attempts.length,
-          overallAccuracyPercentage: attempts.length > 0 ? 78 : 0,
+          overallAccuracyPercentage,
         },
       });
     }
@@ -141,34 +154,50 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
           title,
           score: a.score || 0,
           totalMarks,
-          percentage: Math.round(((a.score || 0) / totalMarks) * 100),
-          timeSpentMinutes: Math.round((a.time_spent_seconds || 1200) / 60),
-          date: a.created_at || new Date().toISOString(),
+          percentage: totalMarks > 0 ? Math.round(((a.score || 0) / totalMarks) * 100) : 0,
+          timeSpentMinutes: Math.round((a.time_spent_seconds || 0) / 60),
+          date: a.completed_at || a.created_at || new Date().toISOString(),
         };
       })
     );
 
+    let totalModulesInCourse = 0;
+    if (userCourseId) {
+      const courseQuestions = await Question.find({ course_id: userCourseId });
+      const uniqueTopics = new Set(courseQuestions.map((q: any) => q.topic_tag).filter(Boolean));
+      totalModulesInCourse = uniqueTopics.size;
+    }
+
     const modulesCompletedCount = practiceAttempts.filter((a: any) => {
-      const pct = ((a.score || 0) / (a.total_marks || 100)) * 100;
+      const pct = a.total_marks ? ((a.score || 0) / a.total_marks) * 100 : 0;
       return pct >= 50;
     }).length;
 
-    const totalModulesInCourse = 15;
-    const moduleCompletionPercentage = Math.min(100, Math.round((modulesCompletedCount / totalModulesInCourse) * 100));
+    const moduleCompletionPercentage = totalModulesInCourse > 0
+      ? Math.min(100, Math.round((modulesCompletedCount / totalModulesInCourse) * 100))
+      : 0;
 
     let totalQuestionsAttempted = 0;
     let totalTimeSpentSeconds = 0;
+    let totalCorrectAnswers = 0;
 
     attempts.forEach((a: any) => {
-      const qCount = a.questions_count || (a.responses ? a.responses.length : 10);
-      const timeSpent = a.time_spent_seconds || 300;
+      const qCount = a.questions_count || (Array.isArray(a.responses) ? a.responses.length : 0);
+      const timeSpent = a.time_spent_seconds || 0;
+      const correctCount = a.correct_answers_count || (Array.isArray(a.responses) ? a.responses.filter((r: any) => r.is_correct).length : 0);
+
       totalQuestionsAttempted += qCount;
       totalTimeSpentSeconds += timeSpent;
+      totalCorrectAnswers += correctCount;
     });
 
     const avgTimePerQuestionSeconds = totalQuestionsAttempted > 0
       ? Math.round(totalTimeSpentSeconds / totalQuestionsAttempted)
-      : 42;
+      : 0;
+
+    const overallAccuracyPercentage = totalQuestionsAttempted > 0
+      ? Math.round((totalCorrectAnswers / totalQuestionsAttempted) * 100)
+      : 0;
 
     return NextResponse.json({
       student: {
@@ -189,7 +218,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
         moduleCompletionPercentage,
         avgTimePerQuestionSeconds,
         totalAttempts: attempts.length,
-        overallAccuracyPercentage: attempts.length > 0 ? 82 : 0,
+        overallAccuracyPercentage,
       },
     });
   } catch (error: any) {

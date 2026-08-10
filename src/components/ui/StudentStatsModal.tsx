@@ -53,8 +53,8 @@ export const StudentStatsModal: React.FC<StudentStatsModalProps> = ({ studentId,
 
   if (!studentId) return null;
 
-  const getSpeedCategory = (seconds: number) => {
-    if (!seconds || seconds <= 0) return { text: 'No Tests Taken', color: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400' };
+  const getSpeedCategory = (seconds: number, totalAttempts: number) => {
+    if (!totalAttempts || !seconds || seconds <= 0) return { text: 'No Tests Attempted', color: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400' };
     if (seconds <= 30) return { text: 'Rapid Solver', color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' };
     if (seconds <= 60) return { text: 'Optimal Pacing', color: 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' };
     return { text: 'Methodical Pace', color: 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300' };
@@ -200,7 +200,7 @@ export const StudentStatsModal: React.FC<StudentStatsModalProps> = ({ studentId,
                     </h4>
                   </div>
                   {(() => {
-                    const spd = getSpeedCategory(data.stats.avgTimePerQuestionSeconds);
+                    const spd = getSpeedCategory(data.stats.avgTimePerQuestionSeconds, data.stats.totalAttempts);
                     return (
                       <span className={`px-2.5 py-0.5 rounded-full font-extrabold text-[10px] ${spd.color}`}>
                         ⚡ {spd.text}
