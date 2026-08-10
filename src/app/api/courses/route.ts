@@ -4,6 +4,9 @@ import { Course, AuditLog } from '@/lib/models';
 import { readSharedDb, writeSharedDb, generateId } from '@/lib/sharedDb';
 import { getAuthenticatedAdmin } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   try {
     const { isMemoryMode } = await dbConnect();
