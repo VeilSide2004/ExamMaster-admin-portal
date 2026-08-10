@@ -291,7 +291,7 @@ export default function QuestionManagementPage() {
       };
       try {
         localStorage.setItem('exam_portal_custom_subjects', JSON.stringify(updated));
-      } catch (err) {}
+      } catch (err) { }
       return updated;
     });
     setNewSubjectName('');
@@ -310,7 +310,7 @@ export default function QuestionManagementPage() {
       };
       try {
         localStorage.setItem('exam_portal_custom_topics', JSON.stringify(updated));
-      } catch (err) {}
+      } catch (err) { }
       return updated;
     });
     setNewTopicName('');
@@ -514,13 +514,13 @@ Explanation: Power is the rate at which work is done or energy is transferred.
       }
 
       const optAKey = findKey(['optiona', 'opta', 'choicea', 'option1', 'opt1', 'choice1']) ||
-                       allKeys.find((k) => k.trim().toLowerCase().replace(/[^a-z0-9]/g, '') === 'a') || null;
+        allKeys.find((k) => k.trim().toLowerCase().replace(/[^a-z0-9]/g, '') === 'a') || null;
       const optBKey = findKey(['optionb', 'optb', 'choiceb', 'option2', 'opt2', 'choice2']) ||
-                       allKeys.find((k) => k.trim().toLowerCase().replace(/[^a-z0-9]/g, '') === 'b') || null;
+        allKeys.find((k) => k.trim().toLowerCase().replace(/[^a-z0-9]/g, '') === 'b') || null;
       const optCKey = findKey(['optionc', 'optc', 'choicec', 'option3', 'opt3', 'choice3']) ||
-                       allKeys.find((k) => k.trim().toLowerCase().replace(/[^a-z0-9]/g, '') === 'c') || null;
+        allKeys.find((k) => k.trim().toLowerCase().replace(/[^a-z0-9]/g, '') === 'c') || null;
       const optDKey = findKey(['optiond', 'optd', 'choiced', 'option4', 'opt4', 'choice4']) ||
-                       allKeys.find((k) => k.trim().toLowerCase().replace(/[^a-z0-9]/g, '') === 'd') || null;
+        allKeys.find((k) => k.trim().toLowerCase().replace(/[^a-z0-9]/g, '') === 'd') || null;
       const ansKey = findKey(['answer', 'correct', 'ans', 'key', 'correctoption', 'correctanswer']);
       const expKey = findKey(['explanation', 'solution', 'reason', 'rationale']);
       const detExpKey = findKey(['detailedexplanation', 'detailed', 'stepbystep', 'workedout']);
@@ -895,7 +895,7 @@ Explanation: Power is the rate at which work is done or energy is transferred.
   const handleDeleteTopicModule = async (e: React.MouseEvent, tName: string, qList: any[]) => {
     e.stopPropagation();
     const count = qList.length;
-    const msg = count > 0 
+    const msg = count > 0
       ? `Are you sure you want to delete topic module "${tName}" and all ${count} questions inside it?`
       : `Are you sure you want to delete topic module "${tName}"?`;
 
@@ -913,7 +913,7 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         const updated = { ...prev, [key]: updatedList };
         try {
           localStorage.setItem('exam_portal_custom_topics', JSON.stringify(updated));
-        } catch (err) {}
+        } catch (err) { }
         return updated;
       });
 
@@ -948,7 +948,7 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         const updated = { ...prev, [selectedCourseId]: updatedList };
         try {
           localStorage.setItem('exam_portal_custom_subjects', JSON.stringify(updated));
-        } catch (err) {}
+        } catch (err) { }
         return updated;
       });
 
@@ -1003,7 +1003,7 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         const updated = { ...prev, [key]: updatedList };
         try {
           localStorage.setItem('exam_portal_custom_topics', JSON.stringify(updated));
-        } catch (err) {}
+        } catch (err) { }
         return updated;
       });
 
@@ -1059,7 +1059,7 @@ Explanation: Power is the rate at which work is done or energy is transferred.
         const updated = { ...prev, [selectedCourseId]: updatedList };
         try {
           localStorage.setItem('exam_portal_custom_subjects', JSON.stringify(updated));
-        } catch (err) {}
+        } catch (err) { }
         return updated;
       });
 
@@ -1240,11 +1240,10 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                             setSelectedSubject(sName);
                             setCurrentLevel('topics');
                           }}
-                          className={`bg-white dark:bg-slate-900 border rounded-xl p-5 shadow-xs hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer group flex flex-col justify-between ${
-                            isSelected
+                          className={`bg-white dark:bg-slate-900 border rounded-xl p-5 shadow-xs hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer group flex flex-col justify-between ${isSelected
                               ? 'ring-2 ring-blue-500 border-blue-500 bg-blue-50/20 dark:bg-blue-950/20'
                               : 'border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600'
-                          }`}
+                            }`}
                         >
                           <div>
                             <div className="flex items-center justify-between mb-3">
@@ -1349,11 +1348,10 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                               setSelectedTopic(tName);
                               setCurrentLevel('questions');
                             }}
-                            className={`bg-white dark:bg-slate-900 border rounded-xl p-5 shadow-xs hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer group flex flex-col justify-between ${
-                              isSelected
+                            className={`bg-white dark:bg-slate-900 border rounded-xl p-5 shadow-xs hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer group flex flex-col justify-between ${isSelected
                                 ? 'ring-2 ring-blue-500 border-blue-500 bg-blue-50/20 dark:bg-blue-950/20'
                                 : 'border-slate-200 dark:border-slate-800 hover:border-slate-400'
-                            }`}
+                              }`}
                           >
                             <div>
                               <div className="flex items-center justify-between mb-3">
@@ -1442,13 +1440,12 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                               <span className="px-2 py-0.5 rounded bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-300 font-extrabold text-[10px] uppercase">
                                 {q.topic_tag || `${selectedSubject} - ${selectedTopic}`}
                               </span>
-                              <span className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase ${
-                                q.question_type === 'Long Answer'
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase ${q.question_type === 'Long Answer'
                                   ? 'bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300'
                                   : q.question_type === 'Short Answer'
-                                  ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300'
-                                  : 'bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300'
-                              }`}>
+                                    ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300'
+                                    : 'bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300'
+                                }`}>
                                 {q.question_type === 'Long Answer' ? '📄 Long Answer' : q.question_type === 'Short Answer' ? '📝 Short Answer' : '🔘 MCQ'}
                               </span>
                               <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-extrabold text-[10px]">
@@ -1793,11 +1790,10 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                                 return (
                                   <div
                                     key={optIdx}
-                                    className={`p-1.5 rounded border ${
-                                      isCorrect
+                                    className={`p-1.5 rounded border ${isCorrect
                                         ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-200 font-bold'
                                         : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
-                                    }`}
+                                      }`}
                                   >
                                     <span className="font-mono mr-1">
                                       {String.fromCharCode(65 + optIdx)}:
@@ -1930,11 +1926,10 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                                 return (
                                   <div
                                     key={optIdx}
-                                    className={`p-1.5 rounded border ${
-                                      isCorrect
+                                    className={`p-1.5 rounded border ${isCorrect
                                         ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-200 font-bold'
                                         : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
-                                    }`}
+                                      }`}
                                   >
                                     <span className="font-mono mr-1">
                                       {String.fromCharCode(65 + optIdx)}:
@@ -2058,11 +2053,10 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                       setQuestionType('MCQ');
                       setQuestionMarks(1);
                     }}
-                    className={`p-2 rounded-lg border text-center transition-all ${
-                      questionType === 'MCQ'
+                    className={`p-2 rounded-lg border text-center transition-all ${questionType === 'MCQ'
                         ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/40 text-blue-900 dark:text-blue-300 font-bold shadow-xs'
                         : 'border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400'
-                    }`}
+                      }`}
                   >
                     <div className="text-xs font-extrabold">🔘 Objective</div>
                     <div className="text-[10px] text-slate-400">MCQ (4 Options)</div>
@@ -2073,11 +2067,10 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                       setQuestionType('Short Answer');
                       setQuestionMarks(2);
                     }}
-                    className={`p-2 rounded-lg border text-center transition-all ${
-                      questionType === 'Short Answer'
+                    className={`p-2 rounded-lg border text-center transition-all ${questionType === 'Short Answer'
                         ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-300 font-bold shadow-xs'
                         : 'border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400'
-                    }`}
+                      }`}
                   >
                     <div className="text-xs font-extrabold">📝 Short Answer</div>
                     <div className="text-[10px] text-slate-400">2-3 Marks (VSA/SA)</div>
@@ -2088,11 +2081,10 @@ Explanation: Power is the rate at which work is done or energy is transferred.
                       setQuestionType('Long Answer');
                       setQuestionMarks(5);
                     }}
-                    className={`p-2 rounded-lg border text-center transition-all ${
-                      questionType === 'Long Answer'
+                    className={`p-2 rounded-lg border text-center transition-all ${questionType === 'Long Answer'
                         ? 'border-purple-600 bg-purple-50 dark:bg-purple-950/40 text-purple-900 dark:text-purple-300 font-bold shadow-xs'
                         : 'border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400'
-                    }`}
+                      }`}
                   >
                     <div className="text-xs font-extrabold">📄 Long Answer</div>
                     <div className="text-[10px] text-slate-400">4-5+ Marks (LA)</div>
