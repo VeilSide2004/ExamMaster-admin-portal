@@ -94,7 +94,7 @@ export default function AdminDashboardPage() {
       <AdminSidebar />
 
       <div className="flex-1 flex flex-col min-w-0">
-        <AdminHeader title="Analytics Engine" subtitle="Real-time engagement and operational performance metrics." />
+        <AdminHeader title="Analytics Engine" subtitle="Real-time engagement and operational performance metrics." showBack={false} />
 
         <main className="p-8 space-y-6 flex-1 overflow-y-auto">
           {/* Title Bar & Action Controls */}

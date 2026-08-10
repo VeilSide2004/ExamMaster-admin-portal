@@ -11,6 +11,7 @@ interface AdminHeaderProps {
   subtitle?: string;
   adminName?: string;
   onBack?: () => void;
+  showBack?: boolean;
 }
 
 export const AdminHeader: React.FC<AdminHeaderProps> = ({
@@ -18,6 +19,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
   subtitle = "Real-time engagement and operational performance metrics.",
   adminName,
   onBack,
+  showBack = true,
 }) => {
   const router = useRouter();
   const [displayName, setDisplayName] = useState(adminName || 'Admin');
@@ -56,21 +58,24 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
         <button
           onClick={handleToggleSidebar}
           type="button"
-          className="lg:hidden p-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors shadow-xs shrink-0"
+          className="lg:hidden p-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors shadow-xs shrink-0 cursor-pointer"
           title="Toggle Navigation Menu"
         >
           <Menu className="w-4 h-4" />
         </button>
 
-        {/* Back Button */}
-        <button
-          onClick={handleBackClick}
-          type="button"
-          className="p-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors group shadow-xs shrink-0"
-          title="Go Back"
-        >
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-        </button>
+        {/* Back Button to Dashboard */}
+        {showBack && (
+          <button
+            onClick={handleBackClick}
+            type="button"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-extrabold transition-colors group shadow-xs shrink-0 cursor-pointer"
+            title="Back to Dashboard"
+          >
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform text-blue-600 dark:text-blue-400" />
+            <span className="hidden sm:inline text-slate-700 dark:text-slate-200">Dashboard</span>
+          </button>
+        )}
 
         {/* Company Logo in Header - ONLY VISIBLE ON MOBILE / SMALL SCREENS (< lg) */}
         <div className="lg:hidden">
