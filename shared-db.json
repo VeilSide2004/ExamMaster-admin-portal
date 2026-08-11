@@ -77,8 +77,9 @@
       "password_hash": "$2a$10$wssQFbdJBzSIuY06wDsS0.BNGSQJLbG5tQOl1WxoKqDFlmyMwiBG.",
       "status": "Active",
       "xp_total": 0,
-      "locked_course_id": null,
-      "created_at": "2026-08-04T11:04:02.806Z"
+      "locked_course_id": "course_class_10_2027",
+      "created_at": "2026-08-04T11:04:02.806Z",
+      "account_email": "aranya@gmail.com"
     },
     {
       "_id": "shs0v0etrmsn5ncpy",
@@ -112,9 +113,39 @@
       "status": "Active",
       "xp_total": 81,
       "created_at": "2026-08-10T11:46:19.107Z"
+    },
+    {
+      "_id": "h3k6s8z84mso9qag3",
+      "name": "Sham",
+      "email": "aranya+profile_6883@exammaster.internal",
+      "password_hash": "$2a$10$wssQFbdJBzSIuY06wDsS0.BNGSQJLbG5tQOl1WxoKqDFlmyMwiBG.",
+      "account_email": "aranya@gmail.com",
+      "locked_course_id": "rk0cw5w0imso9pyqz",
+      "status": "Active",
+      "xp_total": 0,
+      "created_at": "2026-08-11T06:17:26.883Z"
     }
   ],
   "courses": [
+    {
+      "_id": "rk0cw5w0imso9pyqz",
+      "name": "Classs 7th",
+      "description": "7th",
+      "category": "School Exams",
+      "board": "CBSE",
+      "curriculum": "",
+      "subjects": [
+        "Science",
+        "Mathematics",
+        "Social Studies"
+      ],
+      "marking_scheme": {
+        "marks_per_correct": 1,
+        "penalty_per_incorrect": 0
+      },
+      "is_active": true,
+      "created_at": "2026-08-11T06:17:11.723Z"
+    },
     {
       "_id": "kjx0k9x51msd3o1gr",
       "name": "Class 8 Science & Maths",
@@ -225,6 +256,186 @@
     }
   ],
   "questions": [
+    {
+      "_id": "xty012unmmso9r8ot",
+      "course_id": "rk0cw5w0imso9pyqz",
+      "subject": "Physics",
+      "topic_tag": "Physics - Waves and Optics",
+      "question_text": "An object is placed beyond 2F of a convex lens. Where is the image formed?",
+      "options": [
+        "Between F and 2F",
+        "At F",
+        "Beyond 2F",
+        "At 2F"
+      ],
+      "correct_option": 0,
+      "explanation": "For an object beyond 2F, a convex lens forms a real, inverted, diminished image between F and 2F.",
+      "detailed_explanation": "Step 1: Consider the principal rays from the object through the convex lens.\nStep 2: Their intersection occurs on the opposite side between F and 2F.\nStep 3: The image is real, inverted, and smaller than the object.",
+      "is_active": true,
+      "created_at": "2026-08-11T06:18:11.261Z"
+    },
+    {
+      "_id": "o5ryaayt8mso9r8ot",
+      "course_id": "rk0cw5w0imso9pyqz",
+      "subject": "Physics",
+      "topic_tag": "Physics - Waves and Optics",
+      "question_text": "According to the law of reflection, the angle of incidence is always:",
+      "options": [
+        "Greater than the angle of reflection",
+        "Less than the angle of reflection",
+        "Equal to the angle of reflection",
+        "Twice the angle of reflection"
+      ],
+      "correct_option": 2,
+      "explanation": "The angle of incidence equals the angle of reflection when both are measured from the normal.",
+      "detailed_explanation": "Step 1: Draw the normal perpendicular to the reflecting surface.\nStep 2: Measure both angles from the normal.\nStep 3: The law of reflection states θi = θr.",
+      "is_active": true,
+      "created_at": "2026-08-11T06:18:11.261Z"
+    },
+    {
+      "_id": "z7niswhfsmso9r8ot",
+      "course_id": "rk0cw5w0imso9pyqz",
+      "subject": "Physics",
+      "topic_tag": "Physics - Waves and Optics",
+      "question_text": "A wave has a frequency of 50 Hz and a wavelength of 2 m. What is its speed?",
+      "options": [
+        "25 m/s",
+        "50 m/s",
+        "100 m/s",
+        "150 m/s"
+      ],
+      "correct_option": 2,
+      "explanation": "Wave speed is given by v = fλ, so the speed is 100 m/s.",
+      "detailed_explanation": "Step 1: Frequency f = 50 Hz and wavelength λ = 2 m.\nStep 2: Use v = fλ.\nStep 3: v = 50 × 2 = 100 m/s.",
+      "is_active": true,
+      "created_at": "2026-08-11T06:18:11.261Z"
+    },
+    {
+      "_id": "up6oo9pztmso9r8ot",
+      "course_id": "rk0cw5w0imso9pyqz",
+      "subject": "Physics",
+      "topic_tag": "Physics - Work, Energy and Power",
+      "question_text": "A 2 kg object is raised to a height of 5 m. Taking g = 10 m/s², what gravitational potential energy does it gain?",
+      "options": [
+        "10 J",
+        "50 J",
+        "100 J",
+        "200 J"
+      ],
+      "correct_option": 2,
+      "explanation": "Gravitational potential energy is mgh, giving 100 J.",
+      "detailed_explanation": "Step 1: Mass m = 2 kg, height h = 5 m, and g = 10 m/s².\nStep 2: PE = mgh.\nStep 3: PE = 2 × 10 × 5 = 100 J.",
+      "is_active": true,
+      "created_at": "2026-08-11T06:18:11.261Z"
+    },
+    {
+      "_id": "2anhmejlfmso9r8ot",
+      "course_id": "rk0cw5w0imso9pyqz",
+      "subject": "Physics",
+      "topic_tag": "Physics - Work, Energy and Power",
+      "question_text": "What happens to the kinetic energy of an object if its speed is doubled while its mass remains constant?",
+      "options": [
+        "It becomes half",
+        "It doubles",
+        "It becomes four times",
+        "It remains unchanged"
+      ],
+      "correct_option": 2,
+      "explanation": "Kinetic energy is proportional to the square of velocity.",
+      "detailed_explanation": "Step 1: Kinetic energy is KE = ½mv².\nStep 2: If velocity becomes 2v, then KE' = ½m(2v)².\nStep 3: Therefore, KE' = 4KE.",
+      "is_active": true,
+      "created_at": "2026-08-11T06:18:11.261Z"
+    },
+    {
+      "_id": "8jruhkh3zmso9r8ot",
+      "course_id": "rk0cw5w0imso9pyqz",
+      "subject": "Physics",
+      "topic_tag": "Physics - Work, Energy and Power",
+      "question_text": "A force of 10 N moves an object through 5 m in the direction of the force. What work is done?",
+      "options": [
+        "2 J",
+        "15 J",
+        "50 J",
+        "100 J"
+      ],
+      "correct_option": 2,
+      "explanation": "Work done by a constant force in the direction of displacement is W = Fd.",
+      "detailed_explanation": "Step 1: Force F = 10 N and displacement d = 5 m.\nStep 2: The angle between force and displacement is 0°.\nStep 3: W = Fd cos 0° = 10 × 5 = 50 J.",
+      "is_active": true,
+      "created_at": "2026-08-11T06:18:11.261Z"
+    },
+    {
+      "_id": "5420czqn5mso9r8ot",
+      "course_id": "rk0cw5w0imso9pyqz",
+      "subject": "Physics",
+      "topic_tag": "Physics - Mechanics",
+      "question_text": "Which quantity remains conserved in an isolated system during a collision?",
+      "options": [
+        "Temperature",
+        "Linear momentum",
+        "Acceleration",
+        "Force on each object"
+      ],
+      "correct_option": 1,
+      "explanation": "Linear momentum is conserved when the net external force on the system is zero.",
+      "detailed_explanation": "Step 1: For an isolated system, external impulse is zero.\nStep 2: Therefore, total momentum before the collision equals total momentum after it.\nStep 3: Hence, linear momentum is conserved.",
+      "is_active": true,
+      "created_at": "2026-08-11T06:18:11.261Z"
+    },
+    {
+      "_id": "297gw6bf1mso9r8ot",
+      "course_id": "rk0cw5w0imso9pyqz",
+      "subject": "Physics",
+      "topic_tag": "Physics - Mechanics",
+      "question_text": "A projectile is launched horizontally from a height. Neglecting air resistance, what determines its vertical acceleration?",
+      "options": [
+        "Its horizontal speed",
+        "Its mass",
+        "Gravitational acceleration",
+        "Its horizontal range"
+      ],
+      "correct_option": 2,
+      "explanation": "The vertical acceleration of a projectile is determined by gravity.",
+      "detailed_explanation": "Step 1: Horizontal and vertical motions are independent.\nStep 2: Gravity acts downward throughout the flight.\nStep 3: Therefore, the vertical acceleration is approximately g = 9.8 m/s² downward.",
+      "is_active": true,
+      "created_at": "2026-08-11T06:18:11.261Z"
+    },
+    {
+      "_id": "oo23ind6umso9r8ot",
+      "course_id": "rk0cw5w0imso9pyqz",
+      "subject": "Physics",
+      "topic_tag": "Physics - Mechanics",
+      "question_text": "A force of 20 N acts on a 5 kg object. What is the acceleration produced?",
+      "options": [
+        "2 m/s²",
+        "4 m/s²",
+        "5 m/s²",
+        "10 m/s²"
+      ],
+      "correct_option": 1,
+      "explanation": "Newton's second law gives F = ma, so a = F/m = 4 m/s².",
+      "detailed_explanation": "Step 1: Force F = 20 N and mass m = 5 kg.\nStep 2: From F = ma, a = F/m.\nStep 3: a = 20/5 = 4 m/s².",
+      "is_active": true,
+      "created_at": "2026-08-11T06:18:11.261Z"
+    },
+    {
+      "_id": "as8y2lw2jmso9r8ot",
+      "course_id": "rk0cw5w0imso9pyqz",
+      "subject": "Physics",
+      "topic_tag": "Physics - Mechanics",
+      "question_text": "A body starts from rest and accelerates uniformly at 2 m/s². What will be its velocity after 5 s?",
+      "options": [
+        "5 m/s",
+        "10 m/s",
+        "15 m/s",
+        "20 m/s"
+      ],
+      "correct_option": 1,
+      "explanation": "Using v = u + at, the final velocity is 10 m/s.",
+      "detailed_explanation": "Step 1: Initial velocity u = 0 m/s.\nStep 2: Acceleration a = 2 m/s² and time t = 5 s.\nStep 3: v = 0 + (2)(5) = 10 m/s.",
+      "is_active": true,
+      "created_at": "2026-08-11T06:18:11.261Z"
+    },
     {
       "_id": "u9vmexfdcmsn5z53n",
       "course_id": "kjx0k9x51msd3o1gr",
@@ -3656,6 +3867,24 @@
     }
   ],
   "auditLogs": [
+    {
+      "_id": "9anfdz67omso9r8ox",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "BULK_ADD_QUESTIONS",
+      "affected_entity_id": "batch_10",
+      "details": "Bulk uploaded 10 questions into question bank",
+      "timestamp": "2026-08-11T06:18:11.265Z"
+    },
+    {
+      "_id": "udf4hfxzimso9pyqz",
+      "admin_id": "admin_master_1",
+      "admin_name": "Master Controller",
+      "action_type": "ADD_COURSE",
+      "affected_entity_id": "rk0cw5w0imso9pyqz",
+      "details": "Created new course \"Classs 7th\" (School Exams - CBSE) with subjects: Science, Mathematics, Social Studies",
+      "timestamp": "2026-08-11T06:17:11.723Z"
+    },
     {
       "_id": "3xlaqznzdmsn5z53p",
       "admin_id": "admin_master_1",

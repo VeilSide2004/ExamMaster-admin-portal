@@ -24,7 +24,7 @@ export const Logo: React.FC<LogoProps> = ({
 
       {showText && (
         <span className="font-black text-lg tracking-tight text-slate-900 dark:text-white font-sans">
-          ExamMaster
+          Examizo
         </span>
       )}
     </div>

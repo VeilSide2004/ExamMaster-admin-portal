@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'ExamMaster - Admin Management Portal',
+  title: 'Examizo - Admin Management Portal',
   description: 'Restricted administrative back-office portal for managing question banks, courses, and accounts.',
 };
 

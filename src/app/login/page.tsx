@@ -55,7 +55,7 @@ export default function AdminLoginPage() {
           {/* Bottom Left Overlay Text */}
           <div className="absolute bottom-10 left-10 text-white space-y-1 z-10">
             <h2 className="text-2xl font-black tracking-tight text-white uppercase drop-shadow-md">
-              EXAMMASTER COMMAND CENTER
+              EXAMIZO COMMAND CENTER
             </h2>
             <p className="text-[10px] font-extrabold tracking-widest text-slate-300 uppercase">
               ARCHITECTURE OF ACADEMIC PRECISION
