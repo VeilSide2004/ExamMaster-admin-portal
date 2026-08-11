@@ -52,7 +52,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
   };
 
   return (
-    <header className="border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-4 sm:px-8 py-3.5 flex items-center justify-between sticky top-0 z-30 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.08),0_2px_6px_-1px_rgba(0,0,0,0.04)] dark:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.5)] transition-all">
+    <header className="border-b border-slate-200/50 dark:border-slate-800/60 bg-white/65 dark:bg-slate-900/65 backdrop-blur-2xl backdrop-saturate-180 px-4 sm:px-8 py-3.5 flex items-center justify-between sticky top-0 z-30 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.08),0_2px_6px_-1px_rgba(0,0,0,0.04)] dark:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.5)] transition-all">
       <div className="flex items-center gap-3.5">
         {/* Mobile Hamburger Drawer Button */}
         <button

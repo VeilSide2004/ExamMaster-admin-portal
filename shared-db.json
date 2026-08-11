@@ -124,6 +124,61 @@
       "status": "Active",
       "xp_total": 0,
       "created_at": "2026-08-11T06:17:26.883Z"
+    },
+    {
+      "_id": "anlxibfztmsoe82r9",
+      "name": "aarav",
+      "email": "aarav@exammaster.com",
+      "password_hash": "google_oauth_authenticated",
+      "locked_course_id": "rk0cw5w0imso9pyqz",
+      "role": "student",
+      "xp_total": 100,
+      "rank": 1,
+      "created_at": "2026-08-11T08:23:15.189Z"
+    },
+    {
+      "_id": "75j3bvkhqmsoecql5",
+      "name": "Aranya Mondal",
+      "email": "aranyamondal2004@gmail.com",
+      "password_hash": "google_oauth_authenticated",
+      "locked_course_id": "rk0cw5w0imso9pyqz",
+      "role": "student",
+      "xp_total": 100,
+      "rank": 1,
+      "created_at": "2026-08-11T08:26:52.697Z"
+    },
+    {
+      "_id": "3tajyym91msoeddao",
+      "name": "Aranya Mondal",
+      "email": "mondalaranya925@gmail.com",
+      "password_hash": "google_oauth_authenticated",
+      "locked_course_id": "rk0cw5w0imso9pyqz",
+      "role": "student",
+      "xp_total": 100,
+      "rank": 1,
+      "created_at": "2026-08-11T08:27:22.128Z",
+      "account_email": "mondalaranya925@gmail.com"
+    },
+    {
+      "_id": "3f4a8xjwnmsohfa6i",
+      "name": "Remiel",
+      "email": "mondalaranya925+profile_250@exammaster.internal",
+      "password_hash": "google_oauth_authenticated",
+      "account_email": "mondalaranya925@gmail.com",
+      "locked_course_id": "1339osvcems5xpvjb",
+      "status": "Active",
+      "xp_total": 0,
+      "created_at": "2026-08-11T09:52:50.250Z"
+    },
+    {
+      "_id": "auw3ct49omsop5el6",
+      "name": "Manas",
+      "email": "manas@gmail.com",
+      "password_hash": "$2a$10$LfNXeDnrChL3qTpw9Wy4/u3b9KkIL3ItzgfYhkhEucDvH.HkvouMK",
+      "status": "Active",
+      "xp_total": 0,
+      "locked_course_id": "course_jee_2027",
+      "created_at": "2026-08-11T13:29:06.330Z"
     }
   ],
   "courses": [
